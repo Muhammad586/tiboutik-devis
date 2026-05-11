@@ -97,10 +97,10 @@
 
     <script>
         // ================== TES CLÉS EMAILJS ==================
-        emailjs.init("Zi3s-ZwSciwsRW6t6");           // ← Remplace par ta clé qui commence par Zi...
+        emailjs.init("Zi3s-ZwSciwsRW6t6");
 
-        const SERVICE_ID = "service_qzrf6nm";        // ← Ton Service ID
-        const TEMPLATE_ID = "template_qmu3htp";      // ← Ton Template ID (déjà mis)
+        const SERVICE_ID = "service_qzrf6nm";
+        const TEMPLATE_ID = "template_qmu3htp";
 
         const PRIX_LETTRE = 1.10;
         const PRIX_LED = 12;
@@ -108,12 +108,187 @@
         const PRIX_LITHO = 0.75;
         const PRIX_LIVRAISON = 17;
 
-        // === Le reste du code (identique à avant) ===
-        function genererVeilleuses() { /* ... ton code existant ... */ }
-        function calculerPrix() { /* ... ton code existant ... */ }
-        function isFeteDesMeresActive() { /* ... ton code ... */ }
-        function updateOffresVisuelles() { /* ... ton code ... */ }
-        function updateRecap() { /* ... ton code ... */ }
+        function genererVeilleuses() {
+            const nb = parseInt(document.getElementById('nbVeilleuses').value);
+            const container = document.getElementById('veilleuses-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= nb; i++) {
+                const div = document.createElement('div');
+                div.className = 'border-4 border-pink-200 rounded-3xl p-5 bg-pink-50';
+                div.innerHTML = `
+                  <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
+                  <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
+                  <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
+                  <div class="mt-4">
+                    <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
+                    <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
+                  </div>
+                  <div class="mt-4">
+                    <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
+                    <div class="formes-container grid grid-cols-3 gap-2"></div>
+                  </div>
+                  <div class="mt-4">
+                    <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
+                    <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
+                  </div>
+                  <div class="mt-3">
+                    <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
+                    <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
+                      <option value="0">0</option>
+                    </select>
+                  </div>
+                `;
+                container.appendChild(div);
+                const formesContainer = div.querySelector('.formes-container');
+                const formes = ["Stitch","Pikachu","Cœur","Nuage","Drapeau 974","Manette","Fée","Couronne","Luffy","Winnie"];
+                formes.forEach(forme => {
+                    const btn = document.createElement('button');
+                    btn.className = "border-2 border-purple-300 hover:border-pink-500 bg-white hover:bg-pink-100 rounded-2xl py-1 px-2 text-center text-xs font-bold transition-all";
+                    btn.textContent = forme;
+                    btn.onclick = () => { btn.classList.toggle('bg-pink-200'); calculerPrix(); };
+                    formesContainer.appendChild(btn);
+                });
+                const countSelect = div.querySelector('.litho-count');
+                for (let j = 1; j <= 20; j++) {
+                    const opt = document.createElement('option');
+                    opt.value = j;
+                    opt.textContent = j;
+                    countSelect.appendChild(opt);
+                }
+                const allOpt = document.createElement('option');
+                allOpt.value = 'all';
+                allOpt.textContent = 'Toutes les lettres';
+                countSelect.appendChild(allOpt);
+                div.querySelector('.veilleuse-input').addEventListener('input', calculerPrix);
+                div.querySelector('.theme-input').addEventListener('input', calculerPrix);
+            }
+            calculerPrix();
+        }
+
+        function calculerPrix() {
+            const taille = parseFloat(document.getElementById('taille').value) || 12;
+            const livraison = document.getElementById('livraison').checked;
+            const totalVeilleuses = parseInt(document.getElementById('nbVeilleuses').value);
+            const inputs = document.querySelectorAll('.veilleuse-input');
+            let totalLettres = 0;
+            let totalSelectedFormes = 0;
+            let eligible5plus1 = 0;
+            let hasFete = false;
+            let eligiblePackFamily = 0;
+            let prixFormesTotal = 0;
+            let prixLithoTotal = 0;
+            let valeurCadeaux = 0;
+
+            inputs.forEach(input => {
+                const texte = input.value.trim();
+                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+                const countSpan = input.parentElement.querySelector('.lettres-count');
+                if (countSpan) countSpan.textContent = nb;
+                totalLettres += nb;
+                const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
+                let selectedFormes = 0;
+                formesBtns.forEach(btn => {
+                    if (btn.classList.contains('bg-pink-200')) selectedFormes++;
+                });
+                totalSelectedFormes += selectedFormes;
+                if (nb >= 5) {
+                    eligible5plus1++;
+                    hasFete = true;
+                    if (totalVeilleuses >= 2) eligiblePackFamily++;
+                    if (selectedFormes > 1) prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
+                } else {
+                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
+                }
+                const lithoCountSelect = input.parentElement.querySelector('.litho-count');
+                const count = lithoCountSelect ? lithoCountSelect.value : 0;
+                if (count > 0) {
+                    const nbLitho = count === 'all' ? nb : parseInt(count);
+                    prixLithoTotal += nbLitho * taille * PRIX_LITHO;
+                }
+            });
+
+            const totalGlobalChars = totalLettres + totalSelectedFormes;
+            const livraisonGratuiteActive = totalGlobalChars >= 4;
+            if (livraisonGratuiteActive) valeurCadeaux += totalGlobalChars * 2;
+            if (totalVeilleuses >= 2) valeurCadeaux += eligiblePackFamily * taille * PRIX_LETTRE;
+            valeurCadeaux += eligible5plus1 * taille * PRIX_FORME;
+            if (isFeteDesMeresActive() && hasFete) valeurCadeaux += taille * PRIX_FORME + taille * PRIX_LITHO;
+
+            const prixLettres = totalLettres * taille * PRIX_LETTRE;
+            const prixPayant = prixLettres + (PRIX_LED * inputs.length) + prixFormesTotal + prixLithoTotal;
+            const livraisonPrix = livraison ? PRIX_LIVRAISON : 0;
+            const totalAvantOffres = prixPayant + livraisonPrix + valeurCadeaux;
+            const totalFinal = prixPayant + livraisonPrix;
+            const acompte = totalFinal * 0.5;
+
+            document.getElementById('prixLettres').textContent = prixLettres.toFixed(2) + " €";
+            document.getElementById('prixFormes').textContent = prixFormesTotal.toFixed(2) + " €";
+            document.getElementById('prixLitho').textContent = prixLithoTotal.toFixed(2) + " €";
+            document.getElementById('totalBrut').textContent = totalAvantOffres.toFixed(2) + " €";
+            document.getElementById('totalFinal').textContent = totalFinal.toFixed(2) + " €";
+            document.getElementById('acompte').textContent = acompte.toFixed(2) + " €";
+
+            updateOffresVisuelles(eligiblePackFamily, eligible5plus1, hasFete, livraisonGratuiteActive);
+            updateRecap();
+        }
+
+        function isFeteDesMeresActive() {
+            const today = new Date();
+            return today.getMonth() === 4 && today.getFullYear() === 2026;
+        }
+
+        function updateOffresVisuelles(packCount, cinqCount, feteActive, livraisonGratuiteActive) {
+            const container = document.getElementById('offres-list');
+            container.innerHTML = '';
+            const packDiv = document.createElement('div');
+            packDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${packCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+            packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
+            container.appendChild(packDiv);
+            const cinqDiv = document.createElement('div');
+            cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+            cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
+            container.appendChild(cinqDiv);
+            if (feteActive) {
+                const feteDiv = document.createElement('div');
+                feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
+                feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
+                container.appendChild(feteDiv);
+            }
+            const livDiv = document.createElement('div');
+            livDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${livraisonGratuiteActive ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+            livDiv.innerHTML = `🚚 Livraison gratuite → à partir de 4 caractères ${livraisonGratuiteActive ? '✅' : '🔥'}`;
+            container.appendChild(livDiv);
+        }
+
+        function updateRecap() {
+            const container = document.getElementById('recap-veilleuses');
+            container.innerHTML = '';
+            const inputs = document.querySelectorAll('.veilleuse-input');
+            inputs.forEach((input, index) => {
+                const texte = input.value.trim() || '—';
+                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+                const themeInput = input.parentElement.querySelector('.theme-input');
+                const theme = themeInput ? themeInput.value.trim() : '—';
+                const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
+                let formesList = [];
+                formesBtns.forEach(btn => {
+                    if (btn.classList.contains('bg-pink-200')) formesList.push(btn.textContent);
+                });
+                const formesText = formesList.length > 0 ? formesList.join(', ') : 'Aucune';
+                const lithoDesc = input.parentElement.querySelector('.litho-desc') ? input.parentElement.querySelector('.litho-desc').value.trim() : '';
+                const lithoCountSelect = input.parentElement.querySelector('.litho-count');
+                const lithoCount = lithoCountSelect ? lithoCountSelect.value : 0;
+                const div = document.createElement('div');
+                div.className = 'bg-white/10 rounded-2xl p-3 text-xs';
+                div.innerHTML = `
+                  <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
+                  <span class="text-yellow-200">Thème :</span> ${theme}<br>
+                  <span class="text-yellow-200">Formes :</span> ${formesText}<br>
+                  <span class="text-yellow-200">Gravure :</span> ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})
+                `;
+                container.appendChild(div);
+            });
+        }
 
         async function envoyerDevis() {
             const nom = document.getElementById('nomClient').value || "Non renseigné";
@@ -130,7 +305,7 @@
             };
 
             try {
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+                await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
                 alert("✅ Demande envoyée avec succès à néO_Créa !\nMerci 💖");
             } catch (error) {
                 alert("❌ Erreur d'envoi.\nTu peux copier le récapitulatif et me l'envoyer directement.");
