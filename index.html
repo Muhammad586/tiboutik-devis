@@ -298,13 +298,21 @@ async function envoyerDevis() {
     const nom = document.getElementById('nomClient').value || "Non renseigné";
     const emailClient = document.getElementById('email').value || "Non renseigné";
     const taille = document.getElementById('taille').value + " cm";
+    const idees = document.getElementById('idees').value.trim() || "Aucune idée particulière";
+    
     const recap = document.getElementById('recap-veilleuses').innerText || "Aucun récapitulatif";
-    const total = document.getElementById('totalFinal').textContent;
+    
+    // Récupération des prix
+    const prixLettres = document.getElementById('prixLettres').textContent;
+    const prixFormes = document.getElementById('prixFormes').textContent;
+    const prixLitho = document.getElementById('prixLitho').textContent;
+    const totalAvantOffres = document.getElementById('totalBrut').textContent;
+    const totalFinal = document.getElementById('totalFinal').textContent;
+    const acompte = document.getElementById('acompte').textContent;
 
-    // === Récupération améliorée des offres activées ===
+    // Récupération des offres activées
     let offres = [];
     const offreCards = document.querySelectorAll('#offres-list > div');
-    
     offreCards.forEach(card => {
         const text = card.textContent.trim();
         if (text.includes('✅')) {
@@ -316,8 +324,14 @@ async function envoyerDevis() {
         nom_client: nom,
         email_client: emailClient,
         taille_lettres: taille,
+        idees_client: idees,
         recapitulatif: recap,
-        total_payer: total,
+        prix_lettres: prixLettres,
+        prix_formes: prixFormes,
+        prix_litho: prixLitho,
+        total_avant_offres: totalAvantOffres,
+        total_payer: totalFinal,
+        acompte: acompte,
         offres_debloquees: offres.length > 0 ? offres.join("\n• ") : "Aucune offre débloquée",
         date: new Date().toLocaleString('fr-FR')
     };
