@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        body { font-family: 'Comic Sans MS', cursive, sans-serif; }
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen">
@@ -116,28 +118,28 @@
                 const div = document.createElement('div');
                 div.className = 'border-4 border-pink-200 rounded-3xl p-5 bg-pink-50';
                 div.innerHTML = `
-                  <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
-                  <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
-                  <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
-                  <div class="mt-4">
-                    <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
-                    <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
-                  </div>
-                  <div class="mt-4">
-                    <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
-                    <div class="formes-container grid grid-cols-3 gap-2"></div>
-                  </div>
-                  <div class="mt-4">
-                    <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
-                    <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
-                  </div>
-                  <div class="mt-3">
-                    <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
-                    <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
-                      <option value="0">0</option>
-                    </select>
-                  </div>
-                `;
+                      <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
+                      <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
+                      <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
+                      <div class="mt-4">
+                        <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
+                        <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
+                      </div>
+                      <div class="mt-4">
+                        <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
+                        <div class="formes-container grid grid-cols-3 gap-2"></div>
+                      </div>
+                      <div class="mt-4">
+                        <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
+                        <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
+                      </div>
+                      <div class="mt-3">
+                        <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
+                        <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
+                          <option value="0">0</option>
+                        </select>
+                      </div>
+                    `;
                 container.appendChild(div);
                 const formesContainer = div.querySelector('.formes-container');
                 const formes = ["Stitch", "Pikachu", "Cœur", "Nuage", "Drapeau 974", "Manette", "Fée", "Couronne", "Luffy", "Winnie"];
@@ -282,11 +284,11 @@
                 const div = document.createElement('div');
                 div.className = 'bg-white/10 rounded-2xl p-3 text-xs';
                 div.innerHTML = `
-                  <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
-                  <span class="text-yellow-200">Thème :</span> ${theme}<br>
-                  <span class="text-yellow-200">Formes :</span> ${formesText}<br>
-                  <span class="text-yellow-200">Gravure :</span> ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})
-                `;
+                      <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
+                      <span class="text-yellow-200">Thème :</span> ${theme}<br>
+                      <span class="text-yellow-200">Formes :</span> ${formesText}<br>
+                      <span class="text-yellow-200">Gravure :</span> ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})
+                    `;
                 container.appendChild(div);
             });
         }
