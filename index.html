@@ -298,11 +298,36 @@ async function envoyerDevis() {
     const nom = document.getElementById('nomClient').value || "Non renseigné";
     const emailClient = document.getElementById('email').value || "Non renseigné";
     const taille = document.getElementById('taille').value + " cm";
-    const idees = document.getElementById('idees').value.trim() || "Aucune idée particulière";
+    const idees = document.getElementById('idees').value.trim() || "Aucune";
+
+    // === Récapitulatif détaillé par veilleuse avec Thème bien visible ===
+    let recapDetail = "";
+    const veilleuses = document.querySelectorAll('#veilleuses-container > div');
     
-    const recap = document.getElementById('recap-veilleuses').innerText || "Aucun récapitulatif";
-    
-    // Récupération des prix
+    veilleuses.forEach((veilleuse, index) => {
+        const inputTexte = veilleuse.querySelector('.veilleuse-input');
+        const inputTheme = veilleuse.querySelector('.theme-input');
+        const texte = inputTexte ? inputTexte.value.trim() || '—' : '—';
+        const theme = inputTheme ? inputTheme.value.trim() || 'Non renseigné' : 'Non renseigné';
+        const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+
+        recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
+        recapDetail += `Thème : ${theme}\n`;
+        
+        // Formes
+        const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
+            .filter(btn => btn.classList.contains('bg-pink-200'))
+            .map(btn => btn.textContent)
+            .join(', ') || 'Aucune';
+        recapDetail += `Formes : ${formes}\n`;
+        
+        // Gravure
+        const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
+        const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
+        recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})\n\n`;
+    });
+
+    // Prix
     const prixLettres = document.getElementById('prixLettres').textContent;
     const prixFormes = document.getElementById('prixFormes').textContent;
     const prixLitho = document.getElementById('prixLitho').textContent;
@@ -310,10 +335,9 @@ async function envoyerDevis() {
     const totalFinal = document.getElementById('totalFinal').textContent;
     const acompte = document.getElementById('acompte').textContent;
 
-    // Récupération des offres activées
+    // Offres
     let offres = [];
-    const offreCards = document.querySelectorAll('#offres-list > div');
-    offreCards.forEach(card => {
+    document.querySelectorAll('#offres-list > div').forEach(card => {
         const text = card.textContent.trim();
         if (text.includes('✅')) {
             offres.push(text.replace('✅', '').trim());
@@ -325,26 +349,25 @@ async function envoyerDevis() {
         email_client: emailClient,
         taille_lettres: taille,
         idees_client: idees,
-        recapitulatif: recap,
+        recapitulatif: recapDetail,
         prix_lettres: prixLettres,
         prix_formes: prixFormes,
         prix_litho: prixLitho,
         total_avant_offres: totalAvantOffres,
         total_payer: totalFinal,
         acompte: acompte,
-        offres_debloquees: offres.length > 0 ? offres.join("\n• ") : "Aucune offre débloquée",
+        offres_debloquees: offres.length > 0 ? offres.join("\n• ") : "Aucune",
         date: new Date().toLocaleString('fr-FR')
     };
 
     try {
         await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
-        alert("✅ Demande envoyée avec succès à néO_Créa !");
+        alert("✅ Demande envoyée avec succès !");
     } catch (error) {
         console.error(error);
         alert("❌ Erreur d'envoi");
     }
-}
-        document.addEventListener('DOMContentLoaded', () => {
+}   document.addEventListener('DOMContentLoaded', () => {
             genererVeilleuses();
         });
     </script>
