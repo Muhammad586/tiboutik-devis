@@ -294,19 +294,21 @@
         }
 
         // ==================== FONCTION ENVOI CORRIGÉE ====================
-     async function envoyerDevis() {
+async function envoyerDevis() {
     const nom = document.getElementById('nomClient').value || "Non renseigné";
     const emailClient = document.getElementById('email').value || "Non renseigné";
     const taille = document.getElementById('taille').value + " cm";
     const recap = document.getElementById('recap-veilleuses').innerText || "Aucun récapitulatif";
     const total = document.getElementById('totalFinal').textContent;
 
-    // === Récupération des offres débloquées ===
+    // === Récupération améliorée des offres activées ===
     let offres = [];
-    const offreCards = document.querySelectorAll('.offre-card');
+    const offreCards = document.querySelectorAll('#offres-list > div');
+    
     offreCards.forEach(card => {
-        if (card.classList.contains('bg-green-400')) {
-            offres.push(card.textContent.trim());
+        const text = card.textContent.trim();
+        if (text.includes('✅')) {
+            offres.push(text.replace('✅', '').trim());
         }
     });
 
@@ -316,7 +318,7 @@
         taille_lettres: taille,
         recapitulatif: recap,
         total_payer: total,
-        offres_debloquees: offres.length > 0 ? offres.join("\n") : "Aucune offre débloquée",
+        offres_debloquees: offres.length > 0 ? offres.join("\n• ") : "Aucune offre débloquée",
         date: new Date().toLocaleString('fr-FR')
     };
 
