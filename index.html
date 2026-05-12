@@ -294,30 +294,40 @@
         }
 
         // ==================== FONCTION ENVOI CORRIGÉE ====================
-        async function envoyerDevis() {
-            const nom = document.getElementById('nomClient').value || "Non renseigné";
-            const emailClient = document.getElementById('email').value || "Non renseigné";
-            const taille = document.getElementById('taille').value + " cm";
-            const recap = document.getElementById('recap-veilleuses').innerText || "Aucun récapitulatif";
-            const total = document.getElementById('totalFinal').textContent;
+     async function envoyerDevis() {
+    const nom = document.getElementById('nomClient').value || "Non renseigné";
+    const emailClient = document.getElementById('email').value || "Non renseigné";
+    const taille = document.getElementById('taille').value + " cm";
+    const recap = document.getElementById('recap-veilleuses').innerText || "Aucun récapitulatif";
+    const total = document.getElementById('totalFinal').textContent;
 
-            const templateParams = {
-                nom_client: nom,
-                email_client: emailClient,
-                taille_lettres: taille,           // ← Taille maintenant envoyée
-                recapitulatif: recap,
-                total_payer: total,
-                date: new Date().toLocaleString('fr-FR')
-            };
-
-            try {
-                await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
-                alert("✅ Demande envoyée avec succès à néO_Créa !\nMerci 💖");
-            } catch (error) {
-                alert("❌ Erreur d'envoi.\nTu peux copier le récapitulatif et me l'envoyer directement.");
-            }
+    // === Récupération des offres débloquées ===
+    let offres = [];
+    const offreCards = document.querySelectorAll('.offre-card');
+    offreCards.forEach(card => {
+        if (card.classList.contains('bg-green-400')) {
+            offres.push(card.textContent.trim());
         }
+    });
 
+    const templateParams = {
+        nom_client: nom,
+        email_client: emailClient,
+        taille_lettres: taille,
+        recapitulatif: recap,
+        total_payer: total,
+        offres_debloquees: offres.length > 0 ? offres.join("\n") : "Aucune offre débloquée",
+        date: new Date().toLocaleString('fr-FR')
+    };
+
+    try {
+        await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
+        alert("✅ Demande envoyée avec succès à néO_Créa !");
+    } catch (error) {
+        console.error(error);
+        alert("❌ Erreur d'envoi");
+    }
+}
         document.addEventListener('DOMContentLoaded', () => {
             genererVeilleuses();
         });
