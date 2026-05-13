@@ -11,6 +11,29 @@
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+
+        /* === AMÉLIORATIONS VISIBILITÉ RÉCAPITULATIF === */
+        #recap-veilleuses {
+            font-size: 15.5px;
+            line-height: 1.8;
+        }
+
+        #recap-veilleuses > div {
+            background: rgba(255, 255, 255, 0.35) !important;
+            padding: 18px !important;
+            border-radius: 20px !important;
+            margin-bottom: 16px !important;
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Thème très visible et beau */
+        .theme-line {
+            color: #fff700 !important;
+            font-weight: bold;
+            font-size: 17.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen">
@@ -89,7 +112,6 @@
                         <p class="text-sm">Acompte 50% : <span id="acompte" class="font-bold">0 €</span></p>
                     </div>
                 </div>
-
                 <button onclick="envoyerDevis()" class="mt-8 w-full bg-white text-pink-600 font-bold text-3xl py-8 rounded-3xl hover:scale-110 transition-all shadow-2xl flex items-center justify-center gap-4">
                     ✉️ Envoyer ta demande à néO_Créa
                 </button>
@@ -99,17 +121,14 @@
 
     <script>
         emailjs.init("Zi3s-ZwSciwsRW6t6");
-
         const SERVICE_ID = "service_qzrf6nm";
         const TEMPLATE_ID = "template_qmu3htp";
-
         const PRIX_LETTRE = 1;
         const PRIX_LED = 12;
         const PRIX_FORME = 1.15;
         const PRIX_LITHO = 0.65;
         const PRIX_LIVRAISON = 17;
 
-        // ==================== TON CODE ORIGINAL (inchangé) ====================
         function genererVeilleuses() {
             const nb = parseInt(document.getElementById('nbVeilleuses').value);
             const container = document.getElementById('veilleuses-container');
@@ -168,7 +187,6 @@
         }
 
         function calculerPrix() {
-            // Ton code original complet (inchangé)
             const taille = parseFloat(document.getElementById('taille').value) || 12;
             const livraison = document.getElementById('livraison').checked;
             const totalVeilleuses = parseInt(document.getElementById('nbVeilleuses').value);
@@ -188,12 +206,14 @@
                 const countSpan = input.parentElement.querySelector('.lettres-count');
                 if (countSpan) countSpan.textContent = nb;
                 totalLettres += nb;
+
                 const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
                 let selectedFormes = 0;
                 formesBtns.forEach(btn => {
                     if (btn.classList.contains('bg-pink-200')) selectedFormes++;
                 });
                 totalSelectedFormes += selectedFormes;
+
                 if (nb >= 5) {
                     eligible5plus1++;
                     hasFete = true;
@@ -202,6 +222,7 @@
                 } else {
                     prixFormesTotal += selectedFormes * taille * PRIX_FORME;
                 }
+
                 const lithoCountSelect = input.parentElement.querySelector('.litho-count');
                 const count = lithoCountSelect ? lithoCountSelect.value : 0;
                 if (count > 0) {
@@ -247,16 +268,19 @@
             packDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${packCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
             packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
             container.appendChild(packDiv);
+
             const cinqDiv = document.createElement('div');
             cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
             cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
             container.appendChild(cinqDiv);
+
             if (feteActive) {
                 const feteDiv = document.createElement('div');
                 feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
                 feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
                 container.appendChild(feteDiv);
             }
+
             const livDiv = document.createElement('div');
             livDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${livraisonGratuiteActive ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
             livDiv.innerHTML = `🚚 Livraison gratuite → à partir de 4 caractères ${livraisonGratuiteActive ? '✅' : '🔥'}`;
@@ -267,107 +291,84 @@
             const container = document.getElementById('recap-veilleuses');
             container.innerHTML = '';
             const inputs = document.querySelectorAll('.veilleuse-input');
+            
             inputs.forEach((input, index) => {
                 const texte = input.value.trim() || '—';
                 const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
                 const themeInput = input.parentElement.querySelector('.theme-input');
-                const theme = themeInput ? themeInput.value.trim() : '—';
+                const theme = themeInput ? themeInput.value.trim() || 'Non renseigné' : 'Non renseigné';
+                
                 const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
                 let formesList = [];
                 formesBtns.forEach(btn => {
                     if (btn.classList.contains('bg-pink-200')) formesList.push(btn.textContent);
                 });
                 const formesText = formesList.length > 0 ? formesList.join(', ') : 'Aucune';
+
                 const lithoDesc = input.parentElement.querySelector('.litho-desc') ? input.parentElement.querySelector('.litho-desc').value.trim() : '';
-                const lithoCountSelect = input.parentElement.querySelector('.litho-count');
-                const lithoCount = lithoCountSelect ? lithoCountSelect.value : 0;
+                const lithoCount = input.parentElement.querySelector('.litho-count') ? input.parentElement.querySelector('.litho-count').value : 0;
+
                 const div = document.createElement('div');
-                div.className = 'bg-white/10 rounded-2xl p-3 text-xs';
                 div.innerHTML = `
-                      <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
-                      <span class="text-yellow-200">Thème :</span> ${theme}<br>
-                      <span class="text-yellow-200">Formes :</span> ${formesText}<br>
-                      <span class="text-yellow-200">Gravure :</span> ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})
-                    `;
+                    <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
+                    <span class="theme-line">Thème : ${theme}</span><br>
+                    <span class="text-yellow-200">Formes : ${formesText}</span><br>
+                    <span class="text-yellow-200">Gravure : ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})</span>
+                `;
                 container.appendChild(div);
             });
         }
 
-        // ==================== FONCTION ENVOI CORRIGÉE ====================
-async function envoyerDevis() {
-    const nom = document.getElementById('nomClient').value || "Non renseigné";
-    const emailClient = document.getElementById('email').value || "Non renseigné";
-    const taille = document.getElementById('taille').value + " cm";
-    const idees = document.getElementById('idees').value.trim() || "Aucune";
+        async function envoyerDevis() {
+            const nom = document.getElementById('nomClient').value || "Non renseigné";
+            const emailClient = document.getElementById('email').value || "Non renseigné";
+            const taille = document.getElementById('taille').value + " cm";
+            const idees = document.getElementById('idees').value.trim() || "Aucune";
 
-    // === Récapitulatif détaillé par veilleuse avec Thème bien visible ===
-    let recapDetail = "";
-    const veilleuses = document.querySelectorAll('#veilleuses-container > div');
-    
-    veilleuses.forEach((veilleuse, index) => {
-        const inputTexte = veilleuse.querySelector('.veilleuse-input');
-        const inputTheme = veilleuse.querySelector('.theme-input');
-        const texte = inputTexte ? inputTexte.value.trim() || '—' : '—';
-        const theme = inputTheme ? inputTheme.value.trim() || 'Non renseigné' : 'Non renseigné';
-        const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+            let recapDetail = "";
+            const veilleuses = document.querySelectorAll('#veilleuses-container > div');
+            
+            veilleuses.forEach((veilleuse, index) => {
+                const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
+                const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
+                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+                recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
+                recapDetail += `Thème : ${theme}\n`;
+                const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
+                    .filter(btn => btn.classList.contains('bg-pink-200'))
+                    .map(btn => btn.textContent).join(', ') || 'Aucune';
+                recapDetail += `Formes : ${formes}\n`;
+                const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
+                const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
+                recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})\n\n`;
+            });
 
-        recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
-        recapDetail += `Thème : ${theme}\n`;
-        
-        // Formes
-        const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
-            .filter(btn => btn.classList.contains('bg-pink-200'))
-            .map(btn => btn.textContent)
-            .join(', ') || 'Aucune';
-        recapDetail += `Formes : ${formes}\n`;
-        
-        // Gravure
-        const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
-        const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
-        recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount} gravure${lithoCount > 1 ? 's' : ''})\n\n`;
-    });
+            const templateParams = {
+                nom_client: nom,
+                email_client: emailClient,
+                taille_lettres: taille,
+                idees_client: idees,
+                recapitulatif: recapDetail,
+                prix_lettres: document.getElementById('prixLettres').textContent,
+                prix_formes: document.getElementById('prixFormes').textContent,
+                prix_litho: document.getElementById('prixLitho').textContent,
+                total_avant_offres: document.getElementById('totalBrut').textContent,
+                total_payer: document.getElementById('totalFinal').textContent,
+                acompte: document.getElementById('acompte').textContent,
+                offres_debloquees: "Voir récapitulatif",
+                date: new Date().toLocaleString('fr-FR')
+            };
 
-    // Prix
-    const prixLettres = document.getElementById('prixLettres').textContent;
-    const prixFormes = document.getElementById('prixFormes').textContent;
-    const prixLitho = document.getElementById('prixLitho').textContent;
-    const totalAvantOffres = document.getElementById('totalBrut').textContent;
-    const totalFinal = document.getElementById('totalFinal').textContent;
-    const acompte = document.getElementById('acompte').textContent;
-
-    // Offres
-    let offres = [];
-    document.querySelectorAll('#offres-list > div').forEach(card => {
-        const text = card.textContent.trim();
-        if (text.includes('✅')) {
-            offres.push(text.replace('✅', '').trim());
+            try {
+                await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
+                alert("✅ Demande envoyée avec succès !");
+            } catch (error) {
+                console.error(error);
+                alert("❌ Erreur d'envoi");
+            }
         }
-    });
 
-    const templateParams = {
-        nom_client: nom,
-        email_client: emailClient,
-        taille_lettres: taille,
-        idees_client: idees,
-        recapitulatif: recapDetail,
-        prix_lettres: prixLettres,
-        prix_formes: prixFormes,
-        prix_litho: prixLitho,
-        total_avant_offres: totalAvantOffres,
-        total_payer: totalFinal,
-        acompte: acompte,
-        offres_debloquees: offres.length > 0 ? offres.join("\n• ") : "Aucune",
-        date: new Date().toLocaleString('fr-FR')
-    };
-
-    try {
-        await emailjs.send("service_qzrf6nm", "template_qmu3htp", templateParams);
-        alert("✅ Demande envoyée avec succès !");
-    } catch (error) {
-        console.error(error);
-        alert("❌ Erreur d'envoi");
-    }
-}   document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             genererVeilleuses();
         });
     </script>
