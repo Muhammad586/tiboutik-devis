@@ -9,148 +9,88 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         body { font-family: 'Comic Sans MS', cursive, sans-serif; }
-        #recap-veilleuses { font-size: 15.5px; line-height: 1.8; }
-        #recap-veilleuses > div {
-            background: rgba(255, 255, 255, 0.35) !important;
-            padding: 18px !important;
-            border-radius: 20px !important;
-            margin-bottom: 16px !important;
-            border: 4px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-        .theme-line {
-            color: #fff700 !important;
-            font-weight: bold;
-            font-size: 17.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        #recap-veilleuses div {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            border: 2px solid white;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen">
-    <div class="max-w-5xl mx-auto p-6">
+<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen p-4">
+    <div class="max-w-5xl mx-auto">
         <div class="grid lg:grid-cols-2 gap-8">
+            
             <div class="bg-white rounded-3xl shadow-2xl p-8">
                 <h2 class="text-3xl font-bold text-purple-700 mb-6">Remplis ta veilleuse 🪄</h2>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Écris ici ton prénom</label>
-                        <input id="nomClient" type="text" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Julie">
-                    </div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Écris ton mail ici :)</label>
-                        <input id="email" type="email" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="exemple@gmail.com">
-                    </div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Combien de veilleuses veux-tu ?</label>
-                        <select id="nbVeilleuses" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" onchange="genererVeilleuses()">
-                            <option value="1" selected>1 veilleuse</option>
-                            <option value="2">2 veilleuses</option>
-                            <option value="3">3 veilleuses</option>
-                            <option value="4">4 veilleuses</option>
-                            <option value="5">5 veilleuses</option>
-                            <option value="6">6 veilleuses</option>
-                            <option value="7">7 veilleuses</option>
-                            <option value="8">8 veilleuses</option>
-                            <option value="9">9 veilleuses</option>
-                            <option value="10">10 veilleuses</option>
-                        </select>
-                    </div>
-                    <div id="veilleuses-container" class="space-y-6"></div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Taille des lettres</label>
-                        <select id="taille" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" onchange="calculerPrix()">
-                            <option value="10">10 cm</option>
-                            <option value="12" selected>12 cm</option>
-                            <option value="15">15 cm</option>
-                            <option value="20">20 cm</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Tes idées créatives 💡</label>
-                        <textarea id="idees" rows="3" class="w-full border-4 border-pink-300 rounded-3xl px-4 py-3" placeholder="Laisse un message à néO_Créa..."></textarea>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" id="livraison" class="w-6 h-6 accent-pink-500" onchange="calculerPrix()">
-                        <label for="livraison" class="text-lg font-bold">Livraison à La Réunion (17 €)</label>
-                    </div>
+                <div class="space-y-4">
+                    <input id="nomClient" type="text" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3" placeholder="Ton prénom">
+                    <input id="email" type="email" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3" placeholder="Ton mail">
+                    
+                    <label class="block font-bold">Nombre de veilleuses</label>
+                    <select id="nbVeilleuses" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3" onchange="genererVeilleuses()">
+                        <option value="1">1 veilleuse</option>
+                        <option value="2">2 veilleuses</option>
+                        <option value="3">3 veilleuses</option>
+                    </select>
+
+                    <div id="veilleuses-container" class="space-y-4"></div>
+
+                    <label class="block font-bold">Taille</label>
+                    <select id="taille" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3" onchange="calculerPrix()">
+                        <option value="10">10 cm</option>
+                        <option value="12" selected>12 cm</option>
+                    </select>
+
+                    <textarea id="idees" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3" placeholder="Tes idées..."></textarea>
+                    
+                    <label class="flex items-center gap-2 font-bold">
+                        <input type="checkbox" id="livraison" onchange="calculerPrix()"> Livraison Réunion (17€)
+                    </label>
+
+                    <button id="btn-envoi" onclick="envoyerDevis()" class="w-full bg-purple-600 text-white font-bold text-xl py-5 rounded-2xl shadow-lg hover:bg-purple-700 transition-all mt-4">
+                        ✉️ Recevoir les tarifs par mail
+                    </button>
                 </div>
             </div>
 
             <div id="panneau-prix" style="display: none;" class="bg-gradient-to-br from-pink-400 to-purple-500 text-white rounded-3xl shadow-2xl p-8 flex flex-col">
-                <h2 class="text-3xl font-bold mb-6 text-center">Détail de ton devis ✨</h2>
-                <div class="flex-1 space-y-5">
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5 space-y-3">
-                        <div class="flex justify-between"><span>Prix des lettres seules</span><span id="prixLettres" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between"><span>+ LED Premium</span><span class="font-bold">12 €</span></div>
-                        <div class="flex justify-between"><span>+ Formes choisies</span><span id="prixFormes" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between"><span>+ Lithophanie</span><span id="prixLitho" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between border-t pt-3"><span class="font-bold">Total avant offres</span><span id="totalBrut" class="font-bold">0 €</span></div>
+                <h2 class="text-3xl font-bold mb-6 text-center">Ton Devis ✨</h2>
+                <div class="space-y-4">
+                    <div class="bg-white/20 p-4 rounded-xl">
+                        <div class="flex justify-between"><span>Lettres</span><span id="prixLettres">0 €</span></div>
+                        <div class="flex justify-between"><span>Formes/Litho</span><span id="prixOptions">0 €</span></div>
+                        <div class="flex justify-between font-bold border-t mt-2 pt-2"><span>Total</span><span id="totalFinal">0 €</span></div>
                     </div>
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5">
-                        <p class="text-yellow-300 font-bold mb-3">Récapitulatif par veilleuse</p>
-                        <div id="recap-veilleuses" class="space-y-3 text-sm"></div>
-                    </div>
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5">
-                        <p class="text-yellow-300 font-bold mb-3">🎮 Offres activées (cadeaux en plus !)</p>
-                        <div id="offres-list" class="space-y-3"></div>
-                    </div>
-                    <div class="text-center bg-white/30 rounded-2xl p-6">
-                        <p class="text-lg">Total à payer</p>
-                        <p id="totalFinal" class="text-5xl font-bold">0 €</p>
-                        <p class="text-sm">Acompte 50% : <span id="acompte" class="font-bold">0 €</span></p>
+                    <div id="recap-veilleuses" class="text-sm"></div>
+                    <div class="text-center bg-white/30 p-4 rounded-xl">
+                        <p class="text-lg">Acompte 50%</p>
+                        <p id="acompte" class="text-3xl font-bold">0 €</p>
                     </div>
                 </div>
-                <button id="btn-envoi" onclick="envoyerDevis()" class="mt-8 w-full bg-white text-pink-600 font-bold text-2xl py-6 rounded-3xl hover:scale-110 transition-all shadow-2xl flex items-center justify-center gap-4">
-                    ✉️ Recevoir les tarifs par mail
-                </button>
             </div>
 
-            <div id="btn-appel-container" class="lg:col-span-1">
-                <button id="btn-appel" onclick="envoyerDevis()" class="w-full bg-purple-600 text-white font-bold text-2xl py-6 rounded-3xl shadow-xl hover:bg-purple-700 transition-all">
-                    ✉️ Recevoir les tarifs par mail
-                </button>
-            </div>
         </div>
     </div>
 
     <script>
         emailjs.init("Zi3s-ZwSciwsRW6t6");
         
-        // Configuration IDs EmailJS
-        const SERVICE_ID = "service_qzrf6nm";
-        const TEMPLATE_ID_ADMIN = "template_qmu3htp"; // Le tien
-        const TEMPLATE_ID_CLIENT = "template_ag95plm"; // Celui du client (Bruno)
-
-        const PRIX_LETTRE = 1, PRIX_LED = 12, PRIX_FORME = 1.15, PRIX_LITHO = 0.65, PRIX_LIVRAISON = 17;
-
         function genererVeilleuses() {
-            const nb = parseInt(document.getElementById('nbVeilleuses').value);
+            const nb = document.getElementById('nbVeilleuses').value;
             const container = document.getElementById('veilleuses-container');
             container.innerHTML = '';
             for (let i = 1; i <= nb; i++) {
                 const div = document.createElement('div');
-                div.className = 'border-4 border-pink-200 rounded-3xl p-5 bg-pink-50';
+                div.className = 'p-4 border-2 border-pink-100 rounded-2xl bg-pink-50';
                 div.innerHTML = `
-                    <label class="block text-lg font-bold mb-2">Veilleuse #${i}</label>
-                    <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mb-4" placeholder="Prénom">
-                    <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mb-4" placeholder="Thème">
-                    <div class="formes-container grid grid-cols-3 gap-2"></div>
-                    <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mt-4" placeholder="Description gravures">
-                    <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2 mt-2" onchange="calculerPrix()">
-                        <option value="0">0 gravure</option>
-                        ${[...Array(21).keys()].slice(1).map(j => `<option value="${j}">${j}</option>`).join('')}
-                    </select>
+                    <input type="text" class="veilleuse-input w-full border-2 border-white rounded-lg px-3 py-2 mb-2" placeholder="Prénom veilleuse #${i}" oninput="calculerPrix()">
+                    <div class="grid grid-cols-3 gap-1">
+                        ${["Stitch", "Cœur", "974", "Luffy", "Manette", "Pikachu"].map(f => `<button onclick="this.classList.toggle('bg-pink-300'); calculerPrix();" class="forme-btn bg-white text-[10px] p-1 rounded border">${f}</button>`).join('')}
+                    </div>
                 `;
                 container.appendChild(div);
-                const formes = ["Stitch", "Pikachu", "Cœur", "Nuage", "Drapeau 974", "Manette", "Fée", "Couronne", "Luffy", "Winnie", "Soleil", "Lune"];
-                formes.forEach(f => {
-                    const btn = document.createElement('button');
-                    btn.className = "border-2 border-purple-300 bg-white rounded-2xl py-1 text-xs font-bold";
-                    btn.textContent = f;
-                    btn.onclick = () => { btn.classList.toggle('bg-pink-200'); calculerPrix(); };
-                    div.querySelector('.formes-container').appendChild(btn);
-                });
-                div.querySelectorAll('input').forEach(inp => inp.addEventListener('input', calculerPrix));
             }
             calculerPrix();
         }
@@ -159,101 +99,67 @@
             const taille = parseFloat(document.getElementById('taille').value);
             const livraison = document.getElementById('livraison').checked;
             const inputs = document.querySelectorAll('.veilleuse-input');
-            let totalLettres = 0, prixFormes = 0, prixLitho = 0;
+            let totalLettres = 0;
+            let totalOptions = 0;
 
             inputs.forEach(input => {
-                const nb = input.value.trim().replace(/[^a-zA-Z]/g, '').length;
-                totalLettres += nb;
-                const formes = input.parentElement.querySelectorAll('.formes-container .bg-pink-200').length;
-                prixFormes += (nb >= 5 ? Math.max(0, formes - 1) : formes) * taille * PRIX_FORME;
-                const lCount = input.parentElement.querySelector('.litho-count').value;
-                prixLitho += (lCount === 'all' ? nb : parseInt(lCount)) * taille * PRIX_LITHO;
+                const txt = input.value.trim().replace(/[^a-zA-Z]/g, '');
+                totalLettres += txt.length;
+                const formes = input.parentElement.querySelectorAll('.bg-pink-300').length;
+                totalOptions += (formes * taille * 1.15);
             });
 
-            const pLettres = totalLettres * taille * PRIX_LETTRE;
-            const brut = pLettres + (inputs.length * PRIX_LED) + prixFormes + prixLitho;
-            const total = brut + (livraison && totalLettres < 4 ? PRIX_LIVRAISON : 0);
+            const pLettres = totalLettres * taille * 1;
+            const total = pLettres + (inputs.length * 12) + totalOptions + (livraison ? 17 : 0);
 
-            document.getElementById('prixLettres').textContent = pLettres.toFixed(2) + " €";
-            document.getElementById('prixFormes').textContent = prixFormes.toFixed(2) + " €";
-            document.getElementById('prixLitho').textContent = prixLitho.toFixed(2) + " €";
-            document.getElementById('totalBrut').textContent = brut.toFixed(2) + " €";
-            document.getElementById('totalFinal').textContent = total.toFixed(2) + " €";
-            document.getElementById('acompte').textContent = (total * 0.5).toFixed(2) + " €";
+            document.getElementById('prixLettres').innerText = pLettres.toFixed(2) + " €";
+            document.getElementById('prixOptions').innerText = totalOptions.toFixed(2) + " €";
+            document.getElementById('totalFinal').innerText = total.toFixed(2) + " €";
+            document.getElementById('acompte').innerText = (total / 2).toFixed(2) + " €";
             
-            updateOffresVisuelles(0,0,0, (totalLettres >= 4));
-            updateRecap();
-        }
-
-        function updateOffresVisuelles(p, c, f, liv) {
-            const container = document.getElementById('offres-list');
-            container.innerHTML = '';
-            if (liv) {
+            const recap = document.getElementById('recap-veilleuses');
+            recap.innerHTML = '';
+            inputs.forEach((inp, i) => {
                 const d = document.createElement('div');
-                d.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-green-400 text-white';
-                d.innerHTML = 'Livraison Gratuite ✅';
-                container.appendChild(d);
-            }
-        }
-
-        function updateRecap() {
-            const container = document.getElementById('recap-veilleuses');
-            container.innerHTML = '';
-            document.querySelectorAll('.veilleuse-input').forEach((input, index) => {
-                const t = input.parentElement.querySelector('.theme-input').value || 'Non renseigné';
-                const div = document.createElement('div');
-                div.innerHTML = `<strong>#${index + 1}</strong> : ${input.value || '—'}<br><span class="theme-line">Thème : ${t}</span>`;
-                container.appendChild(div);
+                d.innerHTML = `<b>#${i+1}</b>: ${inp.value || '...'}`;
+                recap.appendChild(d);
             });
         }
 
         async function envoyerDevis() {
             const nom = document.getElementById('nomClient').value;
-            const email = document.getElementById('email').value;
+            const mail = document.getElementById('email').value;
 
-            if (!nom || !email) {
-                alert("Remplis ton prénom et ton mail ! ✨");
-                return;
-            }
+            if (!nom || !mail) { return; } // Pas de popup, on attend juste la saisie
 
             const btn = document.getElementById('btn-envoi');
-            const btnAppel = document.getElementById('btn-appel');
-            btn.innerText = btnAppel.innerText = "⏳ Envoi...";
+            btn.innerText = "⏳ Envoi...";
+            btn.disabled = true;
 
             const params = {
                 nom_client: nom,
-                email_client: email,
-                date: new Date().toLocaleString('fr-FR'),
+                email_client: mail,
+                total_payer: document.getElementById('totalFinal').innerText,
+                acompte: document.getElementById('acompte').innerText,
                 recapitulatif: document.getElementById('recap-veilleuses').innerText,
-                taille_lettres: document.getElementById('taille').value + " cm",
-                prix_lettres: document.getElementById('prixLettres').textContent,
-                prix_formes: document.getElementById('prixFormes').textContent,
-                prix_litho: document.getElementById('prixLitho').textContent,
-                total_avant_offres: document.getElementById('totalBrut').textContent,
-                total_payer: document.getElementById('totalFinal').textContent,
-                acompte: document.getElementById('acompte').textContent,
-                idees_client: document.getElementById('idees').value
+                date: new Date().toLocaleString()
             };
 
             try {
-                // Envoi des DEUX mails
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID_ADMIN, params);
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID_CLIENT, params);
-
-                document.getElementById('panneau-prix').style.display = 'flex';
-                document.getElementById('btn-appel-container').style.display = 'none';
-                btn.innerText = "✅ Tarifs envoyés !";
-                btn.classList.replace('text-pink-600', 'text-green-600');
-                document.getElementById('panneau-prix').scrollIntoView({ behavior: 'smooth' });
-
+                await emailjs.send("service_qzrf6nm", "template_qmu3htp", params);
+                await emailjs.send("service_qzrf6nm", "template_ag95plm", params);
+                
+                document.getElementById('panneau-prix').style.display = 'block';
+                btn.innerText = "✅ Envoyé !";
+                btn.style.background = "#10b981";
             } catch (e) {
-                console.error(e);
-                alert("Les tarifs sont affichés !");
-                document.getElementById('panneau-prix').style.display = 'flex';
+                document.getElementById('panneau-prix').style.display = 'block';
+                btn.innerText = "✉️ Réessayer";
+                btn.disabled = false;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', genererVeilleuses);
+        window.onload = genererVeilleuses;
     </script>
 </body>
 </html>
