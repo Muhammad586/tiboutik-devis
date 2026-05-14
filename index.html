@@ -319,61 +319,55 @@
             });
         }
 
-       async function envoyerDevis() {
-            const nom = document.getElementById('nomClient').value || "Non renseigné";
-            const emailClient = document.getElementById('email').value || "Non renseigné";
-            const taille = document.getElementById('taille').value + " cm";
-            const idees = document.getElementById('idees').value.trim() || "Aucune";
+      async function envoyerDevis() {
+    const nom = document.getElementById('nomClient').value || "Non renseigné";
+    const emailClient = document.getElementById('email').value || "Non renseigné";
+    const taille = document.getElementById('taille').value + " cm";
+    const idees = document.getElementById('idees').value.trim() || "Aucune";
 
-            // 1. Préparation du récapitulatif détaillé
-            let recapDetail = "";
-            const veilleuses = document.querySelectorAll('#veilleuses-container > div');
-            
-            veilleuses.forEach((veilleuse, index) => {
-                const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
-                const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
-                recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
-                recapDetail += `Thème : ${theme}\n`;
-                const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
-                    .filter(btn => btn.classList.contains('bg-pink-200'))
-                    .map(btn => btn.textContent).join(', ') || 'Aucune';
-                recapDetail += `Formes : ${formes}\n`;
-                const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
-                const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
-                recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})\n\n`;
-            });
+    let recapDetail = "";
+    const veilleuses = document.querySelectorAll('#veilleuses-container > div');
+    
+    veilleuses.forEach((veilleuse, index) => {
+        const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
+        const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
+        const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
+        recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
+        recapDetail += `Thème : ${theme}\n`;
+        const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
+            .filter(btn => btn.classList.contains('bg-pink-200'))
+            .map(btn => btn.textContent).join(', ') || 'Aucune';
+        recapDetail += `Formes : ${formes}\n`;
+        const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
+        const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
+        recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})\n\n`;
+    });
 
-            // 2. Paramètres correspondants à tes captures EmailJS
-            const templateParams = {
-                nom_client: nom,
-                email_client: emailClient, // Vérifie que c'est bien {{email_client}} dans ton template (Image 3)
-                taille_lettres: taille,
-                idees_client: idees,
-                recapitulatif: recapDetail,
-                prix_lettres: document.getElementById('prixLettres').textContent,
-                prix_formes: document.getElementById('prixFormes').textContent,
-                prix_litho: document.getElementById('prixLitho').textContent,
-                total_avant_offres: document.getElementById('totalBrut').textContent,
-                total_payer: document.getElementById('totalFinal').textContent,
-                acompte: document.getElementById('acompte').textContent,
-                date: new Date().toLocaleString('fr-FR')
-            };
+    const templateParams = {
+        nom_client: nom,
+        email_client: emailClient,
+        taille_lettres: taille,
+        idees_client: idees,
+        recapitulatif: recapDetail,
+        prix_lettres: document.getElementById('prixLettres').textContent,
+        prix_formes: document.getElementById('prixFormes').textContent,
+        prix_litho: document.getElementById('prixLitho').textContent,
+        total_avant_offres: document.getElementById('totalBrut').textContent,
+        total_payer: document.getElementById('totalFinal').textContent,
+        acompte: document.getElementById('acompte').textContent,
+        date: new Date().toLocaleString('fr-FR')
+    };
 
-            try {
-                // ENVOI 1 : À TOI (Template admin)
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
-                
-                // ENVOI 2 : AU CLIENT (Template client dédié)
-                // On force l'envoi vers template_ag95plm
-                await emailjs.send(SERVICE_ID, "template_ag95plm", templateParams);
-                
-                alert("✅ Demande envoyée ! Toi et ton client allez recevoir un mail.");
-            } catch (error) {
-                console.error("Erreur EmailJS:", error);
-                alert("❌ Erreur d'envoi. Vérifie ta connexion.");
-            }
-        }
+    try {
+        // UN SEUL ENVOI (EmailJS enverra aux deux adresses configurées dans le To Email)
+        await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+        
+        alert("✅ Demande envoyée ! Le récapitulatif arrive dans ta boîte mail et celle du client.");
+    } catch (error) {
+        console.error("Erreur:", error);
+        alert("❌ Erreur d'envoi. Vérifie que tu as bien cliqué sur SAVE dans EmailJS.");
+    }
+}
 
         document.addEventListener('DOMContentLoaded', () => {
             genererVeilleuses();
