@@ -7,11 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    
+   
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
+        body { font-family: 'Comic Sans MS', cursive, sans-serif; }
         #recap-veilleuses > div {
             background: rgba(255, 255, 255, 0.35) !important;
             padding: 18px !important;
@@ -26,19 +24,16 @@
             font-size: 17.5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        .offre-card {
-            transition: all 0.3s;
-        }
+        .offre-card { transition: all 0.3s; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen">
     <div class="max-w-5xl mx-auto p-6">
         <div class="grid lg:grid-cols-2 gap-8">
 
-            <!-- ==================== PARTIE GAUCHE : FORMULAIRE ==================== -->
+            <!-- PARTIE FORMULAIRE -->
             <div class="bg-white rounded-3xl shadow-2xl p-8">
                 <h2 class="text-3xl font-bold text-purple-700 mb-6">Remplis ta veilleuse 🪄</h2>
-                
                 <div class="space-y-6">
                     <div>
                         <label class="block text-lg font-bold mb-2">Écris ici ton prénom</label>
@@ -58,8 +53,6 @@
                             <option value="5">5 veilleuses</option>
                         </select>
                     </div>
-
-                    <!-- CONTENEUR DES VEILLEUSES -->
                     <div id="veilleuses-container" class="space-y-6"></div>
 
                     <div>
@@ -84,10 +77,9 @@
                 </div>
             </div>
 
-            <!-- ==================== PARTIE DROITE : DEVIS ==================== -->
+            <!-- PARTIE DEVIS -->
             <div class="bg-gradient-to-br from-pink-400 to-purple-500 text-white rounded-3xl shadow-2xl p-8 flex flex-col">
                 <h2 class="text-3xl font-bold mb-6 text-center">Détail de ton devis ✨</h2>
-                
                 <div class="flex-1 space-y-5">
                     <div class="bg-white/20 backdrop-blur rounded-2xl p-5 space-y-3">
                         <div class="flex justify-between"><span>Prix des lettres seules</span><span id="prixLettres" class="font-bold">0 €</span></div>
@@ -134,7 +126,7 @@
 
         function isFeteDesMeresActive() {
             const today = new Date();
-            return today.getMonth() === 4 && today.getFullYear() === 2026; // Mai 2026
+            return today.getMonth() === 4 && today.getFullYear() === 2026;
         }
 
         function genererVeilleuses() {
@@ -149,22 +141,18 @@
                     <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
                     <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
                     <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
-                    
                     <div class="mt-4">
                         <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
                         <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
                     </div>
-                    
                     <div class="mt-4">
                         <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
                         <div class="formes-container grid grid-cols-3 gap-2"></div>
                     </div>
-                    
                     <div class="mt-4">
                         <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
                         <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
                     </div>
-                    
                     <div class="mt-3">
                         <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
                         <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
@@ -174,7 +162,6 @@
                 `;
                 container.appendChild(div);
 
-                // Formes premium
                 const formesContainer = div.querySelector('.formes-container');
                 const formes = ["Stitch", "Pikachu", "Cœur", "Nuage", "Drapeau 974", "Manette", "Fée", "Couronne", "Luffy", "Winnie", "Soleil", "Lune"];
                 formes.forEach(forme => {
@@ -185,7 +172,6 @@
                     formesContainer.appendChild(btn);
                 });
 
-                // Nombre de gravures
                 const countSelect = div.querySelector('.litho-count');
                 for (let j = 1; j <= 20; j++) {
                     const opt = document.createElement('option');
@@ -240,20 +226,26 @@
                     hasFete = true;
                     if (totalVeilleuses >= 2) eligiblePackFamily++;
 
-                    if (isMay) {
-                        prixFormesTotal += selectedFormes * taille * PRIX_FORME;
-                    } else {
-                        eligible5plus1++;
-                        if (selectedFormes > 1) prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
+                    // ==================== OFFRE 5+1 (à activer/désactiver) ====================
+                    /*
+                    eligible5plus1++;
+                    if (selectedFormes > 1) {
+                        prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
                     }
+                    */
+                    // Version sans 5+1 (toutes formes payantes)
+                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
+
                 } else {
                     prixFormesTotal += selectedFormes * taille * PRIX_FORME;
                 }
 
+                // Gravures
                 const lithoCountSelect = input.parentElement.querySelector('.litho-count');
                 const count = lithoCountSelect ? lithoCountSelect.value : 0;
                 if (count > 0) {
-                    const nbLitho = count === 'all' ? nb : parseInt(count);
+                    let nbLitho = count === 'all' ? nb : parseInt(count);
+                    if (nb >= 5 && isMay) nbLitho = Math.max(0, nbLitho - 1); // 1 gravure gratuite Fête des Mères
                     prixLithoTotal += nbLitho * taille * PRIX_LITHO;
                 }
             });
@@ -287,7 +279,6 @@
         function updateOffresVisuelles(packCount, cinqCount, feteActive, livraisonGratuiteActive) {
             const container = document.getElementById('offres-list');
             container.innerHTML = '';
-            const isMay = isFeteDesMeresActive();
 
             // Pack Family
             const packDiv = document.createElement('div');
@@ -295,18 +286,20 @@
             packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
             container.appendChild(packDiv);
 
-            if (isMay) {
-                if (feteActive) {
-                    const feteDiv = document.createElement('div');
-                    feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
-                    feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
-                    container.appendChild(feteDiv);
-                }
-            } else {
-                const cinqDiv = document.createElement('div');
-                cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-                cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
-                container.appendChild(cinqDiv);
+            // ==================== OFFRE 5+1 (à activer en enlevant /* et */) ====================
+            /*
+            const cinqDiv = document.createElement('div');
+            cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+            cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
+            container.appendChild(cinqDiv);
+            */
+
+            // Fête des Mères
+            if (feteActive && isFeteDesMeresActive()) {
+                const feteDiv = document.createElement('div');
+                feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
+                feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
+                container.appendChild(feteDiv);
             }
 
             // Livraison
@@ -350,7 +343,7 @@
 
             let recapDetail = "";
             const veilleuses = document.querySelectorAll('#veilleuses-container > div');
-            
+           
             veilleuses.forEach((veilleuse, index) => {
                 const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
                 const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
@@ -390,7 +383,6 @@
             }
         }
 
-        // Initialisation
         document.addEventListener('DOMContentLoaded', () => {
             genererVeilleuses();
         });
