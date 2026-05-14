@@ -194,35 +194,26 @@
             let totalLettres = 0;
             let totalSelectedFormes = 0;
             let eligible5plus1 = 0;
-            let hasFete = false;
-            let eligiblePackFamily = 0;
-            let prixFormesTotal = 0;
-            let prixLithoTotal = 0;
-            let valeurCadeaux = 0;
+let hasFete = false;
+const isMay = isFeteDesMeresActive();   // ← nouvelle ligne
 
-            inputs.forEach(input => {
-                const texte = input.value.trim();
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
-                const countSpan = input.parentElement.querySelector('.lettres-count');
-                if (countSpan) countSpan.textContent = nb;
-                totalLettres += nb;
+inputs.forEach(input => {
+    ...
+    if (nb >= 5) {
+        hasFete = true;
+        if (totalVeilleuses >= 2) eligiblePackFamily++;
 
-                const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
-                let selectedFormes = 0;
-                formesBtns.forEach(btn => {
-                    if (btn.classList.contains('bg-pink-200')) selectedFormes++;
-                });
-                totalSelectedFormes += selectedFormes;
-
-                if (nb >= 5) {
-                    eligible5plus1++;
-                    hasFete = true;
-                    if (totalVeilleuses >= 2) eligiblePackFamily++;
-                    if (selectedFormes > 1) prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
-                } else {
-                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
-                }
-
+        if (isMay) {
+            // En mai → on ne compte PAS l'offre 5+1
+            prixFormesTotal += selectedFormes * taille * PRIX_FORME;   // toutes les formes payantes
+        } else {
+            // Hors mai → offre 5+1 normale
+            eligible5plus1++;
+            if (selectedFormes > 1) prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
+        }
+    } else {
+        prixFormesTotal += selectedFormes * taille * PRIX_FORME;
+    }
                 const lithoCountSelect = input.parentElement.querySelector('.litho-count');
                 const count = lithoCountSelect ? lithoCountSelect.value : 0;
                 if (count > 0) {
@@ -236,7 +227,7 @@
             if (livraisonGratuiteActive) valeurCadeaux += totalGlobalChars * 2;
             if (totalVeilleuses >= 2) valeurCadeaux += eligiblePackFamily * taille * PRIX_LETTRE;
             valeurCadeaux += eligible5plus1 * taille * PRIX_FORME;
-            if (isFeteDesMeresActive() && hasFete) valeurCadeaux += taille * PRIX_FORME + taille * PRIX_LITHO;
+            if (isMay && hasFete) valeurCadeaux += taille * PRIX_FORME + taille * PRIX_LITHO;  // seulement en mai
 
             const prixLettres = totalLettres * taille * PRIX_LETTRE;
             const prixPayant = prixLettres + (PRIX_LED * inputs.length) + prixFormesTotal + prixLithoTotal;
@@ -261,32 +252,39 @@
             return today.getMonth() === 4 && today.getFullYear() === 2026;
         }
 
-        function updateOffresVisuelles(packCount, cinqCount, feteActive, livraisonGratuiteActive) {
-            const container = document.getElementById('offres-list');
-            container.innerHTML = '';
-            const packDiv = document.createElement('div');
-            packDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${packCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-            packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
-            container.appendChild(packDiv);
+      function updateOffresVisuelles(packCount, cinqCount, feteActive, livraisonGratuiteActive) {
+    const container = document.getElementById('offres-list');
+    container.innerHTML = '';
+    const isMay = isFeteDesMeresActive();
 
-            const cinqDiv = document.createElement('div');
-            cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-            cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
-            container.appendChild(cinqDiv);
+    // Pack Family (toujours affiché)
+    const packDiv = document.createElement('div');
+    packDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${packCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+    packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
+    container.appendChild(packDiv);
 
-            if (feteActive) {
-                const feteDiv = document.createElement('div');
-                feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
-                feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
-                container.appendChild(feteDiv);
-            }
-
-            const livDiv = document.createElement('div');
-            livDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${livraisonGratuiteActive ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-            livDiv.innerHTML = `🚚 Livraison gratuite → à partir de 4 caractères ${livraisonGratuiteActive ? '✅' : '🔥'}`;
-            container.appendChild(livDiv);
+    if (isMay) {
+        // === MAI : seulement Fête des Mères ===
+        if (feteActive) {
+            const feteDiv = document.createElement('div');
+            feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
+            feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
+            container.appendChild(feteDiv);
         }
+    } else {
+        // === AUTRES MOIS : seulement 5+1 ===
+        const cinqDiv = document.createElement('div');
+        cinqDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${cinqCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+        cinqDiv.innerHTML = `5+1 → ${cinqCount} forme${cinqCount > 1 ? 's' : ''} offerte${cinqCount > 1 ? 's' : ''} ${cinqCount > 0 ? '✅' : '🔥'}`;
+        container.appendChild(cinqDiv);
+    }
 
+    // Livraison gratuite (toujours affichée)
+    const livDiv = document.createElement('div');
+    livDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${livraisonGratuiteActive ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
+    livDiv.innerHTML = `🚚 Livraison gratuite → à partir de 4 caractères ${livraisonGratuiteActive ? '✅' : '🔥'}`;
+    container.appendChild(livDiv);
+}
         function updateRecap() {
             const container = document.getElementById('recap-veilleuses');
             container.innerHTML = '';
