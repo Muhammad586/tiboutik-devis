@@ -187,9 +187,11 @@
                 div.querySelector('.veilleuse-input').addEventListener('input', calculerPrix);
                 div.querySelector('.theme-input').addEventListener('input', calculerPrix);
             }
+
+            // CALCULE DES PRIX ICI 
             calculerPrix();
         }
-           function calculerPrix() {
+                 function calculerPrix() {
             const taille = parseFloat(document.getElementById('taille').value) || 12;
             const livraison = document.getElementById('livraison').checked;
             const totalVeilleuses = parseInt(document.getElementById('nbVeilleuses').value);
@@ -276,7 +278,10 @@
 
             updateOffresVisuelles(eligiblePackFamily, hasFete, livraisonGratuiteActive);
             updateRecap();
+    
         }
+
+        // fin des calcule des prix ici 
         function updateOffresVisuelles(packCount, cinqCount, feteActive, livraisonGratuiteActive) {
             const container = document.getElementById('offres-list');
             container.innerHTML = '';
