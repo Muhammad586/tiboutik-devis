@@ -8,24 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+        body { font-family: 'Comic Sans MS', cursive, sans-serif; }
+        #recap-veilleuses { font-size: 15.5px; line-height: 1.8; }
+        #recap-veilleuses > div {
+            background: rgba(255, 255, 255, 0.35) !important;
+            padding: 18px !important;
+            border-radius: 20px !important;
+            margin-bottom: 16px !important;
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
-
-        #recap-veilleuses {
-            font-size: 15.5px;
-            line-height: 1.8;
-        }
-
-            #recap-veilleuses > div {
-                background: rgba(255, 255, 255, 0.35) !important;
-                padding: 18px !important;
-                border-radius: 20px !important;
-                margin-bottom: 16px !important;
-                border: 4px solid rgba(255, 255, 255, 0.6);
-                box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            }
-
         .theme-line {
             color: #fff700 !important;
             font-weight: bold;
@@ -65,7 +57,7 @@
                     </div>
                     <div id="veilleuses-container" class="space-y-6"></div>
                     <div>
-                        <label class="block text-lg font-bold mb-2">Taille des lettres (pour toutes les veilleuses)</label>
+                        <label class="block text-lg font-bold mb-2">Taille des lettres</label>
                         <select id="taille" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" onchange="calculerPrix()">
                             <option value="10">10 cm</option>
                             <option value="12" selected>12 cm</option>
@@ -74,7 +66,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-lg font-bold mb-2">Tes idées créatives / envies spéciales 💡</label>
+                        <label class="block text-lg font-bold mb-2">Tes idées créatives 💡</label>
                         <textarea id="idees" rows="3" class="w-full border-4 border-pink-300 rounded-3xl px-4 py-3" placeholder="Laisse un message à néO_Créa..."></textarea>
                     </div>
                     <div class="flex items-center gap-3">
@@ -123,13 +115,13 @@
 
     <script>
         emailjs.init("Zi3s-ZwSciwsRW6t6");
+        
+        // Configuration IDs EmailJS
         const SERVICE_ID = "service_qzrf6nm";
-        const TEMPLATE_ID = "template_qmu3htp";
-        const PRIX_LETTRE = 1;
-        const PRIX_LED = 12;
-        const PRIX_FORME = 1.15;
-        const PRIX_LITHO = 0.65;
-        const PRIX_LIVRAISON = 17;
+        const TEMPLATE_ID_ADMIN = "template_qmu3htp"; // Le tien
+        const TEMPLATE_ID_CLIENT = "template_ag95plm"; // Celui du client (Bruno)
+
+        const PRIX_LETTRE = 1, PRIX_LED = 12, PRIX_FORME = 1.15, PRIX_LITHO = 0.65, PRIX_LIVRAISON = 17;
 
         function genererVeilleuses() {
             const nb = parseInt(document.getElementById('nbVeilleuses').value);
@@ -139,132 +131,78 @@
                 const div = document.createElement('div');
                 div.className = 'border-4 border-pink-200 rounded-3xl p-5 bg-pink-50';
                 div.innerHTML = `
-                          <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
-                          <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
-                          <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
-                          <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
-                            <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
-                          </div>
-                          <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
-                            <div class="formes-container grid grid-cols-3 gap-2"></div>
-                          </div>
-                          <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
-                            <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
-                          </div>
-                          <div class="mt-3">
-                            <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
-                            <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
-                              <option value="0">0</option>
-                            </select>
-                          </div>
-                        `;
+                    <label class="block text-lg font-bold mb-2">Veilleuse #${i}</label>
+                    <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mb-4" placeholder="Prénom">
+                    <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mb-4" placeholder="Thème">
+                    <div class="formes-container grid grid-cols-3 gap-2"></div>
+                    <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl mt-4" placeholder="Description gravures">
+                    <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2 mt-2" onchange="calculerPrix()">
+                        <option value="0">0 gravure</option>
+                        ${[...Array(21).keys()].slice(1).map(j => `<option value="${j}">${j}</option>`).join('')}
+                    </select>
+                `;
                 container.appendChild(div);
-                const formesContainer = div.querySelector('.formes-container');
                 const formes = ["Stitch", "Pikachu", "Cœur", "Nuage", "Drapeau 974", "Manette", "Fée", "Couronne", "Luffy", "Winnie", "Soleil", "Lune"];
-                formes.forEach(forme => {
+                formes.forEach(f => {
                     const btn = document.createElement('button');
-                    btn.className = "border-2 border-purple-300 hover:border-pink-500 bg-white hover:bg-pink-100 rounded-2xl py-1 px-2 text-center text-xs font-bold transition-all";
-                    btn.textContent = forme;
+                    btn.className = "border-2 border-purple-300 bg-white rounded-2xl py-1 text-xs font-bold";
+                    btn.textContent = f;
                     btn.onclick = () => { btn.classList.toggle('bg-pink-200'); calculerPrix(); };
-                    formesContainer.appendChild(btn);
+                    div.querySelector('.formes-container').appendChild(btn);
                 });
-                const countSelect = div.querySelector('.litho-count');
-                for (let j = 1; j <= 20; j++) {
-                    const opt = document.createElement('option');
-                    opt.value = j; opt.textContent = j;
-                    countSelect.appendChild(opt);
-                }
-                const allOpt = document.createElement('option');
-                allOpt.value = 'all'; allOpt.textContent = 'Toutes les lettres';
-                countSelect.appendChild(allOpt);
-                div.querySelector('.veilleuse-input').addEventListener('input', calculerPrix);
-                div.querySelector('.theme-input').addEventListener('input', calculerPrix);
+                div.querySelectorAll('input').forEach(inp => inp.addEventListener('input', calculerPrix));
             }
             calculerPrix();
         }
 
         function calculerPrix() {
-            const taille = parseFloat(document.getElementById('taille').value) || 12;
+            const taille = parseFloat(document.getElementById('taille').value);
             const livraison = document.getElementById('livraison').checked;
-            const totalVeilleuses = parseInt(document.getElementById('nbVeilleuses').value);
             const inputs = document.querySelectorAll('.veilleuse-input');
-            let totalLettres = 0;
-            let prixFormesTotal = 0;
-            let prixLithoTotal = 0;
-            let eligible5plus1 = 0;
-            let hasFete = false;
-            let eligiblePackFamily = 0;
-            let valeurCadeaux = 0;
+            let totalLettres = 0, prixFormes = 0, prixLitho = 0;
 
             inputs.forEach(input => {
-                const texte = input.value.trim();
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
-                const countSpan = input.parentElement.querySelector('.lettres-count');
-                if (countSpan) countSpan.textContent = nb;
+                const nb = input.value.trim().replace(/[^a-zA-Z]/g, '').length;
                 totalLettres += nb;
-
-                const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
-                let selectedFormes = 0;
-                formesBtns.forEach(btn => { if (btn.classList.contains('bg-pink-200')) selectedFormes++; });
-
-                if (nb >= 5) {
-                    eligible5plus1++;
-                    hasFete = true;
-                    if (totalVeilleuses >= 2) eligiblePackFamily++;
-                    if (selectedFormes > 1) prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
-                } else {
-                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
-                }
-
-                const lithoCountSelect = input.parentElement.querySelector('.litho-count');
-                const count = lithoCountSelect ? lithoCountSelect.value : 0;
-                if (count > 0) {
-                    const nbLitho = count === 'all' ? nb : parseInt(count);
-                    prixLithoTotal += nbLitho * taille * PRIX_LITHO;
-                }
+                const formes = input.parentElement.querySelectorAll('.formes-container .bg-pink-200').length;
+                prixFormes += (nb >= 5 ? Math.max(0, formes - 1) : formes) * taille * PRIX_FORME;
+                const lCount = input.parentElement.querySelector('.litho-count').value;
+                prixLitho += (lCount === 'all' ? nb : parseInt(lCount)) * taille * PRIX_LITHO;
             });
 
-            const totalGlobalChars = totalLettres;
-            const livGratuite = totalGlobalChars >= 4;
-            const prixLettres = totalLettres * taille * PRIX_LETTRE;
-            const prixPayant = prixLettres + (PRIX_LED * inputs.length) + prixFormesTotal + prixLithoTotal;
-            const totalFinal = prixPayant + (livraison && !livGratuite ? PRIX_LIVRAISON : 0);
+            const pLettres = totalLettres * taille * PRIX_LETTRE;
+            const brut = pLettres + (inputs.length * PRIX_LED) + prixFormes + prixLitho;
+            const total = brut + (livraison && totalLettres < 4 ? PRIX_LIVRAISON : 0);
 
-            document.getElementById('prixLettres').textContent = prixLettres.toFixed(2) + " €";
-            document.getElementById('prixFormes').textContent = prixFormesTotal.toFixed(2) + " €";
-            document.getElementById('prixLitho').textContent = prixLithoTotal.toFixed(2) + " €";
-            document.getElementById('totalFinal').textContent = totalFinal.toFixed(2) + " €";
-            document.getElementById('acompte').textContent = (totalFinal * 0.5).toFixed(2) + " €";
-
-            updateOffresVisuelles(eligiblePackFamily, eligible5plus1, hasFete, livGratuite);
+            document.getElementById('prixLettres').textContent = pLettres.toFixed(2) + " €";
+            document.getElementById('prixFormes').textContent = prixFormes.toFixed(2) + " €";
+            document.getElementById('prixLitho').textContent = prixLitho.toFixed(2) + " €";
+            document.getElementById('totalBrut').textContent = brut.toFixed(2) + " €";
+            document.getElementById('totalFinal').textContent = total.toFixed(2) + " €";
+            document.getElementById('acompte').textContent = (total * 0.5).toFixed(2) + " €";
+            
+            updateOffresVisuelles(0,0,0, (totalLettres >= 4));
             updateRecap();
         }
 
-        function updateOffresVisuelles(packCount, cinqCount, feteActive, livGratuite) {
+        function updateOffresVisuelles(p, c, f, liv) {
             const container = document.getElementById('offres-list');
             container.innerHTML = '';
-            const addO = (txt, ok) => {
+            if (liv) {
                 const d = document.createElement('div');
-                d.className = `px-4 py-2 rounded-xl text-sm font-bold ${ok ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-                d.innerHTML = `${txt} ${ok ? '✅' : '🔥'}`;
+                d.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-green-400 text-white';
+                d.innerHTML = 'Livraison Gratuite ✅';
                 container.appendChild(d);
             }
-            addO("Pack Family", packCount > 0);
-            addO("Offre 5+1", cinqCount > 0);
-            addO("Livraison Gratuite", livGratuite);
         }
 
         function updateRecap() {
             const container = document.getElementById('recap-veilleuses');
             container.innerHTML = '';
             document.querySelectorAll('.veilleuse-input').forEach((input, index) => {
-                const texte = input.value.trim() || '—';
-                const theme = input.parentElement.querySelector('.theme-input').value.trim() || 'Non renseigné';
+                const t = input.parentElement.querySelector('.theme-input').value || 'Non renseigné';
                 const div = document.createElement('div');
-                div.innerHTML = `<strong>Veilleuse #${index + 1}</strong> : ${texte}<br><span class="theme-line">Thème : ${theme}</span>`;
+                div.innerHTML = `<strong>#${index + 1}</strong> : ${input.value || '—'}<br><span class="theme-line">Thème : ${t}</span>`;
                 container.appendChild(div);
             });
         }
@@ -274,31 +212,44 @@
             const email = document.getElementById('email').value;
 
             if (!nom || !email) {
-                alert("N'oublie pas ton prénom et ton email ! ✨");
+                alert("Remplis ton prénom et ton mail ! ✨");
                 return;
             }
 
-            // On affiche le panneau
-            document.getElementById('panneau-prix').style.display = 'flex';
-            document.getElementById('btn-appel-container').style.display = 'none';
-
             const btn = document.getElementById('btn-envoi');
-            btn.innerText = "⏳ Envoi en cours...";
+            const btnAppel = document.getElementById('btn-appel');
+            btn.innerText = btnAppel.innerText = "⏳ Envoi...";
+
+            const params = {
+                nom_client: nom,
+                email_client: email,
+                date: new Date().toLocaleString('fr-FR'),
+                recapitulatif: document.getElementById('recap-veilleuses').innerText,
+                taille_lettres: document.getElementById('taille').value + " cm",
+                prix_lettres: document.getElementById('prixLettres').textContent,
+                prix_formes: document.getElementById('prixFormes').textContent,
+                prix_litho: document.getElementById('prixLitho').textContent,
+                total_avant_offres: document.getElementById('totalBrut').textContent,
+                total_payer: document.getElementById('totalFinal').textContent,
+                acompte: document.getElementById('acompte').textContent,
+                idees_client: document.getElementById('idees').value
+            };
 
             try {
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                    nom_client: nom,
-                    email_client: email,
-                    total_payer: document.getElementById('totalFinal').textContent,
-                    recapitulatif: "Consulter le site pour le détail",
-                    date: new Date().toLocaleString('fr-FR')
-                });
+                // Envoi des DEUX mails
+                await emailjs.send(SERVICE_ID, TEMPLATE_ID_ADMIN, params);
+                await emailjs.send(SERVICE_ID, TEMPLATE_ID_CLIENT, params);
+
+                document.getElementById('panneau-prix').style.display = 'flex';
+                document.getElementById('btn-appel-container').style.display = 'none';
                 btn.innerText = "✅ Tarifs envoyés !";
                 btn.classList.replace('text-pink-600', 'text-green-600');
                 document.getElementById('panneau-prix').scrollIntoView({ behavior: 'smooth' });
+
             } catch (e) {
-                alert("Tarifs affichés ! (Erreur mail technique)");
-                btn.innerText = "Revoir les tarifs";
+                console.error(e);
+                alert("Les tarifs sont affichés !");
+                document.getElementById('panneau-prix').style.display = 'flex';
             }
         }
 
