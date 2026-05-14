@@ -319,12 +319,13 @@
             });
         }
 
-        async function envoyerDevis() {
+       async function envoyerDevis() {
             const nom = document.getElementById('nomClient').value || "Non renseigné";
             const emailClient = document.getElementById('email').value || "Non renseigné";
             const taille = document.getElementById('taille').value + " cm";
             const idees = document.getElementById('idees').value.trim() || "Aucune";
 
+            // 1. Préparation du récapitulatif détaillé
             let recapDetail = "";
             const veilleuses = document.querySelectorAll('#veilleuses-container > div');
             
@@ -343,9 +344,10 @@
                 recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})\n\n`;
             });
 
+            // 2. Paramètres correspondants à tes captures EmailJS
             const templateParams = {
                 nom_client: nom,
-                email_client: emailClient,
+                email_client: emailClient, // Vérifie que c'est bien {{email_client}} dans ton template (Image 3)
                 taille_lettres: taille,
                 idees_client: idees,
                 recapitulatif: recapDetail,
@@ -355,20 +357,21 @@
                 total_avant_offres: document.getElementById('totalBrut').textContent,
                 total_payer: document.getElementById('totalFinal').textContent,
                 acompte: document.getElementById('acompte').textContent,
-                offres_debloquees: "Voir récapitulatif",
                 date: new Date().toLocaleString('fr-FR')
             };
 
             try {
-                // Envoi à TOI
+                // ENVOI 1 : À TOI (Template admin)
                 await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
-                // Envoi au CLIENT
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID_CLIENT, templateParams);
                 
-                alert("✅ Demande envoyée avec succès !");
+                // ENVOI 2 : AU CLIENT (Template client dédié)
+                // On force l'envoi vers template_ag95plm
+                await emailjs.send(SERVICE_ID, "template_ag95plm", templateParams);
+                
+                alert("✅ Demande envoyée ! Toi et ton client allez recevoir un mail.");
             } catch (error) {
-                console.error(error);
-                alert("❌ Erreur d'envoi");
+                console.error("Erreur EmailJS:", error);
+                alert("❌ Erreur d'envoi. Vérifie ta connexion.");
             }
         }
 
