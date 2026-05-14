@@ -189,7 +189,6 @@
             }
             calculerPrix();
         }
-
         function calculerPrix() {
             const taille = parseFloat(document.getElementById('taille').value) || 12;
             const livraison = document.getElementById('livraison').checked;
@@ -198,12 +197,11 @@
 
             let totalLettres = 0;
             let totalSelectedFormes = 0;
-            let eligible5plus1 = 0;
-            let hasFete = false;
             let eligiblePackFamily = 0;
+            let hasFete = false;
             let prixFormesTotal = 0;
             let prixLithoTotal = 0;
-            let valeurCadeaux = 0;
+            let valeurCadeaux = 0;   // valeur des cadeaux à afficher
 
             const isMay = isFeteDesMeresActive();
 
@@ -222,49 +220,44 @@
                 });
                 totalSelectedFormes += selectedFormes;
 
-                if (nb >= 5) {
+                // === CALCUL FORMES ===
+                if (nb >= 5 && isMay) {
                     hasFete = true;
-                    if (totalVeilleuses >= 2) eligiblePackFamily++;
-
-                    // ==================== OFFRE 5+1 (à activer/désactiver) ====================
-                    /*
-                    eligible5plus1++;
-                    if (selectedFormes > 1) {
-                        prixFormesTotal += (selectedFormes - 1) * taille * PRIX_FORME;
-                    }
-                    */
-                    // Version sans 5+1 (toutes formes payantes)
-                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
-
+                    prixFormesTotal += Math.max(0, selectedFormes - 1) * taille * PRIX_FORME; // 1ère gratuite
                 } else {
                     prixFormesTotal += selectedFormes * taille * PRIX_FORME;
                 }
 
-                // Gravures
+                // === CALCUL GRAVURES ===
                 const lithoCountSelect = input.parentElement.querySelector('.litho-count');
                 const count = lithoCountSelect ? lithoCountSelect.value : 0;
                 if (count > 0) {
                     let nbLitho = count === 'all' ? nb : parseInt(count);
-                    if (nb >= 5 && isMay) nbLitho = Math.max(0, nbLitho - 1); // 1 gravure gratuite Fête des Mères
+                    if (nb >= 5 && isMay) nbLitho = Math.max(0, nbLitho - 1); // 1ère gratuite
                     prixLithoTotal += nbLitho * taille * PRIX_LITHO;
                 }
+
+                if (totalVeilleuses >= 2) eligiblePackFamily++;
             });
 
             const totalGlobalChars = totalLettres + totalSelectedFormes;
             const livraisonGratuiteActive = totalGlobalChars >= 4;
 
-            if (livraisonGratuiteActive) valeurCadeaux += totalGlobalChars * 2;
+            // === VALEUR DES CADEAUX (seulement ceux qui sont vraiment gratuits) ===
+            if (livraisonGratuiteActive) valeurCadeaux += 17; // valeur livraison gratuite
             if (totalVeilleuses >= 2) valeurCadeaux += eligiblePackFamily * taille * PRIX_LETTRE;
-            valeurCadeaux += eligible5plus1 * taille * PRIX_FORME;
             if (isMay && hasFete) valeurCadeaux += taille * PRIX_FORME + taille * PRIX_LITHO;
 
             const prixLettres = totalLettres * taille * PRIX_LETTRE;
             const prixPayant = prixLettres + (PRIX_LED * inputs.length) + prixFormesTotal + prixLithoTotal;
-            const livraisonPrix = livraison ? PRIX_LIVRAISON : 0;
-            const totalAvantOffres = prixPayant + livraisonPrix + valeurCadeaux;
+            const livraisonPrix = livraison && !livraisonGratuiteActive ? PRIX_LIVRAISON : 0;
+
+            const totalAvantOffres = prixPayant + (livraison ? PRIX_LIVRAISON : 0) + valeurCadeaux;
             const totalFinal = prixPayant + livraisonPrix;
+
             const acompte = totalFinal * 0.5;
 
+            // Mise à jour
             document.getElementById('prixLettres').textContent = prixLettres.toFixed(2) + " €";
             document.getElementById('prixFormes').textContent = prixFormesTotal.toFixed(2) + " €";
             document.getElementById('prixLitho').textContent = prixLithoTotal.toFixed(2) + " €";
@@ -272,7 +265,7 @@
             document.getElementById('totalFinal').textContent = totalFinal.toFixed(2) + " €";
             document.getElementById('acompte').textContent = acompte.toFixed(2) + " €";
 
-            updateOffresVisuelles(eligiblePackFamily, eligible5plus1, hasFete, livraisonGratuiteActive);
+            updateOffresVisuelles(eligiblePackFamily, hasFete, livraisonGratuiteActive);
             updateRecap();
         }
 
