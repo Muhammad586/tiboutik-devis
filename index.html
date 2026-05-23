@@ -406,16 +406,27 @@
             <i data-lucide="zap" class="text-emerald-500 mr-2 w-5 h-5"></i> Options d'Éclairage
           </h3>
           <div id="ledContainer" class="p-4 rounded-xl border bg-slate-800 border-slate-700 transition-all">
-            <label class="flex items-start gap-3 cursor-pointer select-none">
-              <input type="checkbox" id="hasLedPremium" onchange="updateAll()" class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-sm md:text-base text-white">Passer en LED Premium</span>
-                  <span class="bg-emerald-900/60 text-emerald-400 border border-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">+10,90 €</span>
-                </div>
-                <p class="text-xs md:text-sm text-slate-400 mt-1">Système LED premium Adressable Bluetooth + télécommande réactif au son.</p>
-              </div>
-            </label>
+            <div class="flex flex-col gap-3">
+              <label class="block text-sm font-medium text-slate-400">
+                Nombre de systèmes LED Premium
+              </label>
+              <select id="ledPremiumCount" onchange="updateAll()" class="w-full p-3 rounded-xl border outline-none font-semibold transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-emerald-500">
+                <option value="0">0 (LED standard RGB incluse)</option>
+                <option value="1">1 système (+10,90 €)</option>
+                <option value="2">2 systèmes (+21,80 €)</option>
+                <option value="3">3 systèmes (+32,70 €)</option>
+                <option value="4">4 systèmes (+43,60 €)</option>
+                <option value="5">5 systèmes (+54,50 €)</option>
+                <option value="6">6 systèmes (+65,40 €)</option>
+                <option value="7">7 systèmes (+76,30 €)</option>
+                <option value="8">8 systèmes (+87,20 €)</option>
+                <option value="9">9 systèmes (+98,10 €)</option>
+                <option value="10">10 systèmes (+109,00 €)</option>
+              </select>
+              <p class="text-xs md:text-sm text-slate-400 mt-1">
+                Système LED premium Adressable Bluetooth + télécommande réactif au son avec une multitude d'effets lumineux.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -426,7 +437,7 @@
           </h3>
           <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs" id="reference-table-grid"></div>
           <p class="text-xs text-slate-500 mt-3 italic">
-            * Chaque forme premium équivaut à 1 lettre. Au-delà de 10 éléments, le tarif baisse de <span id="hint-decrement-step">0.02</span> € par élément.
+            * Chaque forme premium équivaut à 1 lettre. Au-delà de 10 éléments, le tarif baisse de <span id="hint-decrement-step">0.02</span> € par élément jusqu'au tarif plancher de <span id="hint-min-rate">0.40</span> €/cm.
           </p>
         </div>
 
@@ -531,9 +542,27 @@
               <p class="flex justify-between"><span>Tarif dégressif</span> <span>x <span id="calcRate">0.00</span> €/cm</span></p>
               <p class="flex justify-between border-b border-slate-700 pb-2"><span>Coefficient multiplicateur</span> <span>x <span id="calcMultiplier">2</span></span></p>
               <p class="flex justify-between text-slate-300"><span>Sous-total lettrage</span> <span id="calcBaseTotal">0,00 €</span></p>
-              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow"><span>Option LED Premium</span> <span>+ 10,90 €</span></p>
+              
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow">
+                <span>Option LED Premium (<span id="calcLedCount">0</span>)</span> 
+                <span id="calcLedPrice">+ 0,00 €</span>
+              </p>
               <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLithoRow"><span>Lithophanie (<span id="calcLithoCount">0</span>x <span id="calcLithoRate">0.65</span>€)</span> <span id="calcLithoPrice">+ 0,00 €</span></p>
               <p class="hidden justify-between text-emerald-400 font-semibold" id="calcDeliveryRow"><span>Livraison (<span id="calcDeliveryCity">Saint-Pierre</span>)</span> <span id="calcDeliveryPrice">0,00 €</span></p>
+              
+              <!-- SECTION CORRIGÉE : Totaux, acomptes et solde -->
+              <p class="flex justify-between text-white font-medium border-t border-slate-700 pt-1">
+                <span>Prix total</span> 
+                <span id="calcTotalPrice">0,00 €</span>
+              </p>
+              <p class="flex justify-between text-slate-300 text-xs">
+                <span>Acompte à verser (50%)</span> 
+                <span id="calcDepositPrice">0,00 €</span>
+              </p>
+              <p class="flex justify-between text-slate-300 text-xs">
+                <span>Solde restant</span> 
+                <span id="calcBalancePrice">0,00 €</span>
+              </p>
             </div>
 
             <!-- Total -->
@@ -580,7 +609,7 @@
       height: 10,
       shapeCount: 0,
       shapeDescription: '',
-      hasLedPremium: false,
+      ledPremiumCount: 0,
       engravingCount: 0,
       engravingTheme: '',
       uploadedLogo: null,
@@ -635,8 +664,8 @@
     window.onload = function() {
       const date = new Date();
       date.setDate(date.getDate() + 14);
-      document.getElementById('deliveryDate').value = date.toISOString().split('T')[0];
-      document.getElementById('orderDate').value = state.orderDate;
+      if(document.getElementById('deliveryDate')) document.getElementById('deliveryDate').value = date.toISOString().split('T')[0];
+      if(document.getElementById('orderDate')) document.getElementById('orderDate').value = state.orderDate;
 
       renderColorSelectors();
       renderReunionCities();
@@ -649,6 +678,7 @@
 
     function renderColorSelectors() {
       const container = document.getElementById('color-selectors-container');
+      if(!container) return;
       container.innerHTML = '';
       Object.keys(colorPresets).forEach(key => {
         const preset = colorPresets[key];
@@ -671,6 +701,7 @@
 
     function renderReunionCities() {
       const select = document.getElementById('deliveryCity');
+      if(!select) return;
       select.innerHTML = '';
       const z1Group = document.createElement('optgroup'); z1Group.label = "Moins de 20 min de Saint-Pierre (Gratuit)";
       const z2Group = document.createElement('optgroup'); z2Group.label = "Secteur Sud étendu / Ouest proche";
@@ -707,14 +738,14 @@
         htmlEl.classList.add('dark');
         bodyEl.classList.add('bg-slate-950', 'text-slate-100');
         bodyEl.classList.remove('bg-slate-50', 'text-slate-800');
-        btnDark.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
-        btnLight.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-400";
+        if(btnDark) btnDark.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
+        if(btnLight) btnLight.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-400";
       } else {
         htmlEl.classList.remove('dark');
         bodyEl.classList.add('bg-slate-50', 'text-slate-800');
         bodyEl.classList.remove('bg-slate-950', 'text-slate-100');
-        btnLight.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
-        btnDark.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800";
+        if(btnLight) btnLight.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
+        if(btnDark) btnDark.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800";
       }
       updateAll();
     }
@@ -722,16 +753,20 @@
     function toggleSettings() {
       const panel = document.getElementById('settings-panel');
       const chevron = document.getElementById('settings-chevron');
+      if(!panel) return;
       if (panel.classList.contains('hidden')) {
         panel.classList.remove('hidden');
-        chevron.style.transform = 'rotate(180deg)';
+        if(chevron) chevron.style.transform = 'rotate(180deg)';
       } else {
         panel.classList.add('hidden');
-        chevron.style.transform = 'rotate(0deg)';
+        if(chevron) chevron.style.transform = 'rotate(0deg)';
       }
     }
 
-    function triggerFileInput() { document.getElementById('logo-file-input').click(); }
+    function triggerFileInput() { 
+      const input = document.getElementById('logo-file-input');
+      if(input) input.click(); 
+    }
 
     function handleLogoUpload(event) {
       const file = event.target.files[0];
@@ -739,7 +774,8 @@
         const reader = new FileReader();
         reader.onload = function(e) {
           state.uploadedLogo = e.target.result;
-          document.getElementById('logo-preview').src = e.target.result;
+          const preview = document.getElementById('logo-preview');
+          if(preview) preview.src = e.target.result;
           showToast("Logo de l'entreprise enregistré avec succès !");
           updateAll();
         };
@@ -749,86 +785,118 @@
 
     function showToast(message) {
       const toast = document.getElementById('toast');
-      document.getElementById('toast-text').innerText = message;
+      const text = document.getElementById('toast-text');
+      if(!toast || !text) return;
+      text.innerText = message;
       toast.classList.remove('hidden');
       setTimeout(() => { toast.classList.add('hidden'); }, 4000);
     }
 
     function resetConfiguration() {
-      document.getElementById('decrementStep').value = 0.02;
-      document.getElementById('minRate').value = 0.40;
-      document.getElementById('multiplier').value = 2;
-      document.getElementById('lithoBaseRate').value = 0.65;
-      document.getElementById('lithoDecrementStep').value = 0.02;
-      document.getElementById('lithoMinRate').value = 0.30;
-      document.getElementById('priceZone1').value = 0;
-      document.getElementById('priceZone2').value = 10;
-      document.getElementById('priceZone3').value = 25;
+      if(document.getElementById('decrementStep')) document.getElementById('decrementStep').value = 0.02;
+      if(document.getElementById('minRate')) document.getElementById('minRate').value = 0.40;
+      if(document.getElementById('multiplier')) document.getElementById('multiplier').value = 2;
+      if(document.getElementById('lithoBaseRate')) document.getElementById('lithoBaseRate').value = 0.65;
+      if(document.getElementById('lithoDecrementStep')) document.getElementById('lithoDecrementStep').value = 0.02;
+      if(document.getElementById('lithoMinRate')) document.getElementById('lithoMinRate').value = 0.30;
+      if(document.getElementById('priceZone1')) document.getElementById('priceZone1').value = 0;
+      if(document.getElementById('priceZone2')) document.getElementById('priceZone2').value = 10;
+      if(document.getElementById('priceZone3')) document.getElementById('priceZone3').value = 25;
       showToast("Toutes les formules ont été réinitialisées !");
       updateAll();
     }
 
+    // --- FONCTIONS PARE-FEU CONTRE LES ERREURS ---
+    function setTxt(id, text) {
+      const el = document.getElementById(id);
+      if(el) el.innerText = text;
+    }
+    
+    function setHtml(id, html) {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = html;
+    }
+    
+    function toggleHide(id, shouldHide) {
+      const el = document.getElementById(id);
+      if(el) {
+        if(shouldHide) { el.classList.add('hidden'); el.classList.remove('flex'); }
+        else { el.classList.remove('hidden'); }
+      }
+    }
+    
+    function toggleResRow(rowId, valId, value) {
+      const row = document.getElementById(rowId);
+      const valEl = document.getElementById(valId);
+      if(!row || !valEl) return;
+      if (value) { 
+        row.classList.remove('hidden'); row.classList.add('flex'); 
+        valEl.innerText = value; 
+      } else { 
+        row.classList.add('hidden'); row.classList.remove('flex'); 
+      }
+    }
+
     // --- RECALCULER TOUT ET RENDRE L'UI ---
     function updateAll() {
-      state.clientName = document.getElementById('clientName').value;
-      state.clientEmail = document.getElementById('clientEmail').value;
-      state.clientPhone = document.getElementById('clientPhone').value;
-      state.orderDate = document.getElementById('orderDate').value;
-      state.deliveryDate = document.getElementById('deliveryDate').value;
-      state.eventType = document.getElementById('eventType').value;
-      state.eventDate = document.getElementById('eventDate') ? document.getElementById('eventDate').value : '';
-      state.deliveryMethod = document.getElementById('deliveryMethod').value;
-      if (state.deliveryMethod === 'livraison') state.deliveryCity = document.getElementById('deliveryCity').value;
+      // Saisie utilisateur
+      state.clientName = document.getElementById('clientName')?.value || '';
+      state.clientEmail = document.getElementById('clientEmail')?.value || '';
+      state.clientPhone = document.getElementById('clientPhone')?.value || '';
+      state.orderDate = document.getElementById('orderDate')?.value || '';
+      state.deliveryDate = document.getElementById('deliveryDate')?.value || '';
+      state.eventType = document.getElementById('eventType')?.value || 'aucun';
+      state.eventDate = document.getElementById('eventDate')?.value || '';
+      state.deliveryMethod = document.getElementById('deliveryMethod')?.value || 'atelier';
+      state.deliveryCity = document.getElementById('deliveryCity')?.value || 'Saint-Pierre';
       
-      state.text = document.getElementById('text').value;
-      state.height = Number(document.getElementById('height').value) || 0;
-      state.shapeCount = Number(document.getElementById('shapeCount').value) || 0;
-      state.shapeDescription = document.getElementById('shapeDescription').value; // CORRECTION ICI
-      state.engravingCount = Number(document.getElementById('engravingCount').value) || 0;
-      state.engravingTheme = document.getElementById('engravingTheme').value;
-      state.hasLedPremium = document.getElementById('hasLedPremium').checked;
+      state.text = document.getElementById('text')?.value || '';
+      state.height = Number(document.getElementById('height')?.value) || 0;
+      state.shapeCount = Number(document.getElementById('shapeCount')?.value) || 0;
+      state.shapeDescription = document.getElementById('shapeDescription')?.value || '';
+      state.engravingCount = Number(document.getElementById('engravingCount')?.value) || 0;
+      state.engravingTheme = document.getElementById('engravingTheme')?.value || '';
+      state.ledPremiumCount = Number(document.getElementById('ledPremiumCount')?.value) || 0;
 
-      state.decrementStep = Number(document.getElementById('decrementStep').value) || 0.02;
-      state.minRate = Number(document.getElementById('minRate').value) || 0.40;
-      state.multiplier = Number(document.getElementById('multiplier').value) || 2;
-      state.lithoBaseRate = Number(document.getElementById('lithoBaseRate').value) || 0.65;
-      state.lithoDecrementStep = Number(document.getElementById('lithoDecrementStep').value) || 0.02;
-      state.lithoMinRate = Number(document.getElementById('lithoMinRate').value) || 0.30;
-      state.priceZone1 = Number(document.getElementById('priceZone1').value) || 0;
-      state.priceZone2 = Number(document.getElementById('priceZone2').value) || 10;
-      state.priceZone3 = Number(document.getElementById('priceZone3').value) || 25;
+      state.decrementStep = Number(document.getElementById('decrementStep')?.value) || 0.02;
+      state.minRate = Number(document.getElementById('minRate')?.value) || 0.40;
+      state.multiplier = Number(document.getElementById('multiplier')?.value) || 2;
+      state.lithoBaseRate = Number(document.getElementById('lithoBaseRate')?.value) || 0.65;
+      state.lithoDecrementStep = Number(document.getElementById('lithoDecrementStep')?.value) || 0.02;
+      state.lithoMinRate = Number(document.getElementById('lithoMinRate')?.value) || 0.30;
+      state.priceZone1 = Number(document.getElementById('priceZone1')?.value) || 0;
+      state.priceZone2 = Number(document.getElementById('priceZone2')?.value) || 10;
+      state.priceZone3 = Number(document.getElementById('priceZone3')?.value) || 25;
 
       // Affichage du sélecteur de ville
-      const deliveryContainer = document.getElementById('deliveryCityContainer');
-      if (state.deliveryMethod === 'livraison') deliveryContainer.classList.remove('hidden');
-      else deliveryContainer.classList.add('hidden');
+      toggleHide('deliveryCityContainer', state.deliveryMethod !== 'livraison');
 
       // Affichage du sélecteur de date d'événement
-      const eventContainer = document.getElementById('eventDateContainer');
       const eventWrapper = document.getElementById('eventTypeWrapper');
       if (state.eventType !== 'aucun') {
-        eventContainer.classList.remove('hidden');
-        eventWrapper.classList.remove('sm:col-span-2');
-        eventWrapper.classList.add('sm:col-span-1');
+        toggleHide('eventDateContainer', false);
+        if(eventWrapper) eventWrapper.classList.replace('sm:col-span-2', 'sm:col-span-1');
       } else {
-        eventContainer.classList.add('hidden');
-        eventWrapper.classList.remove('sm:col-span-1');
-        eventWrapper.classList.add('sm:col-span-2');
+        toggleHide('eventDateContainer', true);
+        if(eventWrapper) eventWrapper.classList.replace('sm:col-span-1', 'sm:col-span-2');
       }
 
       // Input forme premium (désactiver si = 0)
       const shapeDescInput = document.getElementById('shapeDescription');
-      const shapeWarning = document.getElementById('shapeWarning');
       if (state.shapeCount > 0) {
-        shapeDescInput.removeAttribute('disabled');
-        shapeDescInput.classList.remove('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
-        shapeDescInput.classList.add('bg-slate-800', 'text-white');
-        shapeWarning.classList.remove('hidden');
+        if(shapeDescInput) {
+          shapeDescInput.removeAttribute('disabled');
+          shapeDescInput.classList.remove('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
+          shapeDescInput.classList.add('bg-slate-800', 'text-white');
+        }
+        toggleHide('shapeWarning', false);
       } else {
-        shapeDescInput.setAttribute('disabled', 'true');
-        shapeDescInput.classList.add('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
-        shapeDescInput.classList.remove('bg-slate-800', 'text-white');
-        shapeWarning.classList.add('hidden');
+        if(shapeDescInput) {
+          shapeDescInput.setAttribute('disabled', 'true');
+          shapeDescInput.classList.add('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
+          shapeDescInput.classList.remove('bg-slate-800', 'text-white');
+        }
+        toggleHide('shapeWarning', true);
       }
 
       // Calcul lettres
@@ -851,166 +919,189 @@
       }
 
       // Calcul Lithophanie
-      document.getElementById('displayLithoBase').innerText = state.lithoBaseRate.toFixed(2).replace('.', ',');
+      setTxt('displayLithoBase', state.lithoBaseRate.toFixed(2).replace('.', ','));
       let engravingRate = 0, engravingPrice = 0;
-      const degressiveTip = document.getElementById('lithoDegressiveTip');
-      const lithoCurrentBadge = document.getElementById('lithoCurrentRateBadge');
       
       if (state.engravingCount > 0) {
         engravingRate = Math.max(state.lithoMinRate, state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep);
         engravingPrice = state.engravingCount * state.height * engravingRate;
-        lithoCurrentBadge.classList.remove('hidden');
-        lithoCurrentBadge.innerText = `Tarif unitaire actuel : ${engravingRate.toFixed(2).replace('.', ',')} €/cm`;
+        
+        toggleHide('lithoCurrentRateBadge', false);
+        setTxt('lithoCurrentRateBadge', `Tarif unitaire actuel : ${engravingRate.toFixed(2).replace('.', ',')} €/cm`);
+        
         if (state.engravingCount > 1) {
-          degressiveTip.classList.remove('hidden');
-          degressiveTip.innerText = `💡 Remise dégressive : le prix unitaire est passé de ${state.lithoBaseRate.toFixed(2).replace('.', ',')} € à ${engravingRate.toFixed(2).replace('.', ',')} € (-${((state.engravingCount - 1) * state.lithoDecrementStep).toFixed(2).replace('.', ',')} €).`;
-        } else degressiveTip.classList.add('hidden');
+          toggleHide('lithoDegressiveTip', false);
+          setTxt('lithoDegressiveTip', `💡 Remise dégressive : le prix unitaire est passé de ${state.lithoBaseRate.toFixed(2).replace('.', ',')} € à ${engravingRate.toFixed(2).replace('.', ',')} € (-${((state.engravingCount - 1) * state.lithoDecrementStep).toFixed(2).replace('.', ',')} €).`);
+        } else {
+          toggleHide('lithoDegressiveTip', true);
+        }
       } else {
-        lithoCurrentBadge.classList.add('hidden');
-        degressiveTip.classList.add('hidden');
+        toggleHide('lithoCurrentRateBadge', true);
+        toggleHide('lithoDegressiveTip', true);
       }
 
       // Livraison
       const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
       let deliveryPrice = 0;
       if (state.deliveryMethod === 'livraison') {
-        const badge = document.getElementById('deliveryZoneBadge');
-        badge.innerText = cityInfo.zone === 1 ? 'Zone Proche (Gratuit)' : cityInfo.zone === 2 ? 'Zone Moyenne' : 'Zone Éloignée';
+        setTxt('deliveryZoneBadge', cityInfo.zone === 1 ? 'Zone Proche (Gratuit)' : cityInfo.zone === 2 ? 'Zone Moyenne' : 'Zone Éloignée');
         if (cityInfo.zone === 1) deliveryPrice = state.priceZone1;
         else if (cityInfo.zone === 2) deliveryPrice = state.priceZone2;
         else deliveryPrice = state.priceZone3;
       }
 
       const baseTotal = totalElements * state.height * rate * state.multiplier;
-      const ledPrice = state.hasLedPremium ? 10.90 : 0;
+      const ledPrice = state.ledPremiumCount * 10.90;
       const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
       const deposit = total / 2;
       const balance = total / 2;
 
       // MISE A JOUR UI DROITE
-      const resClientBlock = document.getElementById('clientResultBlock');
       if (state.clientName || state.clientEmail || state.clientPhone || state.eventType !== 'aucun' || state.deliveryMethod === 'livraison') {
-        resClientBlock.classList.remove('hidden');
+        toggleHide('clientResultBlock', false);
         toggleResRow('resClientNameRow', 'resClientName', state.clientName);
         toggleResRow('resClientEmailRow', 'resClientEmail', state.clientEmail);
         toggleResRow('resClientPhoneRow', 'resClientPhone', state.clientPhone);
         
         if (state.deliveryMethod === 'livraison') {
-          document.getElementById('resDeliveryMethod').innerText = "Livraison à domicile";
-          document.getElementById('resDeliveryIcon').setAttribute('data-lucide', 'truck');
-          document.getElementById('resDeliveryCityRow').classList.remove('hidden');
-          document.getElementById('resDeliveryCity').innerText = state.deliveryCity;
-          document.getElementById('resDeliveryDescRow').classList.remove('hidden');
-          document.getElementById('resDeliveryDesc').innerText = cityInfo.desc;
+          setTxt('resDeliveryMethod', "Livraison à domicile");
+          const resDelIcon = document.getElementById('resDeliveryIcon');
+          if(resDelIcon) resDelIcon.setAttribute('data-lucide', 'truck');
+          toggleHide('resDeliveryCityRow', false);
+          setTxt('resDeliveryCity', state.deliveryCity);
+          toggleHide('resDeliveryDescRow', false);
+          setTxt('resDeliveryDesc', cityInfo.desc);
         } else {
-          document.getElementById('resDeliveryMethod').innerText = "Retrait direct Atelier";
-          document.getElementById('resDeliveryIcon').setAttribute('data-lucide', 'map-pin');
-          document.getElementById('resDeliveryCityRow').classList.add('hidden');
-          document.getElementById('resDeliveryDescRow').classList.add('hidden');
+          setTxt('resDeliveryMethod', "Retrait direct Atelier");
+          const resDelIcon = document.getElementById('resDeliveryIcon');
+          if(resDelIcon) resDelIcon.setAttribute('data-lucide', 'map-pin');
+          toggleHide('resDeliveryCityRow', true);
+          toggleHide('resDeliveryDescRow', true);
         }
 
-        document.getElementById('resOrderDate').innerText = formatDateFR(state.orderDate);
-        document.getElementById('resDeliveryDate').innerText = formatDateFR(state.deliveryDate);
+        setTxt('resOrderDate', formatDateFR(state.orderDate));
+        setTxt('resDeliveryDate', formatDateFR(state.deliveryDate));
 
         if (state.eventType !== 'aucun') {
-          document.getElementById('eventBadge').classList.remove('hidden');
-          document.getElementById('eventBadge').innerText = getEventLabel(state.eventType);
+          toggleHide('eventBadge', false);
+          setTxt('eventBadge', getEventLabel(state.eventType));
           if (state.eventDate) {
-            document.getElementById('resEventDateAlert').classList.remove('hidden');
-            document.getElementById('resEventDate').innerText = formatDateFR(state.eventDate);
-          } else document.getElementById('resEventDateAlert').classList.add('hidden');
+            toggleHide('resEventDateAlert', false);
+            setTxt('resEventDate', formatDateFR(state.eventDate));
+          } else {
+            toggleHide('resEventDateAlert', true);
+          }
         } else {
-          document.getElementById('eventBadge').classList.add('hidden');
-          document.getElementById('resEventDateAlert').classList.add('hidden');
+          toggleHide('eventBadge', true);
+          toggleHide('resEventDateAlert', true);
         }
-      } else resClientBlock.classList.add('hidden');
+      } else {
+        toggleHide('clientResultBlock', true);
+      }
 
-      document.getElementById('resLetterCount').innerText = letterCount;
+      setTxt('resLetterCount', letterCount);
 
       if (state.shapeCount > 0) {
-        document.getElementById('resShapeBlock').classList.remove('hidden');
-        document.getElementById('resShapeCount').innerText = `+${state.shapeCount}`;
+        toggleHide('resShapeBlock', false);
+        setTxt('resShapeCount', `+${state.shapeCount}`);
         if (state.shapeDescription) {
-          document.getElementById('resShapeDescWrapper').classList.remove('hidden');
-          document.getElementById('resShapeDescription').innerText = state.shapeDescription;
-        } else document.getElementById('resShapeDescWrapper').classList.add('hidden');
-      } else document.getElementById('resShapeBlock').classList.add('hidden');
-
-      const resLedBlock = document.getElementById('resLedBlock');
-      if (state.hasLedPremium) {
-        resLedBlock.innerHTML = `<div class="flex items-center justify-between font-semibold"><div class="flex items-center gap-2"><i data-lucide="zap" class="text-emerald-400 animate-bounce w-5 h-5"></i><span class="text-xs font-bold uppercase tracking-wide">Option Active</span></div><span class="text-lg font-bold text-emerald-400">+10,90 €</span></div><div class="text-xs text-emerald-100 bg-emerald-900/50 p-3 rounded-lg border border-emerald-800/40 font-medium leading-relaxed mt-2">LED premium Adressable Bluetooth + télécommande</div>`;
+          toggleHide('resShapeDescWrapper', false);
+          setTxt('resShapeDescription', state.shapeDescription);
+        } else {
+          toggleHide('resShapeDescWrapper', true);
+        }
       } else {
-        resLedBlock.innerHTML = `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-450 uppercase tracking-wider"><span>Éclairage standard</span><span class="font-extrabold">Inclus (Gratuit)</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="zap" class="text-emerald-400 mr-2 w-4 h-4"></i>LED standard RGB</div>`;
+        toggleHide('resShapeBlock', true);
+      }
+
+      if (state.ledPremiumCount > 0) {
+        setHtml('resLedBlock', `<div class="flex items-center justify-between font-semibold"><div class="flex items-center gap-2"><i data-lucide="zap" class="text-emerald-400 animate-bounce w-5 h-5"></i><span class="text-xs font-bold uppercase tracking-wide">Option Active</span></div><span class="text-lg font-bold text-emerald-400">+${ledPrice.toFixed(2).replace('.', ',')} €</span></div><div class="flex items-center mt-1"><span class="text-[11px] text-amber-500 font-bold uppercase tracking-wider">Nombre : ${state.ledPremiumCount}</span></div><div class="text-xs text-emerald-100 bg-emerald-900/50 p-3 rounded-lg border border-emerald-800/40 font-medium leading-relaxed mt-2">LED premium Adressable Bluetooth + télécommande</div>`);
+      } else {
+        setHtml('resLedBlock', `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-450 uppercase tracking-wider"><span>Éclairage standard</span><span class="font-extrabold">Inclus (Gratuit)</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="zap" class="text-emerald-400 mr-2 w-4 h-4"></i>LED standard RGB</div>`);
       }
 
       if (state.engravingCount > 0) {
-        document.getElementById('resEngravingBlock').classList.remove('hidden');
-        document.getElementById('resEngravingCountHeader').innerText = state.engravingCount;
-        document.getElementById('resEngravingPriceHeader').innerText = `+${engravingPrice.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('resEngravingRate').innerText = engravingRate.toFixed(2).replace('.', ',');
+        toggleHide('resEngravingBlock', false);
+        setTxt('resEngravingCountHeader', state.engravingCount);
+        setTxt('resEngravingPriceHeader', `+${engravingPrice.toFixed(2).replace('.', ',')} €`);
+        setTxt('resEngravingRate', engravingRate.toFixed(2).replace('.', ','));
         if (state.engravingTheme) {
-          document.getElementById('resEngravingThemeWrapper').classList.remove('hidden');
-          document.getElementById('resEngravingThemeWrapper').innerText = state.engravingTheme;
-        } else document.getElementById('resEngravingThemeWrapper').classList.add('hidden');
-      } else document.getElementById('resEngravingBlock').classList.add('hidden');
+          toggleHide('resEngravingThemeWrapper', false);
+          setTxt('resEngravingThemeWrapper', state.engravingTheme);
+        } else {
+          toggleHide('resEngravingThemeWrapper', true);
+        }
+      } else {
+        toggleHide('resEngravingBlock', true);
+      }
 
-      const resDeliveryFeeBlock = document.getElementById('resDeliveryFeeBlock');
       if (state.deliveryMethod === 'livraison') {
-        resDeliveryFeeBlock.classList.remove('hidden');
-        resDeliveryFeeBlock.innerHTML = `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-400 uppercase tracking-wider"><span>Frais de port (${state.deliveryCity})</span><span class="font-extrabold">${deliveryPrice === 0 ? 'LIVRAISON OFFERTE' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`}</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="truck" class="text-emerald-400 mr-2 w-4 h-4"></i>${deliveryPrice === 0 ? '<span class="text-emerald-400 font-extrabold">Zone Proche (Saint-Pierre et alentours)</span>' : 'Envoi à domicile par coursier'}</div>`;
-      } else resDeliveryFeeBlock.classList.add('hidden');
+        toggleHide('resDeliveryFeeBlock', false);
+        setHtml('resDeliveryFeeBlock', `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-400 uppercase tracking-wider"><span>Frais de port (${state.deliveryCity})</span><span class="font-extrabold">${deliveryPrice === 0 ? 'LIVRAISON OFFERTE' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`}</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="truck" class="text-emerald-400 mr-2 w-4 h-4"></i>${deliveryPrice === 0 ? '<span class="text-emerald-400 font-extrabold">Zone Proche (Saint-Pierre et alentours)</span>' : 'Envoi à domicile par coursier'}</div>`);
+      } else {
+        toggleHide('resDeliveryFeeBlock', true);
+      }
 
-      document.getElementById('resCalculatedRate').innerText = `${rate.toFixed(2).replace('.', ',')} €`;
-      if (rate === state.minRate && totalElements > 10) document.getElementById('resMinRateReached').classList.remove('hidden');
-      else document.getElementById('resMinRateReached').classList.add('hidden');
+      setTxt('resCalculatedRate', `${rate.toFixed(2).replace('.', ',')} €`);
+      toggleHide('resMinRateReached', rate !== state.minRate || totalElements <= 10);
 
-      // Détails
-      document.getElementById('calcLetterCount').innerText = letterCount;
+      // --- Détails Détaillés ---
+      setTxt('calcLetterCount', letterCount);
+      
       if (state.shapeCount > 0) {
-        document.getElementById('calcShapeRow').classList.remove('hidden');
-        document.getElementById('calcShapeCount').innerText = `+ ${state.shapeCount}`;
-      } else document.getElementById('calcShapeRow').classList.add('hidden');
-      document.getElementById('calcTotalCount').innerText = totalElements;
-      document.getElementById('calcHeight').innerText = state.height;
-      document.getElementById('calcRate').innerText = rate.toFixed(2).replace('.', ',');
-      document.getElementById('calcMultiplier').innerText = state.multiplier;
-      document.getElementById('calcBaseTotal').innerText = `${baseTotal.toFixed(2).replace('.', ',')} €`;
+        toggleHide('calcShapeRow', false);
+        setTxt('calcShapeCount', `+ ${state.shapeCount}`);
+      } else {
+        toggleHide('calcShapeRow', true);
+      }
+      
+      setTxt('calcTotalCount', totalElements);
+      setTxt('calcHeight', state.height);
+      setTxt('calcRate', rate.toFixed(2).replace('.', ','));
+      setTxt('calcMultiplier', state.multiplier);
+      setTxt('calcBaseTotal', `${baseTotal.toFixed(2).replace('.', ',')} €`);
 
-      if (state.hasLedPremium) document.getElementById('calcLedRow').classList.remove('hidden');
-      else document.getElementById('calcLedRow').classList.add('hidden');
+      if (state.ledPremiumCount > 0) {
+        toggleHide('calcLedRow', false);
+        setTxt('calcLedCount', state.ledPremiumCount);
+        setTxt('calcLedPrice', `+ ${ledPrice.toFixed(2).replace('.', ',')} €`);
+      } else {
+        toggleHide('calcLedRow', true);
+      }
 
       if (state.engravingCount > 0) {
-        document.getElementById('calcLithoRow').classList.remove('hidden');
-        document.getElementById('calcLithoCount').innerText = state.engravingCount;
-        document.getElementById('calcLithoRate').innerText = engravingRate.toFixed(2).replace('.', ',');
-        document.getElementById('calcLithoPrice').innerText = `+ ${engravingPrice.toFixed(2).replace('.', ',')} €`;
-      } else document.getElementById('calcLithoRow').classList.add('hidden');
+        toggleHide('calcLithoRow', false);
+        setTxt('calcLithoCount', state.engravingCount);
+        setTxt('calcLithoRate', engravingRate.toFixed(2).replace('.', ','));
+        setTxt('calcLithoPrice', `+ ${engravingPrice.toFixed(2).replace('.', ',')} €`);
+      } else {
+        toggleHide('calcLithoRow', true);
+      }
 
       if (state.deliveryMethod === 'livraison') {
-        document.getElementById('calcDeliveryRow').classList.remove('hidden');
-        document.getElementById('calcDeliveryCity').innerText = state.deliveryCity;
-        document.getElementById('calcDeliveryPrice').innerText = deliveryPrice === 0 ? 'OFFERTE (0 €)' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`;
-      } else document.getElementById('calcDeliveryRow').classList.add('hidden');
+        toggleHide('calcDeliveryRow', false);
+        setTxt('calcDeliveryCity', state.deliveryCity);
+        setTxt('calcDeliveryPrice', deliveryPrice === 0 ? 'OFFERTE (0 €)' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`);
+      } else {
+        toggleHide('calcDeliveryRow', true);
+      }
 
-      document.getElementById('resTotalPrice').innerText = total.toFixed(2).replace('.', ',');
-      document.getElementById('calcTotalPrice').innerText = `${total.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('calcDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('calcBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('resDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('resBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
+      // --- PRIX TOTAUX DANS LE HTML ---
+      setTxt('calcTotalPrice', `${total.toFixed(2).replace('.', ',')} €`);
+      setTxt('calcDepositPrice', `${deposit.toFixed(2).replace('.', ',')} €`);
+      setTxt('calcBalancePrice', `${balance.toFixed(2).replace('.', ',')} €`);
+      
+      setTxt('resTotalPrice', total.toFixed(2).replace('.', ','));
+      setTxt('resDepositPrice', `${deposit.toFixed(2).replace('.', ',')} €`);
+      setTxt('resBalancePrice', `${balance.toFixed(2).replace('.', ',')} €`);
 
       renderBarèmeGrid(totalElements, rate);
-      lucide.createIcons(); // Recréer les icônes lucide nouvellement injectées
-    }
-
-    function toggleResRow(rowId, valId, value) {
-      const row = document.getElementById(rowId);
-      if (value) { row.classList.remove('hidden'); row.classList.add('flex'); document.getElementById(valId).innerText = value; }
-      else { row.classList.add('hidden'); row.classList.remove('flex'); }
+      lucide.createIcons();
     }
 
     function renderBarèmeGrid(totalElements, rate) {
       const grid = document.getElementById('reference-table-grid');
+      if(!grid) return;
       grid.innerHTML = '';
       const baseGridData = [
         { range: '1-2', price: 1.00 }, { range: '3-4', price: 0.95 }, { range: '5', price: 0.90 },
@@ -1027,20 +1118,9 @@
         card.innerHTML = `<div class="font-semibold">${row.range} ${row.isCustom ? 'élém. (vous)' : 'élém.'}</div><div class="${isCurrent ? 'text-white/90' : 'text-slate-500 dark:text-slate-400 font-mono'}">${row.price.toFixed(2).replace('.', ',')} €/cm</div>`;
         grid.appendChild(card);
       });
-      document.getElementById('hint-decrement-step').innerText = state.decrementStep;
-      document.getElementById('hint-min-rate').innerText = state.minRate.toFixed(2);
-    }
-
-    function formatDateFR(dateStr) {
-      if (!dateStr) return '';
-      const parts = dateStr.split('-');
-      if (parts.length !== 3) return dateStr;
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    function getEventLabel(type) {
-      const labels = { aucun: 'Aucun', anniversaire: 'Anniversaire', bapteme: 'Baptême', mariage: 'Mariage', divorce: 'Divorce', noel: 'Noël', fete_meres: 'Fête des mères', fete_peres: 'Fête des pères' };
-      return labels[type] || 'Aucun';
+      
+      setTxt('hint-decrement-step', state.decrementStep.toFixed(2));
+      setTxt('hint-min-rate', state.minRate.toFixed(2));
     }
 
     // --- PDF ---
@@ -1079,7 +1159,7 @@
       }
 
       const baseTotal = totalElements * state.height * rate * state.multiplier;
-      const ledPrice = state.hasLedPremium ? 10.90 : 0;
+      const ledPrice = state.ledPremiumCount * 10.90;
       const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
       const deposit = total / 2;
       const balance = total / 2;
@@ -1185,11 +1265,11 @@
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
                     <strong style="color: #f8fafc; font-size: 12px;">Système d'Éclairage LED</strong><br />
-                    <span style="font-size: 10px; color: #94a3b8;">${state.hasLedPremium ? 'LED premium Adressable Bluetooth + télécommande' : 'LED standard RGB'}</span>
+                    <span style="font-size: 10px; color: #94a3b8;">${state.ledPremiumCount > 0 ? 'LED premium Adressable Bluetooth + télécommande' : 'LED standard RGB'}</span>
                   </td>
-                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">1 système</td>
-                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
-                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.hasLedPremium ? '10,90 €' : 'Offert'}</td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.ledPremiumCount > 0 ? state.ledPremiumCount : 1} système(s)</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.ledPremiumCount > 0 ? '10,90 €' : '-'}</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.ledPremiumCount > 0 ? `${ledPrice.toFixed(2).replace('.', ',')} €` : 'Offert'}</td>
                 </tr>
 
                 ${state.deliveryMethod === 'livraison' ? `
@@ -1222,10 +1302,10 @@
                   <span>Sous-total fabrication :</span>
                   <span style="font-family: monospace;">${baseTotal.toFixed(2).replace('.', ',')} €</span>
                 </div>
-                ${state.hasLedPremium ? `
+                ${state.ledPremiumCount > 0 ? `
                 <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
-                  <span>Option LED Premium :</span>
-                  <span style="font-family: monospace;">10,90 €</span>
+                  <span>Option LED Premium (${state.ledPremiumCount}) :</span>
+                  <span style="font-family: monospace;">${ledPrice.toFixed(2).replace('.', ',')} €</span>
                 </div>` : ''}
                 ${state.engravingCount > 0 ? `
                 <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
