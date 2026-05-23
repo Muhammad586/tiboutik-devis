@@ -162,7 +162,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Multiplicateur global</label>
-            <input type="number" step="0.1" min="0.5" id="multiplier" value="2" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
+            <input type="number" step="0.1" min="0.5" id="multiplier" value="1" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
           </div>
         </div>
       </div>
@@ -237,6 +237,20 @@
           </h2>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Type de Document -->
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Type de document</label>
+              <div class="relative">
+                <i data-lucide="file-text" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <select id="documentType" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
+                  <option value="">Estimation prix</option>
+                  <option value="devis">Devis</option>
+                  <option value="bon_de_commande">Bon de commande</option>
+                  <option value="facture">Facture</option>
+                </select>
+              </div>
+            </div>
+
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-slate-400 mb-1.5">Nom & Prénom</label>
               <div class="relative">
@@ -449,7 +463,7 @@
           
           <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
             <h2 class="text-xl font-bold flex items-center">
-              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i> Résultat
+              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i> <span id="ui-result-title">Résultat : Estimation prix</span>
             </h2>
             <button onclick="handleExportPDF()" id="btn-export-pdf" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md custom-accent-bg text-white hover:scale-105 active:scale-95 transition-all">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> <span id="btn-export-text">Export PDF</span>
@@ -540,7 +554,7 @@
               <p class="flex justify-between border-t border-slate-700 pt-2 font-semibold text-slate-200"><span>Total d'éléments tarifés</span> <span id="calcTotalCount">0</span></p>
               <p class="flex justify-between"><span>Hauteur</span> <span>x <span id="calcHeight">10</span> cm</span></p>
               <p class="flex justify-between"><span>Tarif dégressif</span> <span>x <span id="calcRate">0.00</span> €/cm</span></p>
-              <p class="flex justify-between border-b border-slate-700 pb-2"><span>Coefficient multiplicateur</span> <span>x <span id="calcMultiplier">2</span></span></p>
+              <p class="flex justify-between border-b border-slate-700 pb-2"><span>Coefficient multiplicateur</span> <span>x <span id="calcMultiplier">1</span></span></p>
               <p class="flex justify-between text-slate-300"><span>Sous-total lettrage</span> <span id="calcBaseTotal">0,00 €</span></p>
               
               <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow">
@@ -550,7 +564,7 @@
               <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLithoRow"><span>Lithophanie (<span id="calcLithoCount">0</span>x <span id="calcLithoRate">0.65</span>€)</span> <span id="calcLithoPrice">+ 0,00 €</span></p>
               <p class="hidden justify-between text-emerald-400 font-semibold" id="calcDeliveryRow"><span>Livraison (<span id="calcDeliveryCity">Saint-Pierre</span>)</span> <span id="calcDeliveryPrice">0,00 €</span></p>
               
-              <!-- SECTION CORRIGÉE : Totaux, acomptes et solde -->
+              <!-- Totaux, acomptes et solde -->
               <p class="flex justify-between text-white font-medium border-t border-slate-700 pt-1">
                 <span>Prix total</span> 
                 <span id="calcTotalPrice">0,00 €</span>
@@ -596,6 +610,7 @@
     const state = {
       isDarkMode: true,
       colorTheme: 'blue',
+      documentType: '', // Type de document
       clientName: '',
       clientEmail: '',
       clientPhone: '',
@@ -614,10 +629,10 @@
       engravingTheme: '',
       uploadedLogo: null,
       
-      // Paramètres
+      // Paramètres (Multiplicateur par défaut à 1)
       decrementStep: 0.02,
       minRate: 0.40,
-      multiplier: 2,
+      multiplier: 1,
       lithoBaseRate: 0.65,
       lithoDecrementStep: 0.02,
       lithoMinRate: 0.30,
@@ -795,7 +810,7 @@
     function resetConfiguration() {
       if(document.getElementById('decrementStep')) document.getElementById('decrementStep').value = 0.02;
       if(document.getElementById('minRate')) document.getElementById('minRate').value = 0.40;
-      if(document.getElementById('multiplier')) document.getElementById('multiplier').value = 2;
+      if(document.getElementById('multiplier')) document.getElementById('multiplier').value = 1;
       if(document.getElementById('lithoBaseRate')) document.getElementById('lithoBaseRate').value = 0.65;
       if(document.getElementById('lithoDecrementStep')) document.getElementById('lithoDecrementStep').value = 0.02;
       if(document.getElementById('lithoMinRate')) document.getElementById('lithoMinRate').value = 0.30;
@@ -837,9 +852,18 @@
       }
     }
 
+    // Fonction d'aide pour obtenir le libellé du type de document
+    function getDocumentTypeName() {
+      if (state.documentType === 'devis') return 'Devis';
+      if (state.documentType === 'bon_de_commande') return 'Bon de commande';
+      if (state.documentType === 'facture') return 'Facture';
+      return 'Estimation prix';
+    }
+
     // --- RECALCULER TOUT ET RENDRE L'UI ---
     function updateAll() {
       // Saisie utilisateur
+      state.documentType = document.getElementById('documentType')?.value || '';
       state.clientName = document.getElementById('clientName')?.value || '';
       state.clientEmail = document.getElementById('clientEmail')?.value || '';
       state.clientPhone = document.getElementById('clientPhone')?.value || '';
@@ -860,13 +884,17 @@
 
       state.decrementStep = Number(document.getElementById('decrementStep')?.value) || 0.02;
       state.minRate = Number(document.getElementById('minRate')?.value) || 0.40;
-      state.multiplier = Number(document.getElementById('multiplier')?.value) || 2;
+      state.multiplier = Number(document.getElementById('multiplier')?.value) || 1;
       state.lithoBaseRate = Number(document.getElementById('lithoBaseRate')?.value) || 0.65;
       state.lithoDecrementStep = Number(document.getElementById('lithoDecrementStep')?.value) || 0.02;
       state.lithoMinRate = Number(document.getElementById('lithoMinRate')?.value) || 0.30;
       state.priceZone1 = Number(document.getElementById('priceZone1')?.value) || 0;
       state.priceZone2 = Number(document.getElementById('priceZone2')?.value) || 10;
       state.priceZone3 = Number(document.getElementById('priceZone3')?.value) || 25;
+
+      // Mise à jour du type de document dans l'UI (titre à droite)
+      const docName = getDocumentTypeName();
+      setTxt('ui-result-title', `Résultat : ${docName}`);
 
       // Affichage du sélecteur de ville
       toggleHide('deliveryCityContainer', state.deliveryMethod !== 'livraison');
@@ -1126,7 +1154,9 @@
     // --- PDF ---
     function handleExportPDF() {
       if (typeof window.html2pdf === 'undefined') { showToast("Veuillez patienter..."); return; }
-      showToast("Génération de votre devis PDF en cours...");
+      
+      const docName = getDocumentTypeName();
+      showToast(`Génération de votre ${docName.toLowerCase()} PDF en cours...`);
 
       // Recalcul au moment précis
       const match = state.text.match(/[\p{L}\p{N}]/gu);
@@ -1182,6 +1212,17 @@
         ? `<img src="${state.uploadedLogo}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid ${accentHex};" />`
         : `<svg width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;"><circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" /><path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" /><text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text><text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text></svg>`;
 
+      // Mentions légales adaptées au type de document
+      const docTypeLower = docName.toLowerCase();
+      let legalText = `Ce document est un(e) ${docTypeLower} émis(e) par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.`;
+      if(state.documentType === 'facture') {
+        legalText = `Ce document est une facture émise par l'entreprise TIBOUTIK-974. Merci pour votre confiance et votre achat.`;
+      } else if(state.documentType === 'bon_de_commande') {
+        legalText = `Ce document est un bon de commande émis par l'entreprise TIBOUTIK-974. L'accord ci-dessous valide le lancement de la fabrication.`;
+      }
+      
+      const signatureBoxDisplay = state.documentType === 'facture' ? 'none' : 'block';
+
       element.innerHTML = `
         <div style="box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px;">
@@ -1195,7 +1236,7 @@
             </div>
             <div style="text-align: right;">
               <div style="background-color: #1e293b; padding: 8px 16px; border-radius: 10px; border: 1px solid #334155; display: inline-block;">
-                <h2 style="font-size: 12px; margin: 0; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">Proposition Commerciale</h2>
+                <h2 style="font-size: 12px; margin: 0; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">${docName}</h2>
                 <p style="font-size: 10px; margin: 3px 0 0 0; color: #94a3b8;">Émis le : ${formatDateFR(state.orderDate)}</p>
                 <p style="font-size: 10px; margin: 1px 0 0 0; color: #34d399; font-weight: bold;">Livraison : ${formatDateFR(state.deliveryDate)}</p>
               </div>
@@ -1290,8 +1331,8 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-end;">
               <div style="width: 55%; font-size: 9px; color: #94a3b8; line-height: 1.5; padding-right: 20px;">
                 <p style="margin: 0 0 8px 0; color: #cbd5e1; font-weight: bold;">Mentions Légales :</p>
-                <p style="margin: 0 0 12px 0;">Ce document est une estimation tarifaire provisoire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.</p>
-                <div style="border: 1px dashed #334155; border-radius: 8px; padding: 8px; text-align: center;">
+                <p style="margin: 0 0 12px 0;">${legalText}</p>
+                <div style="border: 1px dashed #334155; border-radius: 8px; padding: 8px; text-align: center; display: ${signatureBoxDisplay};">
                   <span style="color: #cbd5e1; font-weight: bold; font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Bon pour accord (Date et Signature client)</span>
                   <div style="height: 35px;"></div>
                 </div>
@@ -1342,7 +1383,7 @@
 
       const opt = {
         margin:       0, 
-        filename:     `Devis_${state.clientName.replace(/\s+/g, '_') || 'Client'}_TIBOUTIK974.pdf`,
+        filename:     `${docName.replace(/\s+/g, '_')}_${state.clientName.replace(/\s+/g, '_') || 'Client'}_TIBOUTIK974.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
         jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
