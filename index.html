@@ -1,390 +1,1992 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiboutik974 ✨ Devis Veilleuse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIBOUTIK-974 • Calculateur de Lettrage</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              850: '#1e293b',
+            }
+          }
         }
+      }
+    }
+  </script>
 
-        #recap-veilleuses > div {
-            background: rgba(255, 255, 255, 0.35) !important;
-            padding: 18px !important;
-            border-radius: 20px !important;
-            margin-bottom: 16px !important;
-            border: 4px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        .theme-line {
-            color: #fff700 !important;
-            font-weight: bold;
-            font-size: 17.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+  <!-- html2pdf.js CDN (pour l'export de devis de qualité) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        .offre-card {
-            transition: all 0.3s;
-        }
-    </style>
+  <!-- CSS Variables pour la gestion dynamique de la couleur d'accentuation -->
+  <style>
+    :root {
+      --accent-color: #2563eb;
+      --accent-color-hover: #1d4ed8;
+      --accent-gradient-from: #2563eb;
+      --accent-gradient-to: #4f46e5;
+      --accent-badge-bg: rgba(37, 99, 235, 0.1);
+      --accent-badge-border: rgba(37, 99, 235, 0.2);
+      --accent-badge-text: #60a5fa;
+    }
+    .custom-accent-bg { background-color: var(--accent-color); }
+    .custom-accent-bg-hover:hover { background-color: var(--accent-color-hover); }
+    .custom-accent-text { color: var(--accent-color); }
+    .custom-accent-border { border-color: var(--accent-color); }
+    .custom-accent-badge {
+      background-color: var(--accent-badge-bg);
+      border-color: var(--accent-badge-border);
+      color: var(--accent-badge-text);
+    }
+    .custom-accent-gradient {
+      background-image: linear-gradient(to bottom right, var(--accent-gradient-from), var(--accent-gradient-to));
+    }
+    
+    /* Animation fade in */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-yellow-200 min-h-screen">
-    <div class="max-w-5xl mx-auto p-6">
-        <div class="grid lg:grid-cols-2 gap-8">
+<body id="app-body" class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans transition-colors duration-300">
 
-            <!-- PARTIE FORMULAIRE -->
-            <div class="bg-white rounded-3xl shadow-2xl p-8">
-                <h2 class="text-3xl font-bold text-purple-700 mb-6">Remplis ta veilleuse 🪄</h2>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Écris ici ton prénom</label>
-                        <input id="nomClient" type="text" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Julie">
-                    </div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Écris ton mail ici :)</label>
-                        <input id="email" type="email" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="exemple@gmail.com">
-                    </div>
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Combien de veilleuses veux-tu ?</label>
-                        <select id="nbVeilleuses" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" onchange="genererVeilleuses()">
-                            <option value="1" selected>1 veilleuse</option>
-                            <option value="2">2 veilleuses</option>
-                            <option value="3">3 veilleuses</option>
-                            <option value="4">4 veilleuses</option>
-                            <option value="5">5 veilleuses</option>
-                        </select>
-                    </div>
-                    <div id="veilleuses-container" class="space-y-6"></div>
-
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Taille des lettres (pour toutes les veilleuses)</label>
-                        <select id="taille" class="w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" onchange="calculerPrix()">
-                            <option value="10">10 cm</option>
-                            <option value="12" selected>12 cm</option>
-                            <option value="15">15 cm</option>
-                            <option value="20">20 cm</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-lg font-bold mb-2">Tes idées créatives / envies spéciales 💡</label>
-                        <textarea id="idees" rows="3" class="w-full border-4 border-pink-300 rounded-3xl px-4 py-3" placeholder="Laisse un message à néO_Créa..."></textarea>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" id="livraison" class="w-6 h-6 accent-pink-500" onchange="calculerPrix()">
-                        <label for="livraison" class="text-lg font-bold">Livraison à La Réunion (17 €)</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PARTIE DEVIS -->
-            <div class="bg-gradient-to-br from-pink-400 to-purple-500 text-white rounded-3xl shadow-2xl p-8 flex flex-col">
-                <h2 class="text-3xl font-bold mb-6 text-center">Détail de ton devis ✨</h2>
-                <div class="flex-1 space-y-5">
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5 space-y-3">
-                        <div class="flex justify-between"><span>Prix des lettres seules</span><span id="prixLettres" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between"><span>+ LED Premium</span><span class="font-bold">12 €</span></div>
-                        <div class="flex justify-between"><span>+ Formes choisies</span><span id="prixFormes" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between"><span>+ Lithophanie</span><span id="prixLitho" class="font-bold">0 €</span></div>
-                        <div class="flex justify-between border-t pt-3"><span class="font-bold">Total avant offres</span><span id="totalBrut" class="font-bold">0 €</span></div>
-                    </div>
-
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5">
-                        <p class="text-yellow-300 font-bold mb-3">Récapitulatif par veilleuse</p>
-                        <div id="recap-veilleuses" class="space-y-3 text-sm"></div>
-                    </div>
-
-                    <div class="bg-white/20 backdrop-blur rounded-2xl p-5">
-                        <p class="text-yellow-300 font-bold mb-3">🎮 Offres activées (cadeaux en plus !)</p>
-                        <div id="offres-list" class="space-y-3"></div>
-                    </div>
-
-                    <div class="text-center bg-white/30 rounded-2xl p-6">
-                        <p class="text-lg">Total à payer</p>
-                        <p id="totalFinal" class="text-5xl font-bold">0 €</p>
-                        <p class="text-sm">Acompte 50% : <span id="acompte" class="font-bold">0 €</span></p>
-                    </div>
-                </div>
-
-                <button onclick="envoyerDevis()" class="mt-8 w-full bg-white text-pink-600 font-bold text-3xl py-8 rounded-3xl hover:scale-110 transition-all shadow-2xl flex items-center justify-center gap-4">
-                    ✉️ Envoyer ta demande à néO_Créa
-                </button>
-            </div>
-        </div>
+  <div class="max-w-5xl mx-auto space-y-6">
+    
+    <!-- Toast de Notification -->
+    <div id="toast" class="hidden fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50 animate-fadeIn text-sm">
+      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
+      <span id="toast-text">Notification</span>
     </div>
 
-    <script>
-        emailjs.init("Zi3s-ZwSciwsRW6t6");
-        const SERVICE_ID = "service_qzrf6nm";
-        const TEMPLATE_ID = "template_qmu3htp";
+    <!-- --- TOUT EN HAUT : Personnalisation du Thème et de la Couleur --- -->
+    <div class="rounded-2xl shadow-sm p-4 border bg-slate-900 border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
+      
+      <!-- Sélecteur de Couleur d'Accentuation -->
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center shrink-0">
+          <i data-lucide="palette" class="w-4 h-4 mr-1.5 text-slate-450"></i> Couleur de l'enseigne :
+        </span>
+        <div class="flex items-center gap-2 flex-wrap" id="color-selectors-container">
+          <!-- Injecté par JavaScript -->
+        </div>
+      </div>
 
-        const PRIX_LETTRE = 1;
-        const PRIX_LED = 12;
-        const PRIX_FORME = 1.15;
-        const PRIX_LITHO = 0.65;
-        const PRIX_LIVRAISON = 17;
+      <!-- Sélecteur de Thème (Clair / Sombre) -->
+      <div class="flex items-center gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800 w-full md:w-auto justify-end">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Style :</span>
+        <button
+          onclick="setThemeMode(false)"
+          id="btn-light-mode"
+          class="p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800"
+          title="Thème Clair"
+        >
+          <i data-lucide="sun" class="w-5 h-5"></i>
+        </button>
+        <button
+          onclick="setThemeMode(true)"
+          id="btn-dark-mode"
+          class="p-2 rounded-xl transition-all"
+          title="Thème Sombre"
+        >
+          <i data-lucide="moon" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
 
-        function isFeteDesMeresActive() {
-            const today = new Date();
-            return today.getMonth() === 4 && today.getFullYear() === 2026;
+    <!-- En-tête de l'application avec ton Logo et les informations de ton entreprise -->
+    <div class="rounded-2xl shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 border bg-slate-900 border-slate-800 transition-all duration-300">
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+        
+        <!-- Logo avec import personnalisé au clic -->
+        <div 
+          onclick="triggerFileInput()" 
+          class="relative shrink-0 group cursor-pointer"
+          title="Cliquez pour changer le logo de votre entreprise"
+        >
+          <img 
+            id="logo-preview"
+            src="logo Tiboutik-974.png" 
+            alt="Logo TIBOUTIK-974" 
+            class="w-20 h-20 rounded-full object-cover border-2 border-amber-500 shadow-lg transition-opacity group-hover:opacity-75"
+            onerror="this.onerror=null; this.src='https://placehold.co/150x150/1e293b/ffffff?text=974';"
+          />
+          <div class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <i data-lucide="upload" class="text-white w-5 h-5"></i>
+          </div>
+          <span class="absolute -bottom-1 -right-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow">
+            974
+          </span>
+        </div>
+
+        <!-- Input caché -->
+        <input 
+          type="file" 
+          id="logo-file-input" 
+          onchange="handleLogoUpload(event)" 
+          accept="image/*" 
+          class="hidden" 
+        />
+        
+        <div class="space-y-1 text-center sm:text-left">
+          <div class="flex flex-col sm:flex-row items-center gap-2">
+            <h1 class="text-2xl font-black tracking-tight" id="company-name-title">TIBOUTIK-974</h1>
+            <span class="bg-emerald-500/10 text-emerald-500 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+              Siren Actif
+            </span>
+            <button
+              onclick="triggerFileInput()"
+              class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-700 transition"
+            >
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+              <span>Importer mon logo</span>
+            </button>
+          </div>
+          <p class="text-slate-400 text-xs md:text-sm font-medium">
+            Enseignes lumineuses & Gravures sur-mesure • Bruno BAILLY
+          </p>
+          <div class="text-[10px] text-slate-400 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1">
+            <span><strong>SIRET :</strong> 522 513 829 00039</span>
+            <span><strong>APE :</strong> 93.29Z</span>
+            <span><strong>Atelier :</strong> Saint-Pierre, Île de la Réunion</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bouton Ajuster Formule -->
+      <button
+        onclick="toggleSettings()"
+        id="btn-settings-toggle"
+        class="flex items-center justify-center space-x-2 px-4 py-2 rounded-xl border transition text-sm font-medium shrink-0 bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300"
+      >
+        <i data-lucide="settings" id="settings-icon" class="w-4.5 h-4.5"></i>
+        <span>Ajuster la formule</span>
+        <i data-lucide="chevron-down" id="settings-chevron" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Panneau des Paramètres / Formule (Ajuster la formule) -->
+    <div id="settings-panel" class="hidden rounded-2xl shadow-sm p-6 border animate-fadeIn space-y-6 transition-all duration-300 bg-slate-900 border-slate-800 text-slate-100">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-semibold flex items-center">
+          <i data-lucide="settings" class="custom-accent-text mr-2 w-5 h-5"></i>
+          Réglages de la dégressivité infinie & Tarifs
+        </h3>
+        <button 
+          onclick="resetConfiguration()"
+          class="text-xs flex items-center text-slate-500 hover:text-slate-400 font-medium"
+        >
+          <i data-lucide="refresh-cw" class="mr-1 w-3 h-3"></i> Réinitialiser les défauts
+        </button>
+      </div>
+
+      <!-- Lettrage de base -->
+      <div class="space-y-4">
+        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Formule de base Lettrage</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Baisse par lettre supplémentaire (&gt; 10)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="0.005"
+                min="0"
+                id="decrementStep"
+                value="0.02"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-blue-500 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Tarif plancher minimum (Lettrage)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="0.05"
+                min="0.10"
+                id="minRate"
+                value="0.40"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-955 focus:ring-blue-500 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Multiplicateur global
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0.5"
+              id="multiplier"
+              value="2"
+              oninput="updateAll()"
+              class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-955 focus:ring-blue-505 text-white"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Lithophanie -->
+      <div class="space-y-4 border-t border-slate-800 pt-4">
+        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Formule Lithophanie (Gravure)</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Tarif départ 1ère Litho
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="0.05"
+                id="lithoBaseRate"
+                value="0.65"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Baisse par litho supplémentaire
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="0.005"
+                id="lithoDecrementStep"
+                value="0.02"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Tarif plancher minimum (Litho)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="0.05"
+                id="lithoMinRate"
+                value="0.30"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarifs livraison -->
+      <div class="space-y-4 border-t border-slate-800 pt-4">
+        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Configuration Tarifs de Livraison (Réunion)</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Zone Proche (&lt; 20min)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="1"
+                id="priceZone1"
+                value="0"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Zone Sud étendu / Ouest
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="1"
+                id="priceZone2"
+                value="10"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Zone Reste de l'île (Éloigné)
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                step="1"
+                id="priceZone3"
+                value="25"
+                oninput="updateAll()"
+                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
+              />
+              <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Colonne Gauche : Saisie -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Fiche Client & Planification -->
+        <div class="rounded-2xl shadow-sm p-6 border space-y-4 transition-all duration-300 bg-slate-900 border-slate-800 text-white">
+          <h2 class="text-lg font-semibold flex items-center">
+            <i data-lucide="user" class="mr-2 custom-accent-text w-5 h-5"></i>
+            Fiche Client & Planification
+          </h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Nom & Prénom -->
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Nom & Prénom du client
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="user" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <input
+                  type="text"
+                  id="clientName"
+                  placeholder="Ex: Jean Dupont"
+                  oninput="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Adresse e-mail
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="mail" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <input
+                  type="email"
+                  id="clientEmail"
+                  placeholder="Ex: jean.dupont@gmail.com"
+                  oninput="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Téléphone */}
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Téléphone
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="phone" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <input
+                  type="tel"
+                  id="clientPhone"
+                  placeholder="Ex: 06 12 34 56 78"
+                  oninput="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Date du jour -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Date du jour
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="calendar" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <input
+                  type="date"
+                  id="orderDate"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Date de livraison estimée -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Date de livraison estimée
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="clock" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <input
+                  type="date"
+                  id="deliveryDate"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Mode de récupération -->
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Mode de récupération
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="truck" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <select
+                  id="deliveryMethod"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="atelier">Retrait à l'atelier (Saint-Pierre) - Gratuit</option>
+                  <option value="livraison">Livraison à domicile (Réunion)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Sélecteur de ville si Livraison à domicile (Intégration d'Île de la Réunion) -->
+            <div id="deliveryCityContainer" class="hidden">
+              <label class="block text-sm font-medium text-slate-400 mb-1.5 flex justify-between">
+                <span>Ville de destination</span>
+                <span id="deliveryZoneBadge" class="text-[10px] text-slate-400 font-bold">Zone</span>
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="map-pin" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <select
+                  id="deliveryCity"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                >
+                  <!-- Injecté par JavaScript -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Sélecteur d'Événement -->
+            <div id="eventTypeWrapper" class="sm:col-span-2">
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">
+                Événement lié
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="gift" class="text-slate-400 w-4 h-4"></i>
+                </div>
+                <select
+                  id="eventType"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="aucun">Aucun événement</option>
+                  <option value="anniversaire">Anniversaire</option>
+                  <option value="bapteme">Baptême</option>
+                  <option value="mariage">Mariage</option>
+                  <option value="divorce">Divorce</option>
+                  <option value="noel">Noël</option>
+                  <option value="fete_meres">Fête des mères</option>
+                  <option value="fete_peres">Fête des pères</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Date de l'événement -->
+            <div id="eventDateContainer" class="hidden animate-fadeIn">
+              <label class="block text-sm font-medium text-slate-400 mb-1.5 text-amber-500 font-semibold">
+                Date de l'événement
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="calendar" class="text-amber-500 w-4 h-4"></i>
+                </div>
+                <input
+                  type="date"
+                  id="eventDate"
+                  onchange="updateAll()"
+                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm font-semibold border-amber-300 dark:border-amber-800 bg-slate-800 text-white focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saisie de Texte Enseigne -->
+        <div class="rounded-2xl shadow-sm p-6 border space-y-6 transition-all duration-300 bg-slate-900 border-slate-800 text-white">
+          <div>
+            <h2 class="text-lg font-semibold mb-4 flex items-center">
+              <i data-lucide="file-text" class="mr-2 custom-accent-text w-5 h-5"></i>
+              Saisissez votre texte
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="block text-sm font-medium text-slate-400">
+                    Texte à fabriquer
+                  </label>
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                    Lettres seules comptées
+                  </span>
+                </div>
+                <textarea
+                  id="text"
+                  oninput="updateAll()"
+                  placeholder="Saisissez votre texte ici (les espaces et ponctuations seront ignorés)..."
+                  class="w-full h-32 p-4 rounded-xl border outline-none transition text-lg bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500"
+                ></textarea>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-slate-400 mb-2">
+                    Hauteur des lettres (en cm)
+                  </label>
+                  <div class="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i data-lucide="ruler" class="text-slate-400 w-5 h-5 ml-2.5"></i>
+                    </div>
+                    <input
+                       type="number"
+                       min="1"
+                       id="height"
+                       value="10"
+                       oninput="updateAll()"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- --- SECTION FORME PREMIUM --- -->
+          <div class="border-t border-slate-800 pt-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+              <i data-lucide="sparkles" class="text-amber-500 mr-2 w-5 h-5"></i>
+              Forme Premium
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">
+                  Nombre de formes (0 à 10)
+                </label>
+                <select
+                  id="shapeCount"
+                  onchange="updateAll()"
+                  class="w-full p-3 rounded-xl border outline-none font-semibold transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505 focus:border-blue-500"
+                >
+                  <option value="0">0 forme</option>
+                  <option value="1">1 forme (+1 élément)</option>
+                  <option value="2">2 formes (+2 éléments)</option>
+                  <option value="3">3 formes (+3 éléments)</option>
+                  <option value="4">4 formes (+4 éléments)</option>
+                  <option value="5">5 formes (+5 éléments)</option>
+                  <option value="6">6 formes (+6 éléments)</option>
+                  <option value="7">7 formes (+7 éléments)</option>
+                  <option value="8">8 formes (+8 éléments)</option>
+                  <option value="9">9 formes (+9 éléments)</option>
+                  <option value="10">10 formes (+10 éléments)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">
+                  Modèle de la forme premium choisie
+                </label>
+                <input
+                  type="text"
+                  id="shapeDescription"
+                  oninput="updateAll()"
+                  placeholder="Sélectionnez d'abord un nombre de formes"
+                  disabled
+                  class="w-full p-3 rounded-xl border outline-none transition bg-slate-800/40 border-slate-700 text-slate-500 placeholder-slate-650 cursor-not-allowed"
+                />
+              </div>
+            </div>
+            <p id="shapeWarning" class="hidden text-xs text-amber-500 mt-2 flex items-center">
+              <i data-lucide="info" class="mr-1 w-3.5 h-3.5"></i>
+              Pensez à spécifier quel modèle de forme a été choisi dans le champ ci-dessus.
+            </p>
+          </div>
+
+          <!-- --- SECTION LITHOPHANIE (GRAVURE) --- -->
+          <div class="border-t border-slate-800 pt-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold flex items-center">
+                <i data-lucide="layers" class="text-blue-500 mr-2 w-5 h-5"></i>
+                Lithophanie (Gravure)
+              </h3>
+              <div class="flex flex-col text-right">
+                <span id="lithoBaseRateBadge" class="bg-blue-100 dark:bg-blue-900/65 text-blue-800 dark:text-blue-300 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                  Base : 0,65 € / cm / litho
+                </span>
+                <span id="lithoCurrentRateBadge" class="hidden text-[10px] text-blue-500 mt-1 font-bold">
+                  Tarif unitaire actuel : 0,65 €/cm
+                </span>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Saisie directe du nombre de lithos -->
+                <div class="md:col-span-1">
+                  <label class="block text-sm font-medium text-slate-400 mb-2">
+                    Nombre de lithos
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    id="engravingCount"
+                    placeholder="0"
+                    oninput="updateAll()"
+                    class="w-full p-3 rounded-xl border outline-none font-semibold transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505"
+                  />
+                </div>
+
+                <!-- Saisie libre de la description -->
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-slate-400 mb-2">
+                    Description de la litho / Thème choisi
+                  </label>
+                  <input
+                    type="text"
+                    id="engravingTheme"
+                    oninput="updateAll()"
+                    placeholder="Ex: traits Stitch, One Piece, photo de famille..."
+                    class="w-full p-3 rounded-xl border outline-none transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505 text-slate-850"
+                  />
+                </div>
+              </div>
+              <p id="lithoDegressiveTip" class="hidden text-xs text-blue-500 dark:text-blue-400 italic">
+                💡 Remise dégressive appliquée !
+              </p>
+            </div>
+          </div>
+
+          <!-- --- OPTIONS ÉCLAIRAGE (TOUT EN BAS) --- -->
+          <div class="border-t border-slate-800 pt-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+              <i data-lucide="zap" class="text-emerald-555 mr-2 w-5 h-5"></i>
+              Options d'Éclairage
+            </h3>
+            <div id="ledContainer" class="p-4 rounded-xl border transition-all bg-slate-800 border-slate-700">
+              <label class="flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  id="hasLedPremium"
+                  onchange="updateAll()"
+                  class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0 transition cursor-pointer"
+                />
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-sm md:text-base text-white">Passer en LED Premium</span>
+                    <span class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                      +10,90 €
+                    </span>
+                  </div>
+                  <p class="text-xs md:text-sm text-slate-400 mt-1">
+                    Système LED premium Adressable Bluetooth + télécommande réactif au son avec une multitude d'effets lumineux. (Si décoché, l'enseigne est équipée en LED standard RGB incluse).
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tableau de référence dynamique -->
+        <div class="rounded-2xl shadow-sm p-6 border transition-all duration-300 bg-slate-900 border-slate-800 text-white">
+          <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center">
+            <i data-lucide="tag" class="mr-2 w-4 h-4"></i>
+            Suivi dynamique du barème de prix (Lettres + Formes)
+          </h3>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs" id="reference-table-grid">
+            <!-- Injecté par JavaScript -->
+          </div>
+          <p class="text-xs text-slate-400 dark:text-slate-505 mt-3 italic">
+            * Chaque forme premium est comptée au même titre qu'une lettre. Au-delà de 10 éléments (lettres + formes), le tarif diminue de <span id="hint-decrement-step">0.02</span> € par élément supplémentaire jusqu'au prix plancher de <span id="hint-min-rate">0.40</span> €/cm.
+          </p>
+        </div>
+      </div>
+
+      <!-- Colonne Droite : Résultats -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="rounded-2xl shadow-lg p-6 border transition-all duration-300 bg-slate-900 border-slate-800 text-white shadow-xl">
+          
+          <!-- Entête Devis -->
+          <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
+            <h2 class="text-xl font-bold flex items-center">
+              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i>
+              Résultat du devis
+            </h2>
+            
+            <!-- Export PDF -->
+            <button
+              onclick="handleExportPDF()"
+              id="btn-export-pdf"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md transition-all scale-100 hover:scale-105 active:scale-95 custom-accent-bg text-white"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span id="btn-export-text">Export PDF</span>
+            </button>
+          </div>
+          
+          <div class="space-y-6">
+            
+            <!-- --- BLOC INFOS CLIENT & LIVRAISON (DANS LE RÉSULTAT) --- -->
+            <div id="clientResultBlock" class="hidden bg-slate-800 p-4 rounded-xl border border-slate-800 space-y-3 text-xs animate-fadeIn">
+              <div class="font-semibold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i data-lucide="building" class="text-amber-500 w-3.5 h-3.5"></i> Fiche Client & Suivi</span>
+                <span id="eventBadge" class="hidden bg-amber-500/20 text-amber-400 border border-amber-500/35 px-2 py-0.5 rounded text-[10px] font-bold uppercase animate-pulse">
+                  Événement
+                </span>
+              </div>
+              <p id="resClientNameRow" class="hidden justify-between">
+                <span class="text-slate-400">Client :</span>
+                <span id="resClientName" class="font-bold text-white text-right"></span>
+              </p>
+              <p id="resClientEmailRow" class="hidden justify-between">
+                <span class="text-slate-400">E-mail :</span>
+                <span id="resClientEmail" class="text-slate-300 text-right font-mono"></span>
+              </p>
+              <p id="resClientPhoneRow" class="hidden justify-between">
+                <span class="text-slate-400">Téléphone :</span>
+                <span id="resClientPhone" class="text-slate-300 text-right font-mono"></span>
+              </p>
+              
+              <!-- Infos Livraison / Retrait -->
+              <div class="border-t border-slate-850 pt-2 text-xs">
+                <p class="flex justify-between items-center" id="resDeliveryMethodRow">
+                  <span class="text-slate-400 flex items-center"><i data-lucide="truck" class="mr-1 text-emerald-400 w-3.5 h-3.5"></i> Mode :</span>
+                  <span id="resDeliveryMethod" class="font-semibold text-emerald-400"></span>
+                </p>
+                <p class="hidden justify-between" id="resDeliveryCityRow">
+                  <span class="text-slate-400">Destination :</span>
+                  <span id="resDeliveryCity" class="font-bold text-white"></span>
+                </p>
+                <p class="hidden justify-between text-[11px] text-slate-505 italic" id="resDeliveryDescRow">
+                  <span>Secteur :</span>
+                  <span id="resDeliveryDesc"></span>
+                </p>
+              </div>
+
+              <div class="border-t border-slate-805 pt-2 grid grid-cols-2 gap-2 text-[11px]">
+                <div>
+                  <span class="text-slate-500 block">Date commande :</span>
+                  <span id="resOrderDate" class="font-semibold text-slate-300"></span>
+                </div>
+                <div class="text-right">
+                  <span class="text-slate-500 block">Livraison estimée :</span>
+                  <span id="resDeliveryDate" class="font-semibold text-emerald-400"></span>
+                </div>
+              </div>
+
+              <!-- Alerte Date Événement -->
+              <div id="resEventDateAlert" class="hidden bg-amber-950/40 border border-amber-900/65 p-2.5 rounded-lg text-amber-300 mt-2 text-center font-medium">
+                🗓️ Événement le <span id="resEventDate" class="font-bold underline"></span>
+              </div>
+            </div>
+
+            <!-- Statistiques standard -->
+            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-800">
+              <div class="flex items-center">
+                <i data-lucide="type" class="text-blue-400 mr-3 w-6 h-6"></i>
+                <span class="text-slate-300">Lettres comptées</span>
+              </div>
+              <span id="resLetterCount" class="text-2xl font-bold text-white">0</span>
+            </div>
+
+            <!-- Section Spéciale Forme Premium (Affichée en Vert si > 0) -->
+            <div id="resShapeBlock" class="hidden flex flex-col bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-xl text-emerald-300 animate-fadeIn">
+              <div class="flex items-center justify-between font-semibold">
+                <div class="flex items-center">
+                  <i data-lucide="sparkles" class="text-emerald-400 mr-3 animate-pulse w-6 h-6"></i>
+                  <span>Forme premium</span>
+                </div>
+                <span id="resShapeCount" class="text-2xl font-bold text-emerald-400">+0</span>
+              </div>
+              <div id="resShapeDescWrapper" class="hidden mt-2 text-xs text-emerald-200 bg-emerald-900/50 p-2.5 rounded-lg border border-emerald-800/40">
+                <span class="font-semibold text-emerald-100">Modèles :</span> <span id="resShapeDescription"></span>
+              </div>
+            </div>
+
+            <!-- --- LIGNES D'ÉCLAIRAGE DYNAMIQUE --- -->
+            <div id="resLedBlock" class="flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300 animate-fadeIn">
+              <!-- Injecté dynamiquement par JS -->
+            </div>
+
+            <!-- --- SECTION LITHOPHANIE À DROITE (VERT FLUO) AVEC RECALCUL DEGRESSIF --- -->
+            <div id="resEngravingBlock" class="hidden flex flex-col bg-emerald-950/50 border border-emerald-750 p-4 rounded-xl text-emerald-300 animate-fadeIn space-y-1.5">
+              <div class="flex items-center justify-between font-semibold">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="layers" class="text-emerald-400 animate-pulse w-5 h-5"></i>
+                  <span class="text-sm font-bold">Litho:Gravure (<span id="resEngravingCountHeader">0</span>)</span>
+                </div>
+                <span id="resEngravingPriceHeader" class="text-lg font-bold text-emerald-400">+0,00 €</span>
+              </div>
+              <div class="text-xs text-emerald-300 font-semibold">
+                Tarif : <span id="resEngravingRate">0.65</span> €/cm par litho
+              </div>
+              <div id="resEngravingThemeWrapper" class="hidden text-xs text-emerald-100 italic bg-emerald-900/40 p-2 rounded-lg border border-emerald-800/20 mt-1">
+                <!-- Thème injecté par JS -->
+              </div>
+            </div>
+
+            <!-- Encart Livraison Résultat -->
+            <div id="resDeliveryFeeBlock" class="hidden flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300 animate-fadeIn">
+              <!-- Injecté dynamiquement par JS -->
+            </div>
+
+            <!-- Tarif unitaire calculé -->
+            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-800">
+              <div class="flex items-center">
+                <i data-lucide="tag" class="text-emerald-400 mr-3 w-6 h-6"></i>
+                <span class="text-slate-300">Tarif calculé au cm</span>
+              </div>
+              <div class="text-right">
+                <span id="resCalculatedRate" class="text-xl font-semibold text-white">0,00 €</span>
+                <span id="resMinRateReached" class="hidden block text-[10px] text-amber-400 font-medium">Tarif minimum atteint</span>
+              </div>
+            </div>
+
+            <!-- Detail complet du calcul -->
+            <div class="bg-slate-800 p-4 rounded-xl text-sm text-slate-400 border border-slate-800 space-y-2">
+              <p class="flex items-center text-slate-300 mb-2 font-medium">
+                <i data-lucide="info" class="mr-2 text-blue-400 w-4 h-4"></i>
+                Détail du calcul
+              </p>
+              <p class="flex justify-between">
+                <span>Nombre de lettres</span>
+                <span id="calcLetterCount">0</span>
+              </p>
+              <p class="hidden justify-between text-emerald-400 font-medium" id="calcShapeRow">
+                <span>Formes premium</span>
+                <span id="calcShapeCount">+0</span>
+              </p>
+              <p class="flex justify-between border-t border-slate-800 pt-2 font-semibold text-slate-200">
+                <span>Total d'éléments tarifés</span>
+                <span id="calcTotalCount">0</span>
+              </p>
+              <p class="flex justify-between">
+                <span>Hauteur des lettres</span>
+                <span>x <span id="calcHeight">10</span> cm</span>
+              </p>
+              <p class="flex justify-between">
+                <span>Tarif dégressif</span>
+                <span>x <span id="calcRate">0.00</span> €/cm</span>
+              </p>
+              <p class="flex justify-between border-b border-slate-800 pb-2">
+                <span>Coefficient multiplicateur</span>
+                <span>x <span id="calcMultiplier">2</span></span>
+              </p>
+              <p class="flex justify-between text-slate-300">
+                <span>Sous-total lettrage</span>
+                <span id="calcBaseTotal">0,00 €</span>
+              </p>
+              
+              <!-- Option LED Premium -->
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow">
+                <span>Option LED Premium</span>
+                <span>+ 10,90 €</span>
+              </p>
+
+              <!-- Option Lithophanie (Gravure) dégressive -->
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLithoRow">
+                <span>Lithophanie (<span id="calcLithoCount">0</span> x <span id="calcLithoRate">0.65</span>€/cm)</span>
+                <span id="calcLithoPrice">+ 0,00 €</span>
+              </p>
+
+              <!-- Ligne Livraison si active -->
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcDeliveryRow">
+                <span>Livraison (<span id="calcDeliveryCity">Saint-Pierre</span>)</span>
+                <span id="calcDeliveryPrice">0,00 €</span>
+              </p>
+
+              <p class="flex justify-between text-white font-medium border-t border-slate-800 pt-1">
+                <span>Prix total</span>
+                <span id="calcTotalPrice">0,00 €</span>
+              </p>
+              <p class="flex justify-between text-slate-300 text-xs">
+                <span>Acompte à verser (50%)</span>
+                <span id="calcDepositPrice">0,00 €</span>
+              </p>
+              <p class="flex justify-between text-slate-300 text-xs">
+                <span>Solde restant</span>
+                <span id="calcBalancePrice">0,00 €</span>
+              </p>
+            </div>
+
+            <!-- Total -->
+            <div class="pt-4 border-t border-slate-800">
+              <div id="total-price-box" class="flex flex-col items-center justify-center p-6 rounded-xl shadow-inner text-center custom-accent-gradient">
+                <span class="text-white/80 mb-1 font-medium text-sm">Prix total</span>
+                <div class="flex items-center text-5xl font-extrabold text-white">
+                  <span id="resTotalPrice">0,00</span> <i data-lucide="euro" class="ml-2 opacity-80 w-8 h-8"></i>
+                </div>
+                <!-- Affichage direct Acompte et Solde sous le total -->
+                <div class="mt-4 w-full pt-3 border-t border-white/20 flex justify-between text-xs text-white/90">
+                  <div class="text-left">
+                    <span class="block opacity-75">Acompte (50%)</span>
+                    <span id="resDepositPrice" class="font-extrabold text-sm">0,00 €</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="block opacity-75">Solde restant</span>
+                    <span id="resBalancePrice" class="font-extrabold text-sm">0,00 €</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- --- JAVASCRIPT GLOBAL --- -->
+  <script>
+    // --- États Généraux de l'application ---
+    const state = {
+      isDarkMode: true,
+      colorTheme: 'blue',
+      clientName: '',
+      clientEmail: '',
+      clientPhone: '',
+      orderDate: new Date().toISOString().split('T')[0],
+      deliveryDate: '',
+      eventType: 'aucun',
+      eventDate: '',
+      deliveryMethod: 'atelier',
+      deliveryCity: 'Saint-Pierre',
+      text: '',
+      height: 10,
+      shapeCount: 0,
+      shapeDescription: '',
+      hasLedPremium: false,
+      engravingCount: 0,
+      engravingTheme: '',
+      uploadedLogo: null,
+      isGeneratingPdf: false,
+      
+      // Paramètres configurables (Formule Lettrage)
+      decrementStep: 0.02,
+      minRate: 0.40,
+      multiplier: 2,
+
+      // Paramètres configurables (Formule Lithophanie)
+      lithoBaseRate: 0.65,
+      lithoDecrementStep: 0.02,
+      lithoMinRate: 0.30,
+
+      // Tarifs zones de livraison
+      priceZone1: 0,
+      priceZone2: 10,
+      priceZone3: 25
+    };
+
+    // Configuration des palettes de couleurs du studio
+    const colorPresets = {
+      blue: { name: 'Bleu Royal', color: '#2563eb', hover: '#1d4ed8', from: '#2563eb', to: '#4f46e5', badgeBg: 'rgba(37, 99, 235, 0.1)', badgeBorder: 'rgba(37, 99, 235, 0.2)', badgeText: '#60a5fa' },
+      emerald: { name: 'Émeraude Chic', color: '#059669', hover: '#047857', from: '#059669', to: '#0f766e', badgeBg: 'rgba(5, 150, 105, 0.1)', badgeBorder: 'rgba(5, 150, 105, 0.2)', badgeText: '#34d399' },
+      indigo: { name: 'Indigo Moderne', color: '#4f46e5', hover: '#4338ca', from: '#4f46e5', to: '#6d28d9', badgeBg: 'rgba(79, 70, 229, 0.1)', badgeBorder: 'rgba(79, 70, 229, 0.2)', badgeText: '#818cf8' },
+      violet: { name: 'Violet Premium', color: '#7c3aed', hover: '#6d28d9', from: '#7c3aed', to: '#c084fc', badgeBg: 'rgba(124, 58, 237, 0.1)', badgeBorder: 'rgba(124, 58, 237, 0.2)', badgeText: '#a78bfa' },
+      rose: { name: 'Rose Élégant', color: '#e11d48', hover: '#be123c', from: '#e11d48', to: '#db2777', badgeBg: 'rgba(225, 29, 72, 0.1)', badgeBorder: 'rgba(225, 29, 72, 0.2)', badgeText: '#f43f5e' },
+      amber: { name: 'Ambre Chaud', color: '#d97706', hover: '#b45309', from: '#d97706', to: '#ea580c', badgeBg: 'rgba(217, 119, 6, 0.1)', badgeBorder: 'rgba(217, 119, 6, 0.2)', badgeText: '#fbbf24' }
+    };
+
+    // Communes de l'Île de la Réunion
+    const reunionCities = [
+      { name: 'Saint-Pierre', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
+      { name: 'Saint-Louis', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
+      { name: 'Le Tampon', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
+      { name: 'Petite-Île', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
+      { name: 'Entre-Deux', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
+      
+      { name: "L'Étang-Salé", zone: 2, desc: 'Secteur Sud étendu / Ouest bas' },
+      { name: 'Saint-Joseph', zone: 2, desc: 'Secteur Sud étendu / Est' },
+      { name: 'Les Avirons', zone: 2, desc: 'Secteur Ouest proche' },
+
+      { name: 'Saint-Paul', zone: 3, desc: 'Secteur Ouest' },
+      { name: 'Trois-Bassins', zone: 3, desc: 'Secteur Ouest' },
+      { name: 'Le Port', zone: 3, desc: 'Secteur Ouest' },
+      { name: 'La Possession', zone: 3, desc: 'Secteur Ouest' },
+      { name: 'Saint-Denis', zone: 3, desc: 'Secteur Nord' },
+      { name: 'Sainte-Marie', zone: 3, desc: 'Secteur Nord' },
+      { name: 'Sainte-Suzanne', zone: 3, desc: 'Secteur Nord' },
+      { name: 'Saint-André', zone: 3, desc: 'Secteur Est' },
+      { name: 'Bras-Panon', zone: 3, desc: 'Secteur Est' },
+      { name: 'Saint-Benoît', zone: 3, desc: 'Secteur Est' },
+      { name: 'Sainte-Rose', zone: 3, desc: 'Secteur Est' },
+      { name: 'Saint-Philippe', zone: 3, desc: 'Secteur Sud sauvage' },
+      { name: 'La Plaine-des-Palmistes', zone: 3, desc: 'Secteur Plaines' },
+      { name: 'Cilaos', zone: 3, desc: 'Secteur Cirques (Route de montagne)' },
+      { name: 'Salazie', zone: 3, desc: 'Secteur Cirques' }
+    ];
+
+    // Initialisation
+    window.onload = function() {
+      // Configurer la date de livraison estimée par défaut à J+14
+      const date = new Date();
+      date.setDate(date.getDate() + 14);
+      document.getElementById('deliveryDate').value = date.toISOString().split('T')[0];
+      document.getElementById('orderDate').value = state.orderDate;
+
+      // Générer l'UI des sélecteurs de couleur
+      renderColorSelectors();
+      
+      // Charger les villes de la Réunion
+      renderReunionCities();
+
+      // Appliquer les styles et variables
+      setColorTheme(state.colorTheme);
+      setThemeMode(state.isDarkMode);
+
+      // Effectuer le premier rendu des calculs
+      updateAll();
+    };
+
+    // Générer les boutons de choix de couleurs
+    function renderColorSelectors() {
+      const container = document.getElementById('color-selectors-container');
+      container.innerHTML = '';
+      
+      Object.keys(colorPresets).forEach(key => {
+        const preset = colorPresets[key];
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.title = preset.name;
+        btn.className = `h-8 px-3 rounded-full flex items-center gap-1.5 text-xs font-medium transition-all ${
+          state.colorTheme === key ? 'text-white shadow-sm scale-105' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+        }`;
+        if (state.colorTheme === key) {
+          btn.style.backgroundColor = preset.color;
+        }
+        btn.onclick = () => {
+          state.colorTheme = key;
+          setColorTheme(key);
+          renderColorSelectors();
+          updateAll();
+        };
+
+        const dot = document.createElement('span');
+        dot.className = `w-2.5 h-2.5 rounded-full`;
+        dot.style.backgroundColor = state.colorTheme === key ? '#fff' : preset.color;
+        
+        const label = document.createElement('span');
+        label.innerText = preset.name;
+
+        btn.appendChild(dot);
+        btn.appendChild(label);
+        container.appendChild(btn);
+      });
+    }
+
+    // Remplir le sélecteur de villes de la Réunion
+    function renderReunionCities() {
+      const select = document.getElementById('deliveryCity');
+      select.innerHTML = '';
+
+      const z1Group = document.createElement('optgroup');
+      z1Group.label = "Moins de 20 min de Saint-Pierre (Livraison Gratuite)";
+      
+      const z2Group = document.createElement('optgroup');
+      z2Group.label = "Secteur Sud étendu / Ouest proche";
+
+      const z3Group = document.createElement('optgroup');
+      z3Group.label = "Reste de l'île de la Réunion";
+
+      reunionCities.forEach(city => {
+        const opt = document.createElement('option');
+        opt.value = city.name;
+        opt.innerText = city.name;
+        opt.className = 'bg-slate-900 text-white';
+
+        if (city.zone === 1) z1Group.appendChild(opt);
+        else if (city.zone === 2) z2Group.appendChild(opt);
+        else z3Group.appendChild(opt);
+      });
+
+      select.appendChild(z1Group);
+      select.appendChild(z2Group);
+      select.appendChild(z3Group);
+      
+      select.value = state.deliveryCity;
+    }
+
+    // Appliquer dynamiquement la couleur d'accentuation via CSS Variables
+    function setColorTheme(themeKey) {
+      const preset = colorPresets[themeKey] || colorPresets.blue;
+      const root = document.documentElement;
+      
+      root.style.setProperty('--accent-color', preset.color);
+      root.style.setProperty('--accent-color-hover', preset.hover);
+      root.style.setProperty('--accent-gradient-from', preset.from);
+      root.style.setProperty('--accent-gradient-to', preset.to);
+      root.style.setProperty('--accent-badge-bg', preset.badgeBg);
+      root.style.setProperty('--accent-badge-border', preset.badgeBorder);
+      root.style.setProperty('--accent-badge-text', preset.badgeText);
+    }
+
+    // Gestion du thème clair/sombre
+    function setThemeMode(darkMode) {
+      state.isDarkMode = darkMode;
+      const htmlEl = document.documentElement;
+      const bodyEl = document.getElementById('app-body');
+      
+      const btnLight = document.getElementById('btn-light-mode');
+      const btnDark = document.getElementById('btn-dark-mode');
+
+      if (darkMode) {
+        htmlEl.classList.add('dark');
+        bodyEl.classList.add('bg-slate-950', 'text-slate-100');
+        bodyEl.classList.remove('bg-slate-50', 'text-slate-800');
+        
+        btnDark.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
+        btnLight.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-400";
+      } else {
+        htmlEl.classList.remove('dark');
+        bodyEl.classList.add('bg-slate-50', 'text-slate-800');
+        bodyEl.classList.remove('bg-slate-950', 'text-slate-100');
+        
+        btnLight.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
+        btnDark.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800";
+      }
+      updateAll();
+    }
+
+    // Déplier/Replier le panneau de configuration avancée
+    function toggleSettings() {
+      state.showSettings = !state.showSettings;
+      const panel = document.getElementById('settings-panel');
+      const chevron = document.getElementById('settings-chevron');
+      
+      if (state.showSettings) {
+        panel.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        panel.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    // Import du logo personnalisé
+    function triggerFileInput() {
+      document.getElementById('logo-file-input').click();
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          state.uploadedLogo = e.target.result;
+          document.getElementById('logo-preview').src = e.target.result;
+          showToast("Logo de l'entreprise enregistré avec succès !");
+          updateAll();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Notification toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      
+      toastText.innerText = message;
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+    }
+
+    // Réinitialiser la formule
+    function resetConfiguration() {
+      resetConfig();
+      
+      document.getElementById('decrementStep').value = state.decrementStep;
+      document.getElementById('minRate').value = state.minRate;
+      document.getElementById('multiplier').value = state.multiplier;
+      document.getElementById('lithoBaseRate').value = state.lithoBaseRate;
+      document.getElementById('lithoDecrementStep').value = state.lithoDecrementStep;
+      document.getElementById('lithoMinRate').value = state.lithoMinRate;
+      document.getElementById('priceZone1').value = state.priceZone1;
+      document.getElementById('priceZone2').value = state.priceZone2;
+      document.getElementById('priceZone3').value = state.priceZone3;
+
+      showToast("Toutes les formules ont été réinitialisées !");
+      updateAll();
+    }
+
+    // --- RECALCULER TOUT ET RENDRE L'UI ---
+    function updateAll() {
+      // Récupérer les valeurs des entrées HTML
+      state.clientName = document.getElementById('clientName').value;
+      state.clientEmail = document.getElementById('clientEmail').value;
+      state.clientPhone = document.getElementById('clientPhone').value;
+      state.orderDate = document.getElementById('orderDate').value;
+      state.deliveryDate = document.getElementById('deliveryDate').value;
+      state.eventType = document.getElementById('eventType').value;
+      state.eventDate = document.getElementById('eventDate') ? document.getElementById('eventDate').value : '';
+      state.deliveryMethod = document.getElementById('deliveryMethod').value;
+      if (state.deliveryMethod === 'livraison') {
+        state.deliveryCity = document.getElementById('deliveryCity').value;
+      }
+      state.text = document.getElementById('text').value;
+      state.height = Number(document.getElementById('height').value) || 0;
+      state.shapeCount = Number(document.getElementById('shapeCount').value) || 0;
+      state.engravingCount = Number(document.getElementById('engravingCount').value) || 0;
+      state.engravingTheme = document.getElementById('engravingTheme').value;
+      state.hasLedPremium = document.getElementById('hasLedPremium').checked;
+
+      // Lire les formules si modifiées
+      state.decrementStep = Number(document.getElementById('decrementStep').value) || 0.02;
+      state.minRate = Number(document.getElementById('minRate').value) || 0.40;
+      state.multiplier = Number(document.getElementById('multiplier').value) || 2;
+      state.lithoBaseRate = Number(document.getElementById('lithoBaseRate').value) || 0.65;
+      state.lithoDecrementStep = Number(document.getElementById('lithoDecrementStep').value) || 0.02;
+      state.lithoMinRate = Number(document.getElementById('lithoMinRate').value) || 0.30;
+      state.priceZone1 = Number(document.getElementById('priceZone1').value) || 0;
+      state.priceZone2 = Number(document.getElementById('priceZone2').value) || 10;
+      state.priceZone3 = Number(document.getElementById('priceZone3').value) || 25;
+
+      // 1. Affichage conditionnel des blocs
+      // Bloc livraison
+      const deliveryContainer = document.getElementById('deliveryCityContainer');
+      if (state.deliveryMethod === 'livraison') {
+        deliveryContainer.classList.remove('hidden');
+      } else {
+        deliveryContainer.classList.add('hidden');
+      }
+
+      // Bloc date d'événement
+      const eventContainer = document.getElementById('eventDateContainer');
+      const eventWrapper = document.getElementById('eventTypeWrapper');
+      if (state.eventType !== 'aucun') {
+        eventContainer.classList.remove('hidden');
+        eventWrapper.classList.remove('sm:col-span-2');
+        eventWrapper.classList.add('sm:col-span-1');
+      } else {
+        eventContainer.classList.add('hidden');
+        eventWrapper.classList.remove('sm:col-span-1');
+        eventWrapper.classList.add('sm:col-span-2');
+      }
+
+      // Input descriptif de la forme
+      const shapeDescInput = document.getElementById('shapeDescription');
+      const shapeWarning = document.getElementById('shapeWarning');
+      if (state.shapeCount > 0) {
+        shapeDescInput.removeAttribute('disabled');
+        shapeDescInput.classList.remove('bg-slate-800/40', 'text-slate-505', 'cursor-not-allowed');
+        shapeDescInput.classList.add('bg-slate-850', 'text-white');
+        shapeWarning.classList.remove('hidden');
+      } else {
+        shapeDescInput.setAttribute('disabled', 'true');
+        shapeDescInput.classList.add('bg-slate-800/40', 'text-slate-505', 'cursor-not-allowed');
+        shapeDescInput.classList.remove('bg-slate-850', 'text-white');
+        shapeWarning.classList.add('hidden');
+      }
+
+      // 2. Calculs mathématiques
+      // Compter les lettres
+      const match = state.text.match(/[\p{L}\p{N}]/gu);
+      const letterCount = match ? match.length : 0;
+      
+      const totalElements = letterCount + state.shapeCount;
+
+      // Déterminer le tarif dégressif au cm
+      let rate = 0;
+      if (totalElements === 0) {
+        rate = 0;
+      } else if (totalElements <= 2) {
+        rate = 1.00;
+      } else if (totalElements <= 4) {
+        rate = 0.95;
+      } else if (totalElements === 5) {
+        rate = 0.90;
+      } else if (totalElements === 6) {
+        rate = 0.87;
+      } else if (totalElements === 7) {
+        rate = 0.82;
+      } else if (totalElements === 8) {
+        rate = 0.80;
+      } else if (totalElements === 9) {
+        rate = 0.78;
+      } else if (totalElements === 10) {
+        rate = 0.76;
+      } else {
+        const diff = totalElements - 10;
+        const calculatedRate = 0.76 - (diff * state.decrementStep);
+        rate = Math.max(state.minRate, calculatedRate);
+      }
+
+      // Calcul de la Lithophanie (dégressive)
+      let engravingRate = 0;
+      let engravingPrice = 0;
+      const degressiveTip = document.getElementById('lithoDegressiveTip');
+      const lithoCurrentBadge = document.getElementById('lithoCurrentRateBadge');
+      
+      if (state.engravingCount > 0) {
+        const calculatedEngRate = state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep;
+        engravingRate = Math.max(state.lithoMinRate, calculatedEngRate);
+        engravingPrice = state.engravingCount * state.height * engravingRate;
+
+        lithoCurrentBadge.classList.remove('hidden');
+        lithoCurrentBadge.innerText = `Tarif unitaire actuel : ${engravingRate.toFixed(2).replace('.', ',')} €/cm`;
+        
+        if (state.engravingCount > 1) {
+          degressiveTip.classList.remove('hidden');
+          degressiveTip.innerText = `💡 Remise dégressive appliquée : le prix au cm par lithophanie est passé de ${state.lithoBaseRate.toFixed(2).replace('.', ',')} € à ${engravingRate.toFixed(2).replace('.', ',')} € (-${((state.engravingCount - 1) * state.lithoDecrementStep).toFixed(2).replace('.', ',')} € d'économie par unité).`;
+        } else {
+          degressiveTip.classList.add('hidden');
+        }
+      } else {
+        lithoCurrentBadge.classList.add('hidden');
+        degressiveTip.classList.add('hidden');
+      }
+
+      // Calcul de livraison
+      const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
+      let deliveryPrice = 0;
+      if (state.deliveryMethod === 'livraison') {
+        document.getElementById('deliveryZoneBadge').innerText = cityInfo.zone === 1 ? 'Zone < 20 min' : cityInfo.zone === 2 ? 'Zone Moyenne' : 'Zone Éloignée';
+        if (cityInfo.zone === 1) deliveryPrice = state.priceZone1;
+        else if (cityInfo.zone === 2) deliveryPrice = state.priceZone2;
+        else deliveryPrice = state.priceZone3;
+      }
+
+      // Calcul globaux
+      const baseTotal = totalElements * state.height * rate * state.multiplier;
+      const ledPrice = state.hasLedPremium ? 10.90 : 0;
+      const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
+      const deposit = total / 2;
+      const balance = total / 2;
+
+      // 3. Rendre l'UI de droite (Résultats)
+      // Bloc Fiche client à droite
+      const resClientBlock = document.getElementById('clientResultBlock');
+      if (state.clientName || state.clientEmail || state.clientPhone || state.eventType !== 'aucun' || state.deliveryMethod === 'livraison') {
+        resClientBlock.classList.remove('hidden');
+        
+        // Nom
+        toggleResRow('resClientNameRow', 'resClientName', state.clientName);
+        // Mail
+        toggleResRow('resClientEmailRow', 'resClientEmail', state.clientEmail);
+        // Tél
+        toggleResRow('resClientPhoneRow', 'resClientPhone', state.clientPhone);
+        
+        // Mode livraison / atelier
+        const resDeliveryMethod = document.getElementById('resDeliveryMethod');
+        const resDeliveryCityRow = document.getElementById('resDeliveryCityRow');
+        const resDeliveryDescRow = document.getElementById('resDeliveryDescRow');
+        
+        if (state.deliveryMethod === 'livraison') {
+          resDeliveryMethod.innerText = "Livraison à domicile";
+          resDeliveryMethod.className = "font-semibold text-emerald-400";
+          resDeliveryCityRow.classList.remove('hidden');
+          document.getElementById('resDeliveryCity').innerText = state.deliveryCity;
+          resDeliveryDescRow.classList.remove('hidden');
+          document.getElementById('resDeliveryDesc').innerText = cityInfo.desc;
+        } else {
+          resDeliveryMethod.innerText = "Retrait direct Atelier";
+          resDeliveryMethod.className = "font-semibold text-blue-300";
+          resDeliveryCityRow.classList.add('hidden');
+          resDeliveryDescRow.classList.add('hidden');
         }
 
-        function genererVeilleuses() {
-            const nb = parseInt(document.getElementById('nbVeilleuses').value);
-            const container = document.getElementById('veilleuses-container');
-            container.innerHTML = '';
+        // Dates
+        document.getElementById('resOrderDate').innerText = formatDateFR(state.orderDate);
+        document.getElementById('resDeliveryDate').innerText = formatDateFR(state.deliveryDate);
 
-            for (let i = 1; i <= nb; i++) {
-                const div = document.createElement('div');
-                div.className = 'border-4 border-pink-200 rounded-3xl p-5 bg-pink-50';
-                div.innerHTML = `
-                        <label class="block text-lg font-bold mb-2">Veilleuse #${i} - Prénom ou texte souhaité</label>
-                        <input type="text" class="veilleuse-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: SHAELYS">
-                        <p class="text-sm mt-1 text-pink-600">Nombre de caractères : <span class="lettres-count font-bold text-xl">0</span></p>
-                        <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Thème de la veilleuse</label>
-                            <input type="text" class="theme-input w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Ex: Pokémon, One Piece...">
-                        </div>
-                        <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Formes premium pour cette veilleuse</label>
-                            <div class="formes-container grid grid-cols-3 gap-2"></div>
-                        </div>
-                        <div class="mt-4">
-                            <label class="block text-sm font-bold mb-2">Sur quel lettres ou forme désirez-vous une gravure ?</label>
-                            <input type="text" class="litho-desc w-full border-4 border-pink-300 rounded-2xl px-4 py-3 text-xl" placeholder="Laissez vide si vous ne voulez pas de gravures">
-                        </div>
-                        <div class="mt-3">
-                            <label class="block text-sm font-bold mb-1">Nombre de gravures</label>
-                            <select class="litho-count w-full border-4 border-pink-300 rounded-2xl px-4 py-2" onchange="calculerPrix()">
-                                <option value="0">0</option>
-                            </select>
-                        </div>
-                    `;
-                container.appendChild(div);
-
-                const formesContainer = div.querySelector('.formes-container');
-                const formes = ["Stitch", "Pikachu", "Cœur", "Nuage", "Drapeau 974", "Manette", "Fée", "Couronne", "Luffy", "Winnie", "Soleil", "Lune"];
-                formes.forEach(forme => {
-                    const btn = document.createElement('button');
-                    btn.className = "border-2 border-purple-300 hover:border-pink-500 bg-white hover:bg-pink-100 rounded-2xl py-1 px-2 text-center text-xs font-bold transition-all";
-                    btn.textContent = forme;
-                    btn.onclick = () => { btn.classList.toggle('bg-pink-200'); calculerPrix(); };
-                    formesContainer.appendChild(btn);
-                });
-
-                const countSelect = div.querySelector('.litho-count');
-                for (let j = 1; j <= 20; j++) {
-                    const opt = document.createElement('option');
-                    opt.value = j;
-                    opt.textContent = j;
-                    countSelect.appendChild(opt);
-                }
-                const allOpt = document.createElement('option');
-                allOpt.value = 'all';
-                allOpt.textContent = 'Toutes les lettres';
-                countSelect.appendChild(allOpt);
-
-                div.querySelector('.veilleuse-input').addEventListener('input', calculerPrix);
-                div.querySelector('.theme-input').addEventListener('input', calculerPrix);
-            }
-            calculerPrix();
+        // Alerte événement
+        const eventBadge = document.getElementById('eventBadge');
+        const resEventDateAlert = document.getElementById('resEventDateAlert');
+        if (state.eventType !== 'aucun') {
+          eventBadge.classList.remove('hidden');
+          eventBadge.innerText = getEventLabel(state.eventType);
+          if (state.eventDate) {
+            resEventDateAlert.classList.remove('hidden');
+            document.getElementById('resEventDate').innerText = formatDateFR(state.eventDate);
+          } else {
+            resEventDateAlert.classList.add('hidden');
+          }
+        } else {
+          eventBadge.classList.add('hidden');
+          resEventDateAlert.classList.add('hidden');
         }
+      } else {
+        resClientBlock.classList.add('hidden');
+      }
 
-        function calculerPrix() {
-            const taille = parseFloat(document.getElementById('taille').value) || 12;
-            const livraison = document.getElementById('livraison').checked;
-            const totalVeilleuses = parseInt(document.getElementById('nbVeilleuses').value);
-            const inputs = document.querySelectorAll('.veilleuse-input');
+      // Statistiques standard
+      document.getElementById('resLetterCount').innerText = letterCount;
 
-            let totalLettres = 0;
-            let totalSelectedFormes = 0;
-            let eligiblePackFamily = 0;
-            let hasFete = false;
-            let prixFormesTotal = 0;
-            let prixLithoTotal = 0;
-            let valeurCadeaux = 0;
-
-            const isMay = isFeteDesMeresActive();
-
-            inputs.forEach(input => {
-                const texte = input.value.trim();
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;   // seulement les lettres
-                const countSpan = input.parentElement.querySelector('.lettres-count');
-                if (countSpan) countSpan.textContent = nb;
-
-                totalLettres += nb;
-
-                const formesBtns = input.parentElement.querySelectorAll('.formes-container button');
-                let selectedFormes = 0;
-                formesBtns.forEach(btn => {
-                    if (btn.classList.contains('bg-pink-200')) selectedFormes++;
-                });
-                totalSelectedFormes += selectedFormes;
-
-                // ==================== OFFRE FÊTE DES MÈRES (uniquement à partir de 5 lettres) ====================
-                if (nb >= 5 && isMay) {
-                    hasFete = true;
-
-                    // 1ère forme gratuite
-                    prixFormesTotal += Math.max(0, selectedFormes - 1) * taille * PRIX_FORME;
-
-                    // 1ère gravure gratuite
-                    const lithoCountSelect = input.parentElement.querySelector('.litho-count');
-                    const count = lithoCountSelect ? lithoCountSelect.value : 0;
-                    if (count > 0) {
-                        let nbLitho = count === 'all' ? nb : parseInt(count);
-                        nbLitho = Math.max(0, nbLitho - 1);
-                        prixLithoTotal += nbLitho * taille * PRIX_LITHO;
-                    }
-                } else {
-                    // Pas d'offre Fête des Mères
-                    prixFormesTotal += selectedFormes * taille * PRIX_FORME;
-
-                    const lithoCountSelect = input.parentElement.querySelector('.litho-count');
-                    const count = lithoCountSelect ? lithoCountSelect.value : 0;
-                    if (count > 0) {
-                        const nbLitho = count === 'all' ? nb : parseInt(count);
-                        prixLithoTotal += nbLitho * taille * PRIX_LITHO;
-                    }
-                }
-
-                if (totalVeilleuses >= 2) eligiblePackFamily++;
-            });
-
-            const totalGlobalChars = totalLettres + totalSelectedFormes;
-            const livraisonGratuiteActive = totalGlobalChars >= 4;
-
-            // Valeur des cadeaux
-            if (livraisonGratuiteActive) valeurCadeaux += 17;
-            if (totalVeilleuses >= 2) valeurCadeaux += eligiblePackFamily * taille * PRIX_LETTRE;
-            if (isMay && hasFete) valeurCadeaux += taille * PRIX_FORME + taille * PRIX_LITHO;
-
-            const prixLettres = totalLettres * taille * PRIX_LETTRE;
-            const prixPayant = prixLettres + (PRIX_LED * inputs.length) + prixFormesTotal + prixLithoTotal;
-            const livraisonPrix = livraison && !livraisonGratuiteActive ? PRIX_LIVRAISON : 0;
-
-            const totalAvantOffres = prixPayant + (livraison ? PRIX_LIVRAISON : 0) + valeurCadeaux;
-            const totalFinal = prixPayant + livraisonPrix;
-            const acompte = totalFinal * 0.5;
-
-            // Mise à jour affichage
-            document.getElementById('prixLettres').textContent = prixLettres.toFixed(2) + " €";
-            document.getElementById('prixFormes').textContent = prixFormesTotal.toFixed(2) + " €";
-            document.getElementById('prixLitho').textContent = prixLithoTotal.toFixed(2) + " €";
-            document.getElementById('totalBrut').textContent = totalAvantOffres.toFixed(2) + " €";
-            document.getElementById('totalFinal').textContent = totalFinal.toFixed(2) + " €";
-            document.getElementById('acompte').textContent = acompte.toFixed(2) + " €";
-
-            updateOffresVisuelles(eligiblePackFamily, hasFete, livraisonGratuiteActive);
-            updateRecap();
+      // Section Forme Premium à droite
+      const resShapeBlock = document.getElementById('resShapeBlock');
+      const resShapeDescWrapper = document.getElementById('resShapeDescWrapper');
+      if (state.shapeCount > 0) {
+        resShapeBlock.classList.remove('hidden');
+        document.getElementById('resShapeCount').innerText = `+${state.shapeCount}`;
+        if (state.shapeDescription) {
+          resShapeDescWrapper.classList.remove('hidden');
+          document.getElementById('resShapeDescription').innerText = state.shapeDescription;
+        } else {
+          resShapeDescWrapper.classList.add('hidden');
         }
+      } else {
+        resShapeBlock.classList.add('hidden');
+      }
 
-        function updateOffresVisuelles(packCount, feteActive, livraisonGratuiteActive) {
-            const container = document.getElementById('offres-list');
-            container.innerHTML = '';
+      // Section Éclairage à droite
+      const resLedBlock = document.getElementById('resLedBlock');
+      if (state.hasLedPremium) {
+        resLedBlock.innerHTML = `
+          <div class="flex items-center justify-between font-semibold">
+            <div class="flex items-center gap-2">
+              <i data-lucide="zap" class="text-emerald-400 animate-bounce w-5 h-5"></i>
+              <span class="text-xs font-bold uppercase tracking-wide">Option Active</span>
+            </div>
+            <span class="text-lg font-bold text-emerald-400">+10,90 €</span>
+          </div>
+          <div class="text-xs text-emerald-100 bg-emerald-900/50 p-3 rounded-lg border border-emerald-800/40 font-medium leading-relaxed mt-2 animate-fadeIn">
+            LED premium Adressable Bluetooth + télécommande réactif au son multitude d'effets lumineux
+          </div>
+        `;
+      } else {
+        resLedBlock.innerHTML = `
+          <div class="flex items-center justify-between font-semibold text-[11px] text-emerald-450 uppercase tracking-wider">
+            <span>Éclairage standard</span>
+            <span class="font-extrabold">Inclus (Gratuit)</span>
+          </div>
+          <div class="text-sm font-bold text-emerald-100 flex items-center mt-1">
+            <i data-lucide="zap" class="text-emerald-400 mr-2 w-4 h-4"></i>
+            LED standard RGB
+          </div>
+        `;
+      }
 
-            const packDiv = document.createElement('div');
-            packDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${packCount > 0 ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-            packDiv.innerHTML = `Pack Family → ${packCount} lettre${packCount > 1 ? 's' : ''} offerte${packCount > 1 ? 's' : ''} ${packCount > 0 ? '✅' : '🔥'}`;
-            container.appendChild(packDiv);
-
-            if (feteActive && isFeteDesMeresActive()) {
-                const feteDiv = document.createElement('div');
-                feteDiv.className = 'offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-green-400 text-white';
-                feteDiv.innerHTML = `Fête des Mères → 1 forme + 1 litho gratuite ✅`;
-                container.appendChild(feteDiv);
-            }
-
-            const livDiv = document.createElement('div');
-            livDiv.className = `offre-card flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold ${livraisonGratuiteActive ? 'bg-green-400 text-white' : 'bg-yellow-300 text-yellow-800'}`;
-            livDiv.innerHTML = `🚚 Livraison gratuite → à partir de 4 caractères ${livraisonGratuiteActive ? '✅' : '🔥'}`;
-            container.appendChild(livDiv);
+      // Section Lithophanie à droite
+      const resEngravingBlock = document.getElementById('resEngravingBlock');
+      const resEngravingThemeWrapper = document.getElementById('resEngravingThemeWrapper');
+      if (state.engravingCount > 0) {
+        resEngravingBlock.classList.remove('hidden');
+        document.getElementById('resEngravingCountHeader').innerText = state.engravingCount;
+        document.getElementById('resEngravingPriceHeader').innerText = `+${engravingPrice.toFixed(2).replace('.', ',')} €`;
+        document.getElementById('resEngravingRate').innerText = engravingRate.toFixed(2).replace('.', ',');
+        
+        if (state.engravingTheme) {
+          resEngravingThemeWrapper.classList.remove('hidden');
+          resEngravingThemeWrapper.innerText = state.engravingTheme;
+        } else {
+          resEngravingThemeWrapper.classList.add('hidden');
         }
+      } else {
+        resEngravingBlock.classList.add('hidden');
+      }
 
-        function updateRecap() {
-            const container = document.getElementById('recap-veilleuses');
-            container.innerHTML = '';
-            const inputs = document.querySelectorAll('#veilleuses-container > div');
+      // Section livraison à droite
+      const resDeliveryFeeBlock = document.getElementById('resDeliveryFeeBlock');
+      if (state.deliveryMethod === 'livraison') {
+        resDeliveryFeeBlock.classList.remove('hidden');
+        resDeliveryFeeBlock.innerHTML = `
+          <div class="flex items-center justify-between font-semibold text-[11px] text-emerald-400 uppercase tracking-wider">
+            <span>Frais de port (${state.deliveryCity})</span>
+            <span class="font-extrabold">
+              ${deliveryPrice === 0 ? 'LIVRAISON OFFERTE' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`}
+            </span>
+          </div>
+          <div class="text-sm font-bold text-emerald-100 flex items-center mt-1">
+            <i data-lucide="truck" class="text-emerald-400 mr-2 w-4 h-4"></i>
+            ${deliveryPrice === 0 ? '<span class="text-emerald-400 font-extrabold">Zone Proche (Saint-Pierre et alentours)</span>' : 'Envoi à domicile par coursier'}
+          </div>
+        `;
+      } else {
+        resDeliveryFeeBlock.classList.add('hidden');
+      }
 
-            inputs.forEach((veilleuse, index) => {
-                const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
-                const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
-                const formesList = Array.from(veilleuse.querySelectorAll('.formes-container button'))
-                    .filter(btn => btn.classList.contains('bg-pink-200'))
-                    .map(btn => btn.textContent).join(', ') || 'Aucune';
-                const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
-                const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
+      // Tarif calculé au cm
+      document.getElementById('resCalculatedRate').innerText = `${rate.toFixed(2).replace('.', ',')} €`;
+      const minRateReached = document.getElementById('resMinRateReached');
+      if (rate === state.minRate && totalElements > 10) {
+        minRateReached.classList.remove('hidden');
+      } else {
+        minRateReached.classList.add('hidden');
+      }
 
-                const div = document.createElement('div');
-                div.innerHTML = `
-                        <strong>Veilleuse #${index + 1}</strong> : ${texte} (${nb} caractères)<br>
-                        <span class="theme-line">Thème : ${theme}</span><br>
-                        <span class="text-yellow-200">Formes : ${formesList}</span><br>
-                        <span class="text-yellow-200">Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})</span>
-                    `;
-                container.appendChild(div);
-            });
-        }
+      // Détail du calcul à droite
+      document.getElementById('calcLetterCount').innerText = letterCount;
+      const calcShapeRow = document.getElementById('calcShapeRow');
+      if (state.shapeCount > 0) {
+        calcShapeRow.classList.remove('hidden');
+        document.getElementById('calcShapeCount').innerText = `+ ${state.shapeCount}`;
+      } else {
+        calcShapeRow.classList.add('hidden');
+      }
+      document.getElementById('calcTotalCount').innerText = totalElements;
+      document.getElementById('calcHeight').innerText = state.height;
+      document.getElementById('calcRate').innerText = rate.toFixed(2).replace('.', ',');
+      document.getElementById('calcMultiplier').innerText = state.multiplier;
+      document.getElementById('calcBaseTotal').innerText = `${baseTotal.toFixed(2).replace('.', ',')} €`;
 
-        async function envoyerDevis() {
-            const nom = document.getElementById('nomClient').value || "Non renseigné";
-            const emailClient = document.getElementById('email').value || "Non renseigné";
-            const taille = document.getElementById('taille').value + " cm";
-            const idees = document.getElementById('idees').value.trim() || "Aucune";
+      const calcLedRow = document.getElementById('calcLedRow');
+      if (state.hasLedPremium) {
+        calcLedRow.classList.remove('hidden');
+      } else {
+        calcLedRow.classList.add('hidden');
+      }
 
-            let recapDetail = "";
-            const veilleuses = document.querySelectorAll('#veilleuses-container > div');
+      const calcLithoRow = document.getElementById('calcLithoRow');
+      if (state.engravingCount > 0) {
+        calcLithoRow.classList.remove('hidden');
+        document.getElementById('calcLithoCount').innerText = state.engravingCount;
+        document.getElementById('calcLithoRate').innerText = engravingRate.toFixed(2).replace('.', ',');
+        document.getElementById('calcLithoPrice').innerText = `+ ${engravingPrice.toFixed(2).replace('.', ',')} €`;
+      } else {
+        calcLithoRow.classList.add('hidden');
+      }
 
-            veilleuses.forEach((veilleuse, index) => {
-                const texte = veilleuse.querySelector('.veilleuse-input').value.trim() || '—';
-                const theme = veilleuse.querySelector('.theme-input').value.trim() || 'Non renseigné';
-                const nb = texte.replace(/[_'\-.;,:!?]/g, '').length;
-                recapDetail += `Veilleuse #${index + 1} : ${texte} (${nb} caractères)\n`;
-                recapDetail += `Thème : ${theme}\n`;
-                const formes = Array.from(veilleuse.querySelectorAll('.formes-container button'))
-                    .filter(btn => btn.classList.contains('bg-pink-200'))
-                    .map(btn => btn.textContent).join(', ') || 'Aucune';
-                recapDetail += `Formes : ${formes}\n`;
-                const lithoDesc = veilleuse.querySelector('.litho-desc') ? veilleuse.querySelector('.litho-desc').value.trim() : '';
-                const lithoCount = veilleuse.querySelector('.litho-count') ? veilleuse.querySelector('.litho-count').value : '0';
-                recapDetail += `Gravure : ${lithoDesc || 'Aucune'} (${lithoCount})\n\n`;
-            });
+      const calcDeliveryRow = document.getElementById('calcDeliveryRow');
+      if (state.deliveryMethod === 'livraison') {
+        calcDeliveryRow.classList.remove('hidden');
+        document.getElementById('calcDeliveryCity').innerText = state.deliveryCity;
+        document.getElementById('calcDeliveryPrice').innerText = deliveryPrice === 0 ? 'OFFERTE (0 €)' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`;
+      } else {
+        calcDeliveryRow.classList.add('hidden');
+      }
 
-            const templateParams = {
-                nom_client: nom,
-                email_client: emailClient,
-                taille_lettres: taille,
-                idees_client: idees,
-                recapitulatif: recapDetail,
-                prix_lettres: document.getElementById('prixLettres').textContent,
-                prix_formes: document.getElementById('prixFormes').textContent,
-                prix_litho: document.getElementById('prixLitho').textContent,
-                total_avant_offres: document.getElementById('totalBrut').textContent,
-                total_payer: document.getElementById('totalFinal').textContent,
-                acompte: document.getElementById('acompte').textContent,
-                date: new Date().toLocaleString('fr-FR')
-            };
+      // Prix Total de base, acompte et solde
+      document.getElementById('calcTotalPrice').innerText = `${total.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('calcDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('calcBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
 
-            try {
-                await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
-                alert("✅ Demande envoyée avec succès !");
-            } catch (error) {
-                console.error("Erreur:", error);
-                alert("❌ Erreur lors de l'envoi.");
-            }
-        }
+      // Encart total principal tout en bas de droite
+      document.getElementById('resTotalPrice').innerText = total.toFixed(2).replace('.', ',');
+      document.getElementById('resDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('resBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            genererVeilleuses();
+      // 4. Rendu de la grille dynamique de suivi du barème
+      renderBarèmeGrid(totalElements, rate);
+
+      // Re-exécuter le créateur d'icônes Lucide pour s'assurer que les nouvelles icônes sont appliquées
+      lucide.createIcons();
+    }
+
+    // Fonction d'aide pour afficher/masquer les lignes à droite
+    function toggleResRow(rowId, valId, value) {
+      const row = document.getElementById(rowId);
+      const textSpan = document.getElementById(valId);
+      if (value) {
+        row.classList.remove('hidden');
+        row.classList.add('flex');
+        textSpan.innerText = value;
+      } else {
+        row.classList.add('hidden');
+        row.classList.remove('flex');
+      }
+    }
+
+    // Générer la grille dynamique du barème
+    function renderBarèmeGrid(totalElements, rate) {
+      const grid = document.getElementById('reference-table-grid');
+      grid.innerHTML = '';
+
+      const baseGridData = [
+        { range: '1-2', price: 1.00 },
+        { range: '3-4', price: 0.95 },
+        { range: '5', price: 0.90 },
+        { range: '6', price: 0.87 },
+        { range: '7', price: 0.82 },
+        { range: '8', price: 0.80 },
+        { range: '9', price: 0.78 },
+        { range: '10', price: 0.76 },
+      ];
+
+      // Ajouter la ligne sur-mesure si > 10
+      if (totalElements > 10) {
+        baseGridData.push({
+          range: `${totalElements}`,
+          price: rate,
+          isCustom: true
         });
-    </script>
+      } else {
+        baseGridData.push({
+          range: '10+',
+          price: 0.76,
+          isInfiniteHint: true
+        });
+      }
+
+      baseGridData.forEach(row => {
+        // Détecter si actif
+        const isCurrent = 
+          (totalElements === 1 && row.range === '1-2') ||
+          (totalElements === 2 && row.range === '1-2') ||
+          (totalElements === 3 && row.range === '3-4') ||
+          (totalElements === 4 && row.range === '3-4') ||
+          (totalElements.toString() === row.range) ||
+          (totalElements > 10 && row.isCustom) ||
+          (totalElements > 10 && row.isInfiniteHint);
+
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-xl border text-center transition-all duration-300 ${
+          isCurrent
+            ? 'custom-accent-bg text-white shadow-md scale-105 font-bold' 
+            : row.isCustom 
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+              : state.isDarkMode
+                ? 'bg-slate-800 border-slate-700/60 text-slate-300'
+                : 'bg-slate-100 border-slate-200 text-slate-600'
+        }`;
+
+        const header = document.createElement('div');
+        header.className = 'font-semibold';
+        header.innerText = `${row.range} ${row.isCustom ? 'élém. (vous)' : 'élém.'}`;
+
+        const price = document.createElement('div');
+        price.className = isCurrent ? 'text-white/90' : 'text-slate-500 dark:text-slate-400 font-mono';
+        price.innerText = `${row.price.toFixed(2).replace('.', ',')} €/cm`;
+
+        card.appendChild(header);
+        card.appendChild(price);
+        grid.appendChild(card);
+      });
+
+      // Mettre à jour les tips textuels sous le barème
+      document.getElementById('hint-decrement-step').innerText = state.lithoDecrementStep;
+      document.getElementById('hint-min-rate').innerText = state.minRate.toFixed(2);
+    }
+
+    // --- GENERATION DU PDF COMPACT SUR UNE PAGE UNIQUE ---
+    function handleExportPDF() {
+      if (typeof window.html2pdf === 'undefined') {
+        showToast("La bibliothèque PDF charge encore. Réessayez dans un instant.");
+        return;
+      }
+
+      const btnText = document.getElementById('btn-export-text');
+      btnText.innerText = "Génération...";
+      showToast("Génération de votre devis PDF en cours...");
+
+      // Recompter à l'instant t pour assurer l'intégrité du PDF
+      const match = state.text.match(/[\p{L}\p{N}]/gu);
+      const letterCount = match ? match.length : 0;
+      const totalElements = letterCount + state.shapeCount;
+
+      let rate = 0;
+      if (totalElements === 0) rate = 0;
+      else if (totalElements <= 2) rate = 1.00;
+      else if (totalElements <= 4) rate = 0.95;
+      else if (totalElements === 5) rate = 0.90;
+      else if (totalElements === 6) rate = 0.87;
+      else if (totalElements === 7) rate = 0.82;
+      else if (totalElements === 8) rate = 0.80;
+      else if (totalElements === 9) rate = 0.78;
+      else if (totalElements === 10) rate = 0.76;
+      else {
+        const diff = totalElements - 10;
+        rate = Math.max(state.minRate, 0.76 - (diff * state.decrementStep));
+      }
+
+      let engravingRate = 0;
+      let engravingPrice = 0;
+      if (state.engravingCount > 0) {
+        engravingRate = Math.max(state.lithoMinRate, state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep);
+        engravingPrice = state.engravingCount * state.height * engravingRate;
+      }
+
+      const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
+      let deliveryPrice = 0;
+      if (state.deliveryMethod === 'livraison') {
+        if (cityInfo.zone === 1) deliveryPrice = state.priceZone1;
+        else if (cityInfo.zone === 2) deliveryPrice = state.priceZone2;
+        else deliveryPrice = state.priceZone3;
+      }
+
+      const baseTotal = totalElements * state.height * rate * state.multiplier;
+      const ledPrice = state.hasLedPremium ? 10.90 : 0;
+      const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
+      const deposit = total / 2;
+      const balance = total / 2;
+
+      const element = document.createElement('div');
+      element.style.width = '794px'; 
+      element.style.minHeight = '1120px';
+      element.style.maxHeight = '1120px';
+      element.style.boxSizing = 'border-box';
+      element.style.padding = '35px 40px';
+      element.style.backgroundColor = '#0f172a';
+      element.style.color = '#ffffff';
+      element.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+      element.style.position = 'relative';
+      
+      const accentColorMap = {
+        blue: '#2563eb',
+        emerald: '#059669',
+        indigo: '#4f46e5',
+        violet: '#7c3aed',
+        rose: '#e11d48',
+        amber: '#d97706'
+      };
+      const accentHex = accentColorMap[state.colorTheme] || '#2563eb';
+
+      // Rendu du logo (Upload personnalisé ou dessin SVG de secours)
+      const logoHtml = state.uploadedLogo 
+        ? `<img src="${state.uploadedLogo}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid ${accentHex};" />`
+        : `<svg width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" />
+            <path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" />
+            <text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text>
+            <text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text>
+          </svg>`;
+
+      element.innerHTML = `
+        <div style="box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+          <!-- En-tête de page -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              ${logoHtml}
+              <div>
+                <h1 style="font-size: 24px; font-weight: 900; margin: 0; color: #f8fafc; letter-spacing: -0.02em;">TIBOUTIK-974</h1>
+                <p style="font-size: 11px; color: #94a3b8; margin: 1px 0 6px 0;">Créations d'Enseignes Lumineuses & Lithophanies</p>
+                <div style="font-size: 9px; color: #cbd5e1; line-height: 1.4;">
+                  <strong>Bruno BAILLY</strong> (Entrepreneur individuel)<br />
+                  SIRET : 522 513 829 00039 | APE : 93.29Z<br />
+                  Saint-Pierre, Île de la Réunion
+                </div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="background-color: #1e293b; padding: 8px 16px; border-radius: 10px; border: 1px solid #334155; display: inline-block;">
+                <h2 style="font-size: 12px; margin: 0; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">Proposition Commerciale</h2>
+                <p style="font-size: 10px; margin: 3px 0 0 0; color: #94a3b8;">Émis le : ${formatDateFR(state.orderDate)}</p>
+                <p style="font-size: 10px; margin: 1px 0 0 0; color: #34d399; font-weight: bold;">Livraison : ${formatDateFR(state.deliveryDate)}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fiche Client & Événement -->
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px; margin-bottom: 20px;">
+            <div style="background-color: #1e293b; padding: 12px 15px; border-radius: 10px; border: 1px solid #334155;">
+              <h3 style="font-size: 10px; text-transform: uppercase; color: #94a3b8; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Destinataire / Client</h3>
+              <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Client : ${state.clientName || 'Non spécifié'}</p>
+              ${state.clientEmail ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">E-mail : ${state.clientEmail}</p>` : ''}
+              ${state.clientPhone ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">Tél : ${state.clientPhone}</p>` : ''}
+              <p style="font-size: 11px; margin: 0; color: #cbd5e1;">Mode : ${state.deliveryMethod === 'livraison' ? `Livraison à domicile (${state.deliveryCity})` : 'Retrait direct à l\'atelier'}</p>
+            </div>
+            
+            <div style="background-color: #1e293b; padding: 12px 15px; border-radius: 10px; border: 1px solid #334155; display: ${state.eventType !== 'aucun' ? 'block' : 'none'};">
+              <h3 style="font-size: 10px; text-transform: uppercase; color: #fb7185; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Planification Événement</h3>
+              <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Occasion : ${getEventLabel(state.eventType)}</p>
+              ${state.eventDate ? `<p style="font-size: 11px; margin: 0; color: #fbbf24; font-weight: bold;">Date : ${formatDateFR(state.eventDate)}</p>` : ''}
+            </div>
+          </div>
+
+          <!-- Détails de la fabrication -->
+          <div style="flex-grow: 1; margin-bottom: 20px;">
+            <h3 style="font-size: 11px; text-transform: uppercase; color: #cbd5e1; margin: 0 0 8px 0; font-weight: bold; letter-spacing: 0.05em;">Détail de la commande</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+              <thead>
+                <tr style="border-bottom: 2px solid #334155; color: #cbd5e1; font-size: 11px;">
+                  <th style="padding: 6px 4px; width: 50%;">Description de la pièce</th>
+                  <th style="padding: 6px 4px; text-align: center; width: 22%;">Détails / Taille</th>
+                  <th style="padding: 6px 4px; text-align: right; width: 14%;">Tarif unitaire</th>
+                  <th style="padding: 6px 4px; text-align: right; width: 14%;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Lettres -->
+                <tr style="border-bottom: 1px solid #1e293b;">
+                  <td style="padding: 10px 4px;">
+                    <strong style="color: #f8fafc; font-size: 12px;">Lettrage et enseigne personnalisée</strong><br />
+                    <span style="font-size: 10px; color: #94a3b8;">Texte : "${state.text || 'Aucun texte saisi'}"</span>
+                  </td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${letterCount} lettres / ${state.height} cm</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(letterCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                
+                <!-- Forme Premium -->
+                ${state.shapeCount > 0 ? `
+                <tr style="border-bottom: 1px solid #1e293b;">
+                  <td style="padding: 10px 4px;">
+                    <strong style="color: #f8fafc; font-size: 12px;">Forme Premium</strong><br />
+                    <span style="font-size: 10px; color: #94a3b8;">Modèle : ${state.shapeDescription || 'Non défini'}</span>
+                  </td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.shapeCount} forme(s) / ${state.height} cm</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(state.shapeCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
+                </tr>` : ''}
+
+                <!-- Lithophanie / Gravure -->
+                ${state.engravingCount > 0 ? `
+                <tr style="border-bottom: 1px solid #1e293b;">
+                  <td style="padding: 10px 4px;">
+                    <strong style="color: #f8fafc; font-size: 12px;">Lithophanie (Gravure dégressive)</strong><br />
+                    <span style="font-size: 10px; color: #94a3b8;">Thème : ${state.engravingTheme || 'Standard'}</span>
+                  </td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.engravingCount} litho(s) / ${state.height} cm</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingRate.toFixed(2).replace('.', ',')} €</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingPrice.toFixed(2).replace('.', ',')} €</td>
+                </tr>` : ''}
+
+                <!-- Option Éclairage LED -->
+                <tr style="border-bottom: 1px solid #1e293b;">
+                  <td style="padding: 10px 4px;">
+                    <strong style="color: #f8fafc; font-size: 12px;">Système d'Éclairage LED</strong><br />
+                    <span style="font-size: 10px; color: #94a3b8;">${state.hasLedPremium ? 'LED premium Adressable Bluetooth + télécommande réactif au son' : 'LED standard RGB'}</span>
+                  </td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">1 système</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.hasLedPremium ? '10,90 €' : 'Offert'}</td>
+                </tr>
+
+                <!-- Option Livraison -->
+                ${state.deliveryMethod === 'livraison' ? `
+                <tr style="border-bottom: 1px solid #1e293b;">
+                  <td style="padding: 10px 4px;">
+                    <strong style="color: #f8fafc; font-size: 12px;">Livraison à domicile Réunion</strong><br />
+                    <span style="font-size: 10px; color: #94a3b8;">Destination : ${state.deliveryCity} (${cityInfo.desc})</span>
+                  </td>
+                  <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">Coursier</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
+                  <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${deliveryPrice === 0 ? 'Offerte' : `${deliveryPrice.toFixed(2).replace('.', ',')} €`}</td>
+                </tr>` : ''}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Totaux & Signatures -->
+          <div style="border-top: 1px solid #1e293b; padding-top: 15px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+              
+              <!-- Mentions & Cadre Signature -->
+              <div style="width: 55%; font-size: 9px; color: #94a3b8; line-height: 1.5; padding-right: 20px;">
+                <p style="margin: 0 0 8px 0; color: #cbd5e1; font-weight: bold;">Mentions Légales :</p>
+                <p style="margin: 0 0 12px 0;">Ce document est une estimation tarifaire provisoire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.</p>
+                <div style="border: 1px dashed #334155; border-radius: 8px; padding: 8px; text-align: center;">
+                  <span style="color: #cbd5e1; font-weight: bold; font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Bon pour accord (Date et Signature client)</span>
+                  <div style="height: 35px;"></div>
+                </div>
+              </div>
+
+              <!-- Bloc Récapitulatif Financier (Mise à jour Prix total / Acompte / Solde) -->
+              <div style="width: 40%; background-color: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
+                  <span>Sous-total fabrication :</span>
+                  <span style="font-family: monospace;">${baseTotal.toFixed(2).replace('.', ',')} €</span>
+                </div>
+                ${state.hasLedPremium ? `
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
+                  <span>Option LED Premium :</span>
+                  <span style="font-family: monospace;">10,90 €</span>
+                </div>` : ''}
+                ${state.engravingCount > 0 ? `
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
+                  <span>Option Gravure :</span>
+                  <span style="font-family: monospace;">${engravingPrice.toFixed(2).replace('.', ',')} €</span>
+                </div>` : ''}
+                ${state.deliveryMethod === 'livraison' ? `
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
+                  <span>Frais de livraison :</span>
+                  <span style="font-family: monospace;">${deliveryPrice === 0 ? '0,00' : deliveryPrice.toFixed(2).replace('.', ',')} €</span>
+                </div>` : ''}
+                
+                <!-- SECTION PRIX TOTAL ET DETAIL PDF -->
+                <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: #f8fafc; border-top: 1px solid #334155; margin-top: 8px; padding-top: 8px;">
+                  <span>Prix total :</span>
+                  <span style="color: #34d399; font-family: monospace;">${total.toFixed(2).replace('.', ',')} €</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-top: 6px;">
+                  <span>Acompte à verser (50%) :</span>
+                  <span style="font-family: monospace; font-weight: bold;">${deposit.toFixed(2).replace('.', ',')} €</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-top: 4px;">
+                  <span>Solde restant :</span>
+                  <span style="font-family: monospace; font-weight: bold;">${balance.toFixed(2).replace('.', ',')} €</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px; font-size: 9px; color: #64748b; font-weight: 500;">
+              TIBOUTIK-974 • Merci pour votre confiance !
+            </div>
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin:       0, 
+        filename:     `Devis_${state.clientName.replace(/\s+/g, '_') || 'Client'}_TIBOUTIK974.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
+        jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save()
+        .then(() => {
+          setIsGeneratingPdf(false);
+        })
+        .catch((err) => {
+          setIsGeneratingPdf(false);
+          showToast("Erreur lors de la génération du PDF.");
+          console.error(err);
+        });
+    }
+
+    function setIsGeneratingPdf(val) {
+      state.isGeneratingPdf = val;
+      const btnText = document.getElementById('btn-export-text');
+      btnText.innerText = val ? "Génération..." : "Export PDF";
+    }
+  </script>
 </body>
 </html>
