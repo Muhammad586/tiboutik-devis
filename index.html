@@ -25,10 +25,10 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- html2pdf.js CDN (pour l'export de devis de qualité) -->
+  <!-- html2pdf.js CDN (pour l'export de devis) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-  <!-- CSS Variables pour la gestion dynamique de la couleur d'accentuation -->
+  <!-- CSS Variables pour la gestion dynamique des couleurs -->
   <style>
     :root {
       --accent-color: #2563eb;
@@ -72,92 +72,49 @@
       <span id="toast-text">Notification</span>
     </div>
 
-    <!-- --- TOUT EN HAUT : Personnalisation du Thème et de la Couleur --- -->
+    <!-- --- EN-TÊTE : Thème et Couleurs --- -->
     <div class="rounded-2xl shadow-sm p-4 border bg-slate-900 border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
-      
-      <!-- Sélecteur de Couleur d'Accentuation -->
       <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center shrink-0">
-          <i data-lucide="palette" class="w-4 h-4 mr-1.5 text-slate-450"></i> Couleur de l'enseigne :
+          <i data-lucide="palette" class="w-4 h-4 mr-1.5 text-slate-400"></i> Couleur de l'enseigne :
         </span>
         <div class="flex items-center gap-2 flex-wrap" id="color-selectors-container">
           <!-- Injecté par JavaScript -->
         </div>
       </div>
-
-      <!-- Sélecteur de Thème (Clair / Sombre) -->
       <div class="flex items-center gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800 w-full md:w-auto justify-end">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Style :</span>
-        <button
-          onclick="setThemeMode(false)"
-          id="btn-light-mode"
-          class="p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800"
-          title="Thème Clair"
-        >
+        <button onclick="setThemeMode(false)" id="btn-light-mode" class="p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800" title="Thème Clair">
           <i data-lucide="sun" class="w-5 h-5"></i>
         </button>
-        <button
-          onclick="setThemeMode(true)"
-          id="btn-dark-mode"
-          class="p-2 rounded-xl transition-all"
-          title="Thème Sombre"
-        >
+        <button onclick="setThemeMode(true)" id="btn-dark-mode" class="p-2 rounded-xl transition-all" title="Thème Sombre">
           <i data-lucide="moon" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
 
-    <!-- En-tête de l'application avec ton Logo et les informations de ton entreprise -->
+    <!-- --- EN-TÊTE : Entreprise & Logo --- -->
     <div class="rounded-2xl shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6 border bg-slate-900 border-slate-800 transition-all duration-300">
       <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
         
-        <!-- Logo avec import personnalisé au clic -->
-        <div 
-          onclick="triggerFileInput()" 
-          class="relative shrink-0 group cursor-pointer"
-          title="Cliquez pour changer le logo de votre entreprise"
-        >
-          <img 
-            id="logo-preview"
-            src="logo Tiboutik-974.png" 
-            alt="Logo TIBOUTIK-974" 
-            class="w-20 h-20 rounded-full object-cover border-2 border-amber-500 shadow-lg transition-opacity group-hover:opacity-75"
-            onerror="this.onerror=null; this.src='https://placehold.co/150x150/1e293b/ffffff?text=974';"
-          />
+        <div onclick="triggerFileInput()" class="relative shrink-0 group cursor-pointer" title="Cliquez pour changer le logo de votre entreprise">
+          <img id="logo-preview" src="logo Tiboutik-974.png" alt="Logo TIBOUTIK-974" class="w-20 h-20 rounded-full object-cover border-2 border-amber-500 shadow-lg transition-opacity group-hover:opacity-75" onerror="this.onerror=null; this.src='https://placehold.co/150x150/1e293b/ffffff?text=974';"/>
           <div class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <i data-lucide="upload" class="text-white w-5 h-5"></i>
           </div>
-          <span class="absolute -bottom-1 -right-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow">
-            974
-          </span>
+          <span class="absolute -bottom-1 -right-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow">974</span>
         </div>
-
-        <!-- Input caché -->
-        <input 
-          type="file" 
-          id="logo-file-input" 
-          onchange="handleLogoUpload(event)" 
-          accept="image/*" 
-          class="hidden" 
-        />
+        <input type="file" id="logo-file-input" onchange="handleLogoUpload(event)" accept="image/*" class="hidden" />
         
         <div class="space-y-1 text-center sm:text-left">
           <div class="flex flex-col sm:flex-row items-center gap-2">
             <h1 class="text-2xl font-black tracking-tight" id="company-name-title">TIBOUTIK-974</h1>
-            <span class="bg-emerald-500/10 text-emerald-500 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">
-              Siren Actif
-            </span>
-            <button
-              onclick="triggerFileInput()"
-              class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-700 transition"
-            >
-              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-              <span>Importer mon logo</span>
+            <span class="bg-emerald-500/10 text-emerald-500 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">Siren Actif</span>
+            <button onclick="triggerFileInput()" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-slate-700 transition">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i><span>Importer mon logo</span>
             </button>
           </div>
-          <p class="text-slate-400 text-xs md:text-sm font-medium">
-            Enseignes lumineuses & Gravures sur-mesure • Bruno BAILLY
-          </p>
+          <p class="text-slate-400 text-xs md:text-sm font-medium">Enseignes lumineuses & Gravures sur-mesure • Bruno BAILLY</p>
           <div class="text-[10px] text-slate-400 flex flex-wrap justify-center sm:justify-start gap-x-3 gap-y-1">
             <span><strong>SIRET :</strong> 522 513 829 00039</span>
             <span><strong>APE :</strong> 93.29Z</span>
@@ -166,29 +123,21 @@
         </div>
       </div>
       
-      <!-- Bouton Ajuster Formule -->
-      <button
-        onclick="toggleSettings()"
-        id="btn-settings-toggle"
-        class="flex items-center justify-center space-x-2 px-4 py-2 rounded-xl border transition text-sm font-medium shrink-0 bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300"
-      >
+      <button onclick="toggleSettings()" id="btn-settings-toggle" class="flex items-center justify-center space-x-2 px-4 py-2 rounded-xl border transition text-sm font-medium shrink-0 bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300">
         <i data-lucide="settings" id="settings-icon" class="w-4.5 h-4.5"></i>
         <span>Ajuster la formule</span>
-        <i data-lucide="chevron-down" id="settings-chevron" class="w-4 h-4"></i>
+        <i data-lucide="chevron-down" id="settings-chevron" class="w-4 h-4 transition-transform duration-300"></i>
       </button>
     </div>
 
-    <!-- Panneau des Paramètres / Formule (Ajuster la formule) -->
+    <!-- --- PANNEAU DE CONFIGURATION TARIFAIRE --- -->
     <div id="settings-panel" class="hidden rounded-2xl shadow-sm p-6 border animate-fadeIn space-y-6 transition-all duration-300 bg-slate-900 border-slate-800 text-slate-100">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-semibold flex items-center">
           <i data-lucide="settings" class="custom-accent-text mr-2 w-5 h-5"></i>
           Réglages de la dégressivité infinie & Tarifs
         </h3>
-        <button 
-          onclick="resetConfiguration()"
-          class="text-xs flex items-center text-slate-500 hover:text-slate-400 font-medium"
-        >
+        <button onclick="resetConfiguration()" class="text-xs flex items-center text-slate-500 hover:text-slate-400 font-medium">
           <i data-lucide="refresh-cw" class="mr-1 w-3 h-3"></i> Réinitialiser les défauts
         </button>
       </div>
@@ -198,109 +147,48 @@
         <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Formule de base Lettrage</h4>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Baisse par lettre supplémentaire (&gt; 10)
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Baisse par lettre sup. (&gt; 10)</label>
             <div class="relative">
-              <input
-                type="number"
-                step="0.005"
-                min="0"
-                id="decrementStep"
-                value="0.02"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-blue-500 text-white"
-              />
+              <input type="number" step="0.005" min="0" id="decrementStep" value="0.02" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Tarif plancher minimum (Lettrage)
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tarif plancher minimum</label>
             <div class="relative">
-              <input
-                type="number"
-                step="0.05"
-                min="0.10"
-                id="minRate"
-                value="0.40"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-955 focus:ring-blue-500 text-white"
-              />
+              <input type="number" step="0.05" min="0.10" id="minRate" value="0.40" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Multiplicateur global
-            </label>
-            <input
-              type="number"
-              step="0.1"
-              min="0.5"
-              id="multiplier"
-              value="2"
-              oninput="updateAll()"
-              class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-955 focus:ring-blue-505 text-white"
-            />
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Multiplicateur global</label>
+            <input type="number" step="0.1" min="0.5" id="multiplier" value="2" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
           </div>
         </div>
       </div>
 
       <!-- Lithophanie -->
       <div class="space-y-4 border-t border-slate-800 pt-4">
-        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Formule Lithophanie (Gravure)</h4>
+        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Formule Lithophanie (Gravure)</h4>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Tarif départ 1ère Litho
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tarif départ 1ère Litho</label>
             <div class="relative">
-              <input
-                type="number"
-                step="0.05"
-                id="lithoBaseRate"
-                value="0.65"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
-              />
+              <input type="number" step="0.05" min="0.10" id="lithoBaseRate" value="0.65" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Baisse par litho supplémentaire
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Baisse par litho sup.</label>
             <div class="relative">
-              <input
-                type="number"
-                step="0.005"
-                id="lithoDecrementStep"
-                value="0.02"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
-              />
+              <input type="number" step="0.005" min="0" id="lithoDecrementStep" value="0.02" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Tarif plancher minimum (Litho)
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tarif plancher (Litho)</label>
             <div class="relative">
-              <input
-                type="number"
-                step="0.05"
-                id="lithoMinRate"
-                value="0.30"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white"
-              />
+              <input type="number" step="0.05" min="0.10" id="lithoMinRate" value="0.30" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€/cm</span>
             </div>
           </div>
@@ -309,55 +197,26 @@
 
       <!-- Tarifs livraison -->
       <div class="space-y-4 border-t border-slate-800 pt-4">
-        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Configuration Tarifs de Livraison (Réunion)</h4>
+        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Tarifs de Livraison (Réunion)</h4>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Zone Proche (&lt; 20min)
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Zone Proche (&lt; 20min)</label>
             <div class="relative">
-              <input
-                type="number"
-                step="1"
-                id="priceZone1"
-                value="0"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
-              />
+              <input type="number" step="1" min="0" id="priceZone1" value="0" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Zone Sud étendu / Ouest
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Zone Moyenne (Sud/Ouest)</label>
             <div class="relative">
-              <input
-                type="number"
-                step="1"
-                id="priceZone2"
-                value="10"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
-              />
+              <input type="number" step="1" min="0" id="priceZone2" value="10" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
             </div>
           </div>
-
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Zone Reste de l'île (Éloigné)
-            </label>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Zone Éloignée (N/E/Cirques)</label>
             <div class="relative">
-              <input
-                type="number"
-                step="1"
-                id="priceZone3"
-                value="25"
-                oninput="updateAll()"
-                class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-505 text-white"
-              />
+              <input type="number" step="1" min="0" id="priceZone3" value="25" oninput="updateAll()" class="w-full px-3 py-2 border rounded-xl font-mono text-sm outline-none bg-slate-800 border-slate-700 focus:ring-2 focus:ring-blue-500 text-white" />
               <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
             </div>
           </div>
@@ -365,166 +224,80 @@
       </div>
     </div>
 
+    <!-- --- ZONE PRINCIPALE : COLONNES SAISIE & RÉSULTATS --- -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
-      <!-- Colonne Gauche : Saisie -->
+      <!-- COLONNE GAUCHE (SAISIE) -->
       <div class="lg:col-span-7 space-y-6">
         
-        <!-- Fiche Client & Planification -->
-        <div class="rounded-2xl shadow-sm p-6 border space-y-4 transition-all duration-300 bg-slate-900 border-slate-800 text-white">
-          <h2 class="text-lg font-semibold flex items-center">
-            <i data-lucide="user" class="mr-2 custom-accent-text w-5 h-5"></i>
-            Fiche Client & Planification
+        <!-- Bloc 1 : Fiche Client -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white transition-all duration-300">
+          <h2 class="text-lg font-semibold flex items-center mb-4">
+            <i data-lucide="user" class="mr-2 custom-accent-text w-5 h-5"></i> Fiche Client & Planification
           </h2>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Nom & Prénom -->
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Nom & Prénom du client
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Nom & Prénom</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="user" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <input
-                  type="text"
-                  id="clientName"
-                  placeholder="Ex: Jean Dupont"
-                  oninput="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
+                <i data-lucide="user" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="text" id="clientName" placeholder="Ex: Jean Dupont" oninput="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
-
-            <!-- Email -->
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Adresse e-mail
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Adresse e-mail</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="mail" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <input
-                  type="email"
-                  id="clientEmail"
-                  placeholder="Ex: jean.dupont@gmail.com"
-                  oninput="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
+                <i data-lucide="mail" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="email" id="clientEmail" placeholder="Ex: jean.dupont@gmail.com" oninput="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
-
-            {/* Téléphone */}
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Téléphone
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Téléphone</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="phone" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <input
-                  type="tel"
-                  id="clientPhone"
-                  placeholder="Ex: 06 12 34 56 78"
-                  oninput="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
+                <i data-lucide="phone" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="tel" id="clientPhone" placeholder="Ex: 06 12 34 56 78" oninput="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
-
-            <!-- Date du jour -->
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Date du jour
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Date du jour</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="calendar" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <input
-                  type="date"
-                  id="orderDate"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
+                <i data-lucide="calendar" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="date" id="orderDate" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
-
-            <!-- Date de livraison estimée -->
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Date de livraison estimée
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Livraison estimée</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="clock" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <input
-                  type="date"
-                  id="deliveryDate"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                />
+                <i data-lucide="clock" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <input type="date" id="deliveryDate" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
-
-            <!-- Mode de récupération -->
             <div>
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Mode de récupération
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Récupération</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="truck" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <select
-                  id="deliveryMethod"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="atelier">Retrait à l'atelier (Saint-Pierre) - Gratuit</option>
-                  <option value="livraison">Livraison à domicile (Réunion)</option>
+                <i data-lucide="truck" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <select id="deliveryMethod" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
+                  <option value="atelier">Retrait à l'atelier (Gratuit)</option>
+                  <option value="livraison">Livraison à domicile</option>
                 </select>
               </div>
             </div>
-
-            <!-- Sélecteur de ville si Livraison à domicile (Intégration d'Île de la Réunion) -->
-            <div id="deliveryCityContainer" class="hidden">
+            <div id="deliveryCityContainer" class="hidden animate-fadeIn">
               <label class="block text-sm font-medium text-slate-400 mb-1.5 flex justify-between">
-                <span>Ville de destination</span>
-                <span id="deliveryZoneBadge" class="text-[10px] text-slate-400 font-bold">Zone</span>
+                <span>Ville</span><span id="deliveryZoneBadge" class="text-[10px] text-slate-400 font-bold"></span>
               </label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="map-pin" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <select
-                  id="deliveryCity"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                >
+                <i data-lucide="map-pin" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <select id="deliveryCity" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
                   <!-- Injecté par JavaScript -->
                 </select>
               </div>
             </div>
-
-            <!-- Sélecteur d'Événement -->
             <div id="eventTypeWrapper" class="sm:col-span-2">
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">
-                Événement lié
-              </label>
+              <label class="block text-sm font-medium text-slate-400 mb-1.5">Événement lié</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="gift" class="text-slate-400 w-4 h-4"></i>
-                </div>
-                <select
-                  id="eventType"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"
-                >
+                <i data-lucide="gift" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+                <select id="eventType" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
                   <option value="aucun">Aucun événement</option>
                   <option value="anniversaire">Anniversaire</option>
                   <option value="bapteme">Baptême</option>
@@ -536,320 +309,186 @@
                 </select>
               </div>
             </div>
-
-            <!-- Date de l'événement -->
             <div id="eventDateContainer" class="hidden animate-fadeIn">
-              <label class="block text-sm font-medium text-slate-400 mb-1.5 text-amber-500 font-semibold">
-                Date de l'événement
-              </label>
+              <label class="block text-sm font-medium text-amber-500 mb-1.5 font-semibold">Date de l'événement</label>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i data-lucide="calendar" class="text-amber-500 w-4 h-4"></i>
-                </div>
-                <input
-                  type="date"
-                  id="eventDate"
-                  onchange="updateAll()"
-                  class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm font-semibold border-amber-300 dark:border-amber-800 bg-slate-800 text-white focus:ring-2 focus:ring-amber-500"
-                />
+                <i data-lucide="calendar" class="absolute left-3 top-2.5 text-amber-500 w-4 h-4"></i>
+                <input type="date" id="eventDate" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none text-sm font-semibold border-amber-800 bg-slate-800 text-white focus:ring-2 focus:ring-amber-500" />
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Saisie de Texte Enseigne -->
-        <div class="rounded-2xl shadow-sm p-6 border space-y-6 transition-all duration-300 bg-slate-900 border-slate-800 text-white">
-          <div>
-            <h2 class="text-lg font-semibold mb-4 flex items-center">
-              <i data-lucide="file-text" class="mr-2 custom-accent-text w-5 h-5"></i>
-              Saisissez votre texte
-            </h2>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <label class="block text-sm font-medium text-slate-400">
-                    Texte à fabriquer
-                  </label>
-                  <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
-                    Lettres seules comptées
-                  </span>
-                </div>
-                <textarea
-                  id="text"
-                  oninput="updateAll()"
-                  placeholder="Saisissez votre texte ici (les espaces et ponctuations seront ignorés)..."
-                  class="w-full h-32 p-4 rounded-xl border outline-none transition text-lg bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500"
-                ></textarea>
+        <!-- Bloc 2 : Saisie de Texte -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white">
+          <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="file-text" class="mr-2 custom-accent-text w-5 h-5"></i> Saisissez votre texte
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-sm font-medium text-slate-400">Texte à fabriquer</label>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Lettres seules comptées</span>
               </div>
-
-              <div class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1">
-                  <label class="block text-sm font-medium text-slate-400 mb-2">
-                    Hauteur des lettres (en cm)
-                  </label>
-                  <div class="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <i data-lucide="ruler" class="text-slate-400 w-5 h-5 ml-2.5"></i>
-                    </div>
-                    <input
-                       type="number"
-                       min="1"
-                       id="height"
-                       value="10"
-                       oninput="updateAll()"
-                       class="w-full pl-10 pr-4 py-3 rounded-xl border outline-none transition font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
+              <textarea id="text" oninput="updateAll()" placeholder="Tapez votre texte ici..." class="w-full h-32 p-4 rounded-xl border outline-none text-lg bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-slate-400 mb-2">Hauteur des lettres (en cm)</label>
+              <div class="relative">
+                <i data-lucide="ruler" class="absolute left-3 top-3 text-slate-400 w-5 h-5"></i>
+                <input type="number" min="1" id="height" value="10" oninput="updateAll()" class="w-full pl-10 pr-4 py-3 rounded-xl border outline-none font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
           </div>
-
-          <!-- --- SECTION FORME PREMIUM --- -->
-          <div class="border-t border-slate-800 pt-6">
-            <h3 class="text-lg font-semibold mb-4 flex items-center">
-              <i data-lucide="sparkles" class="text-amber-500 mr-2 w-5 h-5"></i>
-              Forme Premium
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-400 mb-2">
-                  Nombre de formes (0 à 10)
-                </label>
-                <select
-                  id="shapeCount"
-                  onchange="updateAll()"
-                  class="w-full p-3 rounded-xl border outline-none font-semibold transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505 focus:border-blue-500"
-                >
-                  <option value="0">0 forme</option>
-                  <option value="1">1 forme (+1 élément)</option>
-                  <option value="2">2 formes (+2 éléments)</option>
-                  <option value="3">3 formes (+3 éléments)</option>
-                  <option value="4">4 formes (+4 éléments)</option>
-                  <option value="5">5 formes (+5 éléments)</option>
-                  <option value="6">6 formes (+6 éléments)</option>
-                  <option value="7">7 formes (+7 éléments)</option>
-                  <option value="8">8 formes (+8 éléments)</option>
-                  <option value="9">9 formes (+9 éléments)</option>
-                  <option value="10">10 formes (+10 éléments)</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-slate-400 mb-2">
-                  Modèle de la forme premium choisie
-                </label>
-                <input
-                  type="text"
-                  id="shapeDescription"
-                  oninput="updateAll()"
-                  placeholder="Sélectionnez d'abord un nombre de formes"
-                  disabled
-                  class="w-full p-3 rounded-xl border outline-none transition bg-slate-800/40 border-slate-700 text-slate-500 placeholder-slate-650 cursor-not-allowed"
-                />
-              </div>
-            </div>
-            <p id="shapeWarning" class="hidden text-xs text-amber-500 mt-2 flex items-center">
-              <i data-lucide="info" class="mr-1 w-3.5 h-3.5"></i>
-              Pensez à spécifier quel modèle de forme a été choisi dans le champ ci-dessus.
-            </p>
-          </div>
-
-          <!-- --- SECTION LITHOPHANIE (GRAVURE) --- -->
-          <div class="border-t border-slate-800 pt-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold flex items-center">
-                <i data-lucide="layers" class="text-blue-500 mr-2 w-5 h-5"></i>
-                Lithophanie (Gravure)
-              </h3>
-              <div class="flex flex-col text-right">
-                <span id="lithoBaseRateBadge" class="bg-blue-100 dark:bg-blue-900/65 text-blue-800 dark:text-blue-300 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
-                  Base : 0,65 € / cm / litho
-                </span>
-                <span id="lithoCurrentRateBadge" class="hidden text-[10px] text-blue-500 mt-1 font-bold">
-                  Tarif unitaire actuel : 0,65 €/cm
-                </span>
-              </div>
-            </div>
-            
-            <div class="space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Saisie directe du nombre de lithos -->
-                <div class="md:col-span-1">
-                  <label class="block text-sm font-medium text-slate-400 mb-2">
-                    Nombre de lithos
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    id="engravingCount"
-                    placeholder="0"
-                    oninput="updateAll()"
-                    class="w-full p-3 rounded-xl border outline-none font-semibold transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505"
-                  />
-                </div>
-
-                <!-- Saisie libre de la description -->
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-slate-400 mb-2">
-                    Description de la litho / Thème choisi
-                  </label>
-                  <input
-                    type="text"
-                    id="engravingTheme"
-                    oninput="updateAll()"
-                    placeholder="Ex: traits Stitch, One Piece, photo de famille..."
-                    class="w-full p-3 rounded-xl border outline-none transition bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-505 text-slate-850"
-                  />
-                </div>
-              </div>
-              <p id="lithoDegressiveTip" class="hidden text-xs text-blue-500 dark:text-blue-400 italic">
-                💡 Remise dégressive appliquée !
-              </p>
-            </div>
-          </div>
-
-          <!-- --- OPTIONS ÉCLAIRAGE (TOUT EN BAS) --- -->
-          <div class="border-t border-slate-800 pt-6">
-            <h3 class="text-lg font-semibold mb-4 flex items-center">
-              <i data-lucide="zap" class="text-emerald-555 mr-2 w-5 h-5"></i>
-              Options d'Éclairage
-            </h3>
-            <div id="ledContainer" class="p-4 rounded-xl border transition-all bg-slate-800 border-slate-700">
-              <label class="flex items-start gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  id="hasLedPremium"
-                  onchange="updateAll()"
-                  class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0 transition cursor-pointer"
-                />
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-sm md:text-base text-white">Passer en LED Premium</span>
-                    <span class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
-                      +10,90 €
-                    </span>
-                  </div>
-                  <p class="text-xs md:text-sm text-slate-400 mt-1">
-                    Système LED premium Adressable Bluetooth + télécommande réactif au son avec une multitude d'effets lumineux. (Si décoché, l'enseigne est équipée en LED standard RGB incluse).
-                  </p>
-                </div>
-              </label>
-            </div>
-          </div>
-
         </div>
 
-        <!-- Tableau de référence dynamique -->
-        <div class="rounded-2xl shadow-sm p-6 border transition-all duration-300 bg-slate-900 border-slate-800 text-white">
-          <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center">
-            <i data-lucide="tag" class="mr-2 w-4 h-4"></i>
-            Suivi dynamique du barème de prix (Lettres + Formes)
+        <!-- Bloc 3 : Formes Premium -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="sparkles" class="text-amber-500 mr-2 w-5 h-5"></i> Forme Premium
           </h3>
-          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs" id="reference-table-grid">
-            <!-- Injecté par JavaScript -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">Nombre de formes</label>
+              <select id="shapeCount" onchange="updateAll()" class="w-full p-3 rounded-xl border outline-none font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
+                <option value="0">0 forme</option>
+                <option value="1">1 forme (+1 élément)</option>
+                <option value="2">2 formes (+2 éléments)</option>
+                <option value="3">3 formes (+3 éléments)</option>
+                <option value="4">4 formes (+4 éléments)</option>
+                <option value="5">5 formes (+5 éléments)</option>
+                <option value="6">6 formes (+6 éléments)</option>
+                <option value="7">7 formes (+7 éléments)</option>
+                <option value="8">8 formes (+8 éléments)</option>
+                <option value="9">9 formes (+9 éléments)</option>
+                <option value="10">10 formes (+10 éléments)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-400 mb-2">Description de la forme</label>
+              <input type="text" id="shapeDescription" oninput="updateAll()" placeholder="Ex: Étoile, logo..." disabled class="w-full p-3 rounded-xl border outline-none bg-slate-800/40 border-slate-700 text-slate-500 cursor-not-allowed" />
+            </div>
           </div>
-          <p class="text-xs text-slate-400 dark:text-slate-505 mt-3 italic">
-            * Chaque forme premium est comptée au même titre qu'une lettre. Au-delà de 10 éléments (lettres + formes), le tarif diminue de <span id="hint-decrement-step">0.02</span> € par élément supplémentaire jusqu'au prix plancher de <span id="hint-min-rate">0.40</span> €/cm.
+          <p id="shapeWarning" class="hidden text-xs text-amber-500 mt-2 flex items-center">
+            <i data-lucide="info" class="mr-1 w-3.5 h-3.5"></i> Pensez à spécifier quel modèle a été choisi.
           </p>
         </div>
+
+        <!-- Bloc 4 : Lithophanie -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold flex items-center">
+              <i data-lucide="layers" class="text-blue-500 mr-2 w-5 h-5"></i> Lithophanie (Gravure)
+            </h3>
+            <div class="flex flex-col text-right">
+              <span class="bg-blue-900/65 text-blue-300 text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-blue-800">
+                Base : <span id="displayLithoBase">0,65</span> €/cm
+              </span>
+              <span id="lithoCurrentRateBadge" class="hidden text-[10px] text-blue-500 mt-1 font-bold"></span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-slate-400 mb-2">Quantité</label>
+              <input type="number" min="0" id="engravingCount" placeholder="0" oninput="updateAll()" class="w-full p-3 rounded-xl border outline-none font-semibold bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-400 mb-2">Thème de la gravure</label>
+              <input type="text" id="engravingTheme" oninput="updateAll()" placeholder="Ex: traits Stitch, Photo..." class="w-full p-3 rounded-xl border outline-none bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          <p id="lithoDegressiveTip" class="hidden text-xs text-blue-400 italic mt-3">💡 Remise dégressive appliquée !</p>
+        </div>
+
+        <!-- Bloc 5 : Éclairage -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-lucide="zap" class="text-emerald-500 mr-2 w-5 h-5"></i> Options d'Éclairage
+          </h3>
+          <div id="ledContainer" class="p-4 rounded-xl border bg-slate-800 border-slate-700 transition-all">
+            <label class="flex items-start gap-3 cursor-pointer select-none">
+              <input type="checkbox" id="hasLedPremium" onchange="updateAll()" class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-sm md:text-base text-white">Passer en LED Premium</span>
+                  <span class="bg-emerald-900/60 text-emerald-400 border border-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">+10,90 €</span>
+                </div>
+                <p class="text-xs md:text-sm text-slate-400 mt-1">Système LED premium Adressable Bluetooth + télécommande réactif au son.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Barème Dynamique -->
+        <div class="rounded-2xl shadow-sm p-6 border bg-slate-900 border-slate-800 text-white">
+          <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center">
+            <i data-lucide="tag" class="mr-2 w-4 h-4"></i> Suivi dynamique du barème de prix
+          </h3>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs" id="reference-table-grid"></div>
+          <p class="text-xs text-slate-500 mt-3 italic">
+            * Chaque forme premium équivaut à 1 lettre. Au-delà de 10 éléments, le tarif baisse de <span id="hint-decrement-step">0.02</span> € par élément.
+          </p>
+        </div>
+
       </div>
 
-      <!-- Colonne Droite : Résultats -->
+      <!-- COLONNE DROITE : RÉSULTATS -->
       <div class="lg:col-span-5 space-y-6">
-        <div class="rounded-2xl shadow-lg p-6 border transition-all duration-300 bg-slate-900 border-slate-800 text-white shadow-xl">
+        <div class="rounded-2xl shadow-lg p-6 border bg-slate-900 border-slate-800 text-white shadow-xl">
           
-          <!-- Entête Devis -->
           <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
             <h2 class="text-xl font-bold flex items-center">
-              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i>
-              Résultat du devis
+              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i> Résultat
             </h2>
-            
-            <!-- Export PDF -->
-            <button
-              onclick="handleExportPDF()"
-              id="btn-export-pdf"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md transition-all scale-100 hover:scale-105 active:scale-95 custom-accent-bg text-white"
-            >
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span id="btn-export-text">Export PDF</span>
+            <button onclick="handleExportPDF()" id="btn-export-pdf" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md custom-accent-bg text-white hover:scale-105 active:scale-95 transition-all">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> <span id="btn-export-text">Export PDF</span>
             </button>
           </div>
           
           <div class="space-y-6">
             
-            <!-- --- BLOC INFOS CLIENT & LIVRAISON (DANS LE RÉSULTAT) --- -->
-            <div id="clientResultBlock" class="hidden bg-slate-800 p-4 rounded-xl border border-slate-800 space-y-3 text-xs animate-fadeIn">
-              <div class="font-semibold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-1.5 flex items-center justify-between">
-                <span class="flex items-center gap-1.5"><i data-lucide="building" class="text-amber-500 w-3.5 h-3.5"></i> Fiche Client & Suivi</span>
-                <span id="eventBadge" class="hidden bg-amber-500/20 text-amber-400 border border-amber-500/35 px-2 py-0.5 rounded text-[10px] font-bold uppercase animate-pulse">
-                  Événement
-                </span>
+            <!-- Fiche Client Résultat -->
+            <div id="clientResultBlock" class="hidden bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 text-xs animate-fadeIn">
+              <div class="font-semibold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1.5 flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i data-lucide="building" class="text-amber-500 w-3.5 h-3.5"></i> Fiche Client</span>
+                <span id="eventBadge" class="hidden bg-amber-500/20 text-amber-400 border border-amber-500/35 px-2 py-0.5 rounded text-[10px] font-bold uppercase"></span>
               </div>
-              <p id="resClientNameRow" class="hidden justify-between">
-                <span class="text-slate-400">Client :</span>
-                <span id="resClientName" class="font-bold text-white text-right"></span>
-              </p>
-              <p id="resClientEmailRow" class="hidden justify-between">
-                <span class="text-slate-400">E-mail :</span>
-                <span id="resClientEmail" class="text-slate-300 text-right font-mono"></span>
-              </p>
-              <p id="resClientPhoneRow" class="hidden justify-between">
-                <span class="text-slate-400">Téléphone :</span>
-                <span id="resClientPhone" class="text-slate-300 text-right font-mono"></span>
-              </p>
+              <p id="resClientNameRow" class="hidden justify-between"><span class="text-slate-400">Client :</span> <span id="resClientName" class="font-bold text-white text-right"></span></p>
+              <p id="resClientEmailRow" class="hidden justify-between"><span class="text-slate-400">E-mail :</span> <span id="resClientEmail" class="text-slate-300 text-right font-mono"></span></p>
+              <p id="resClientPhoneRow" class="hidden justify-between"><span class="text-slate-400">Téléphone :</span> <span id="resClientPhone" class="text-slate-300 text-right font-mono"></span></p>
               
-              <!-- Infos Livraison / Retrait -->
-              <div class="border-t border-slate-850 pt-2 text-xs">
+              <div class="border-t border-slate-700 pt-2 text-xs">
                 <p class="flex justify-between items-center" id="resDeliveryMethodRow">
-                  <span class="text-slate-400 flex items-center"><i data-lucide="truck" class="mr-1 text-emerald-400 w-3.5 h-3.5"></i> Mode :</span>
+                  <span class="text-slate-400 flex items-center"><i data-lucide="truck" class="mr-1 text-emerald-400 w-3.5 h-3.5" id="resDeliveryIcon"></i> Mode :</span>
                   <span id="resDeliveryMethod" class="font-semibold text-emerald-400"></span>
                 </p>
-                <p class="hidden justify-between" id="resDeliveryCityRow">
-                  <span class="text-slate-400">Destination :</span>
-                  <span id="resDeliveryCity" class="font-bold text-white"></span>
+                <p class="hidden justify-between mt-1" id="resDeliveryCityRow">
+                  <span class="text-slate-400">Destination :</span> <span id="resDeliveryCity" class="font-bold text-white"></span>
                 </p>
-                <p class="hidden justify-between text-[11px] text-slate-505 italic" id="resDeliveryDescRow">
-                  <span>Secteur :</span>
-                  <span id="resDeliveryDesc"></span>
+                <p class="hidden justify-between text-[11px] text-slate-400 italic" id="resDeliveryDescRow">
+                  <span>Secteur :</span> <span id="resDeliveryDesc"></span>
                 </p>
               </div>
 
-              <div class="border-t border-slate-805 pt-2 grid grid-cols-2 gap-2 text-[11px]">
-                <div>
-                  <span class="text-slate-500 block">Date commande :</span>
-                  <span id="resOrderDate" class="font-semibold text-slate-300"></span>
-                </div>
-                <div class="text-right">
-                  <span class="text-slate-500 block">Livraison estimée :</span>
-                  <span id="resDeliveryDate" class="font-semibold text-emerald-400"></span>
-                </div>
+              <div class="border-t border-slate-700 pt-2 grid grid-cols-2 gap-2 text-[11px]">
+                <div><span class="text-slate-500 block">Commande :</span> <span id="resOrderDate" class="font-semibold text-slate-300"></span></div>
+                <div class="text-right"><span class="text-slate-500 block">Livraison :</span> <span id="resDeliveryDate" class="font-semibold text-emerald-400"></span></div>
               </div>
-
-              <!-- Alerte Date Événement -->
               <div id="resEventDateAlert" class="hidden bg-amber-950/40 border border-amber-900/65 p-2.5 rounded-lg text-amber-300 mt-2 text-center font-medium">
                 🗓️ Événement le <span id="resEventDate" class="font-bold underline"></span>
               </div>
             </div>
 
-            <!-- Statistiques standard -->
-            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-800">
-              <div class="flex items-center">
-                <i data-lucide="type" class="text-blue-400 mr-3 w-6 h-6"></i>
-                <span class="text-slate-300">Lettres comptées</span>
-              </div>
+            <!-- Lettres comptées -->
+            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-700">
+              <div class="flex items-center"><i data-lucide="type" class="text-blue-400 mr-3 w-6 h-6"></i> <span class="text-slate-300">Lettres comptées</span></div>
               <span id="resLetterCount" class="text-2xl font-bold text-white">0</span>
             </div>
 
-            <!-- Section Spéciale Forme Premium (Affichée en Vert si > 0) -->
+            <!-- Forme Premium -->
             <div id="resShapeBlock" class="hidden flex flex-col bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-xl text-emerald-300 animate-fadeIn">
               <div class="flex items-center justify-between font-semibold">
-                <div class="flex items-center">
-                  <i data-lucide="sparkles" class="text-emerald-400 mr-3 animate-pulse w-6 h-6"></i>
-                  <span>Forme premium</span>
-                </div>
+                <div class="flex items-center"><i data-lucide="sparkles" class="text-emerald-400 mr-3 w-6 h-6"></i> <span>Forme premium</span></div>
                 <span id="resShapeCount" class="text-2xl font-bold text-emerald-400">+0</span>
               </div>
               <div id="resShapeDescWrapper" class="hidden mt-2 text-xs text-emerald-200 bg-emerald-900/50 p-2.5 rounded-lg border border-emerald-800/40">
@@ -857,120 +496,53 @@
               </div>
             </div>
 
-            <!-- --- LIGNES D'ÉCLAIRAGE DYNAMIQUE --- -->
-            <div id="resLedBlock" class="flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300 animate-fadeIn">
-              <!-- Injecté dynamiquement par JS -->
-            </div>
+            <!-- LED -->
+            <div id="resLedBlock" class="flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300"></div>
 
-            <!-- --- SECTION LITHOPHANIE À DROITE (VERT FLUO) AVEC RECALCUL DEGRESSIF --- -->
-            <div id="resEngravingBlock" class="hidden flex flex-col bg-emerald-950/50 border border-emerald-750 p-4 rounded-xl text-emerald-300 animate-fadeIn space-y-1.5">
+            <!-- Lithophanie -->
+            <div id="resEngravingBlock" class="hidden flex flex-col bg-emerald-950/50 border border-emerald-700 p-4 rounded-xl text-emerald-300 animate-fadeIn space-y-1.5">
               <div class="flex items-center justify-between font-semibold">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="layers" class="text-emerald-400 animate-pulse w-5 h-5"></i>
-                  <span class="text-sm font-bold">Litho:Gravure (<span id="resEngravingCountHeader">0</span>)</span>
-                </div>
+                <div class="flex items-center gap-2"><i data-lucide="layers" class="text-emerald-400 w-5 h-5"></i> <span class="text-sm font-bold">Litho:Gravure (<span id="resEngravingCountHeader">0</span>)</span></div>
                 <span id="resEngravingPriceHeader" class="text-lg font-bold text-emerald-400">+0,00 €</span>
               </div>
-              <div class="text-xs text-emerald-300 font-semibold">
-                Tarif : <span id="resEngravingRate">0.65</span> €/cm par litho
-              </div>
-              <div id="resEngravingThemeWrapper" class="hidden text-xs text-emerald-100 italic bg-emerald-900/40 p-2 rounded-lg border border-emerald-800/20 mt-1">
-                <!-- Thème injecté par JS -->
-              </div>
+              <div class="text-xs text-emerald-300 font-semibold">Tarif : <span id="resEngravingRate">0.65</span> €/cm par litho</div>
+              <div id="resEngravingThemeWrapper" class="hidden text-xs text-emerald-100 italic bg-emerald-900/40 p-2 rounded-lg border border-emerald-800/40 mt-1"></div>
             </div>
 
-            <!-- Encart Livraison Résultat -->
-            <div id="resDeliveryFeeBlock" class="hidden flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300 animate-fadeIn">
-              <!-- Injecté dynamiquement par JS -->
-            </div>
+            <!-- Livraison -->
+            <div id="resDeliveryFeeBlock" class="hidden flex flex-col bg-emerald-950/40 border border-emerald-800/50 p-4 rounded-xl text-emerald-300 animate-fadeIn"></div>
 
-            <!-- Tarif unitaire calculé -->
-            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-800">
-              <div class="flex items-center">
-                <i data-lucide="tag" class="text-emerald-400 mr-3 w-6 h-6"></i>
-                <span class="text-slate-300">Tarif calculé au cm</span>
-              </div>
+            <!-- Tarif calculé -->
+            <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-700">
+              <div class="flex items-center"><i data-lucide="tag" class="text-emerald-400 mr-3 w-6 h-6"></i> <span class="text-slate-300">Tarif calculé au cm</span></div>
               <div class="text-right">
                 <span id="resCalculatedRate" class="text-xl font-semibold text-white">0,00 €</span>
                 <span id="resMinRateReached" class="hidden block text-[10px] text-amber-400 font-medium">Tarif minimum atteint</span>
               </div>
             </div>
 
-            <!-- Detail complet du calcul -->
-            <div class="bg-slate-800 p-4 rounded-xl text-sm text-slate-400 border border-slate-800 space-y-2">
-              <p class="flex items-center text-slate-300 mb-2 font-medium">
-                <i data-lucide="info" class="mr-2 text-blue-400 w-4 h-4"></i>
-                Détail du calcul
-              </p>
-              <p class="flex justify-between">
-                <span>Nombre de lettres</span>
-                <span id="calcLetterCount">0</span>
-              </p>
-              <p class="hidden justify-between text-emerald-400 font-medium" id="calcShapeRow">
-                <span>Formes premium</span>
-                <span id="calcShapeCount">+0</span>
-              </p>
-              <p class="flex justify-between border-t border-slate-800 pt-2 font-semibold text-slate-200">
-                <span>Total d'éléments tarifés</span>
-                <span id="calcTotalCount">0</span>
-              </p>
-              <p class="flex justify-between">
-                <span>Hauteur des lettres</span>
-                <span>x <span id="calcHeight">10</span> cm</span>
-              </p>
-              <p class="flex justify-between">
-                <span>Tarif dégressif</span>
-                <span>x <span id="calcRate">0.00</span> €/cm</span>
-              </p>
-              <p class="flex justify-between border-b border-slate-800 pb-2">
-                <span>Coefficient multiplicateur</span>
-                <span>x <span id="calcMultiplier">2</span></span>
-              </p>
-              <p class="flex justify-between text-slate-300">
-                <span>Sous-total lettrage</span>
-                <span id="calcBaseTotal">0,00 €</span>
-              </p>
-              
-              <!-- Option LED Premium -->
-              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow">
-                <span>Option LED Premium</span>
-                <span>+ 10,90 €</span>
-              </p>
-
-              <!-- Option Lithophanie (Gravure) dégressive -->
-              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLithoRow">
-                <span>Lithophanie (<span id="calcLithoCount">0</span> x <span id="calcLithoRate">0.65</span>€/cm)</span>
-                <span id="calcLithoPrice">+ 0,00 €</span>
-              </p>
-
-              <!-- Ligne Livraison si active -->
-              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcDeliveryRow">
-                <span>Livraison (<span id="calcDeliveryCity">Saint-Pierre</span>)</span>
-                <span id="calcDeliveryPrice">0,00 €</span>
-              </p>
-
-              <p class="flex justify-between text-white font-medium border-t border-slate-800 pt-1">
-                <span>Prix total</span>
-                <span id="calcTotalPrice">0,00 €</span>
-              </p>
-              <p class="flex justify-between text-slate-300 text-xs">
-                <span>Acompte à verser (50%)</span>
-                <span id="calcDepositPrice">0,00 €</span>
-              </p>
-              <p class="flex justify-between text-slate-300 text-xs">
-                <span>Solde restant</span>
-                <span id="calcBalancePrice">0,00 €</span>
-              </p>
+            <!-- Détail calcul -->
+            <div class="bg-slate-800 p-4 rounded-xl text-sm text-slate-400 border border-slate-700 space-y-2">
+              <p class="flex items-center text-slate-300 mb-2 font-medium"><i data-lucide="info" class="mr-2 text-blue-400 w-4 h-4"></i> Détail du calcul</p>
+              <p class="flex justify-between"><span>Nombre de lettres</span> <span id="calcLetterCount">0</span></p>
+              <p class="hidden justify-between text-emerald-400 font-medium" id="calcShapeRow"><span>Formes premium</span> <span id="calcShapeCount">+0</span></p>
+              <p class="flex justify-between border-t border-slate-700 pt-2 font-semibold text-slate-200"><span>Total d'éléments tarifés</span> <span id="calcTotalCount">0</span></p>
+              <p class="flex justify-between"><span>Hauteur</span> <span>x <span id="calcHeight">10</span> cm</span></p>
+              <p class="flex justify-between"><span>Tarif dégressif</span> <span>x <span id="calcRate">0.00</span> €/cm</span></p>
+              <p class="flex justify-between border-b border-slate-700 pb-2"><span>Coefficient multiplicateur</span> <span>x <span id="calcMultiplier">2</span></span></p>
+              <p class="flex justify-between text-slate-300"><span>Sous-total lettrage</span> <span id="calcBaseTotal">0,00 €</span></p>
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLedRow"><span>Option LED Premium</span> <span>+ 10,90 €</span></p>
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcLithoRow"><span>Lithophanie (<span id="calcLithoCount">0</span>x <span id="calcLithoRate">0.65</span>€)</span> <span id="calcLithoPrice">+ 0,00 €</span></p>
+              <p class="hidden justify-between text-emerald-400 font-semibold" id="calcDeliveryRow"><span>Livraison (<span id="calcDeliveryCity">Saint-Pierre</span>)</span> <span id="calcDeliveryPrice">0,00 €</span></p>
             </div>
 
             <!-- Total -->
-            <div class="pt-4 border-t border-slate-800">
-              <div id="total-price-box" class="flex flex-col items-center justify-center p-6 rounded-xl shadow-inner text-center custom-accent-gradient">
+            <div class="pt-4 border-t border-slate-700">
+              <div class="flex flex-col items-center justify-center p-6 rounded-xl shadow-inner text-center custom-accent-gradient">
                 <span class="text-white/80 mb-1 font-medium text-sm">Prix total</span>
                 <div class="flex items-center text-5xl font-extrabold text-white">
                   <span id="resTotalPrice">0,00</span> <i data-lucide="euro" class="ml-2 opacity-80 w-8 h-8"></i>
                 </div>
-                <!-- Affichage direct Acompte et Solde sous le total -->
                 <div class="mt-4 w-full pt-3 border-t border-white/20 flex justify-between text-xs text-white/90">
                   <div class="text-left">
                     <span class="block opacity-75">Acompte (50%)</span>
@@ -987,13 +559,11 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- --- JAVASCRIPT GLOBAL --- -->
   <script>
-    // --- États Généraux de l'application ---
     const state = {
       isDarkMode: true,
       colorTheme: 'blue',
@@ -1014,25 +584,19 @@
       engravingCount: 0,
       engravingTheme: '',
       uploadedLogo: null,
-      isGeneratingPdf: false,
       
-      // Paramètres configurables (Formule Lettrage)
+      // Paramètres
       decrementStep: 0.02,
       minRate: 0.40,
       multiplier: 2,
-
-      // Paramètres configurables (Formule Lithophanie)
       lithoBaseRate: 0.65,
       lithoDecrementStep: 0.02,
       lithoMinRate: 0.30,
-
-      // Tarifs zones de livraison
       priceZone1: 0,
       priceZone2: 10,
       priceZone3: 25
     };
 
-    // Configuration des palettes de couleurs du studio
     const colorPresets = {
       blue: { name: 'Bleu Royal', color: '#2563eb', hover: '#1d4ed8', from: '#2563eb', to: '#4f46e5', badgeBg: 'rgba(37, 99, 235, 0.1)', badgeBorder: 'rgba(37, 99, 235, 0.2)', badgeText: '#60a5fa' },
       emerald: { name: 'Émeraude Chic', color: '#059669', hover: '#047857', from: '#059669', to: '#0f766e', badgeBg: 'rgba(5, 150, 105, 0.1)', badgeBorder: 'rgba(5, 150, 105, 0.2)', badgeText: '#34d399' },
@@ -1042,18 +606,15 @@
       amber: { name: 'Ambre Chaud', color: '#d97706', hover: '#b45309', from: '#d97706', to: '#ea580c', badgeBg: 'rgba(217, 119, 6, 0.1)', badgeBorder: 'rgba(217, 119, 6, 0.2)', badgeText: '#fbbf24' }
     };
 
-    // Communes de l'Île de la Réunion
     const reunionCities = [
       { name: 'Saint-Pierre', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
       { name: 'Saint-Louis', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
       { name: 'Le Tampon', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
       { name: 'Petite-Île', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
       { name: 'Entre-Deux', zone: 1, desc: 'Secteur local (Moins de 20 min)' },
-      
       { name: "L'Étang-Salé", zone: 2, desc: 'Secteur Sud étendu / Ouest bas' },
       { name: 'Saint-Joseph', zone: 2, desc: 'Secteur Sud étendu / Est' },
       { name: 'Les Avirons', zone: 2, desc: 'Secteur Ouest proche' },
-
       { name: 'Saint-Paul', zone: 3, desc: 'Secteur Ouest' },
       { name: 'Trois-Bassins', zone: 3, desc: 'Secteur Ouest' },
       { name: 'Le Port', zone: 3, desc: 'Secteur Ouest' },
@@ -1067,105 +628,65 @@
       { name: 'Sainte-Rose', zone: 3, desc: 'Secteur Est' },
       { name: 'Saint-Philippe', zone: 3, desc: 'Secteur Sud sauvage' },
       { name: 'La Plaine-des-Palmistes', zone: 3, desc: 'Secteur Plaines' },
-      { name: 'Cilaos', zone: 3, desc: 'Secteur Cirques (Route de montagne)' },
+      { name: 'Cilaos', zone: 3, desc: 'Secteur Cirques' },
       { name: 'Salazie', zone: 3, desc: 'Secteur Cirques' }
     ];
 
-    // Initialisation
     window.onload = function() {
-      // Configurer la date de livraison estimée par défaut à J+14
       const date = new Date();
       date.setDate(date.getDate() + 14);
       document.getElementById('deliveryDate').value = date.toISOString().split('T')[0];
       document.getElementById('orderDate').value = state.orderDate;
 
-      // Générer l'UI des sélecteurs de couleur
       renderColorSelectors();
-      
-      // Charger les villes de la Réunion
       renderReunionCities();
-
-      // Appliquer les styles et variables
       setColorTheme(state.colorTheme);
       setThemeMode(state.isDarkMode);
 
-      // Effectuer le premier rendu des calculs
+      lucide.createIcons();
       updateAll();
     };
 
-    // Générer les boutons de choix de couleurs
     function renderColorSelectors() {
       const container = document.getElementById('color-selectors-container');
       container.innerHTML = '';
-      
       Object.keys(colorPresets).forEach(key => {
         const preset = colorPresets[key];
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.title = preset.name;
-        btn.className = `h-8 px-3 rounded-full flex items-center gap-1.5 text-xs font-medium transition-all ${
-          state.colorTheme === key ? 'text-white shadow-sm scale-105' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-        }`;
-        if (state.colorTheme === key) {
-          btn.style.backgroundColor = preset.color;
-        }
-        btn.onclick = () => {
-          state.colorTheme = key;
-          setColorTheme(key);
-          renderColorSelectors();
-          updateAll();
-        };
-
+        btn.className = `h-8 px-3 rounded-full flex items-center gap-1.5 text-xs font-medium transition-all ${state.colorTheme === key ? 'text-white shadow-sm scale-105' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+        if (state.colorTheme === key) btn.style.backgroundColor = preset.color;
+        btn.onclick = () => { state.colorTheme = key; setColorTheme(key); renderColorSelectors(); updateAll(); };
         const dot = document.createElement('span');
         dot.className = `w-2.5 h-2.5 rounded-full`;
         dot.style.backgroundColor = state.colorTheme === key ? '#fff' : preset.color;
-        
         const label = document.createElement('span');
         label.innerText = preset.name;
-
         btn.appendChild(dot);
         btn.appendChild(label);
         container.appendChild(btn);
       });
     }
 
-    // Remplir le sélecteur de villes de la Réunion
     function renderReunionCities() {
       const select = document.getElementById('deliveryCity');
       select.innerHTML = '';
-
-      const z1Group = document.createElement('optgroup');
-      z1Group.label = "Moins de 20 min de Saint-Pierre (Livraison Gratuite)";
-      
-      const z2Group = document.createElement('optgroup');
-      z2Group.label = "Secteur Sud étendu / Ouest proche";
-
-      const z3Group = document.createElement('optgroup');
-      z3Group.label = "Reste de l'île de la Réunion";
-
+      const z1Group = document.createElement('optgroup'); z1Group.label = "Moins de 20 min de Saint-Pierre (Gratuit)";
+      const z2Group = document.createElement('optgroup'); z2Group.label = "Secteur Sud étendu / Ouest proche";
+      const z3Group = document.createElement('optgroup'); z3Group.label = "Reste de l'île de la Réunion";
       reunionCities.forEach(city => {
         const opt = document.createElement('option');
-        opt.value = city.name;
-        opt.innerText = city.name;
-        opt.className = 'bg-slate-900 text-white';
-
-        if (city.zone === 1) z1Group.appendChild(opt);
-        else if (city.zone === 2) z2Group.appendChild(opt);
-        else z3Group.appendChild(opt);
+        opt.value = city.name; opt.innerText = city.name; opt.className = 'bg-slate-900 text-white';
+        if (city.zone === 1) z1Group.appendChild(opt); else if (city.zone === 2) z2Group.appendChild(opt); else z3Group.appendChild(opt);
       });
-
-      select.appendChild(z1Group);
-      select.appendChild(z2Group);
-      select.appendChild(z3Group);
-      
+      select.appendChild(z1Group); select.appendChild(z2Group); select.appendChild(z3Group);
       select.value = state.deliveryCity;
     }
 
-    // Appliquer dynamiquement la couleur d'accentuation via CSS Variables
     function setColorTheme(themeKey) {
       const preset = colorPresets[themeKey] || colorPresets.blue;
       const root = document.documentElement;
-      
       root.style.setProperty('--accent-color', preset.color);
       root.style.setProperty('--accent-color-hover', preset.hover);
       root.style.setProperty('--accent-gradient-from', preset.from);
@@ -1175,12 +696,10 @@
       root.style.setProperty('--accent-badge-text', preset.badgeText);
     }
 
-    // Gestion du thème clair/sombre
     function setThemeMode(darkMode) {
       state.isDarkMode = darkMode;
       const htmlEl = document.documentElement;
       const bodyEl = document.getElementById('app-body');
-      
       const btnLight = document.getElementById('btn-light-mode');
       const btnDark = document.getElementById('btn-dark-mode');
 
@@ -1188,27 +707,22 @@
         htmlEl.classList.add('dark');
         bodyEl.classList.add('bg-slate-950', 'text-slate-100');
         bodyEl.classList.remove('bg-slate-50', 'text-slate-800');
-        
         btnDark.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
         btnLight.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-400";
       } else {
         htmlEl.classList.remove('dark');
         bodyEl.classList.add('bg-slate-50', 'text-slate-800');
         bodyEl.classList.remove('bg-slate-950', 'text-slate-100');
-        
         btnLight.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
         btnDark.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800";
       }
       updateAll();
     }
 
-    // Déplier/Replier le panneau de configuration avancée
     function toggleSettings() {
-      state.showSettings = !state.showSettings;
       const panel = document.getElementById('settings-panel');
       const chevron = document.getElementById('settings-chevron');
-      
-      if (state.showSettings) {
+      if (panel.classList.contains('hidden')) {
         panel.classList.remove('hidden');
         chevron.style.transform = 'rotate(180deg)';
       } else {
@@ -1217,10 +731,7 @@
       }
     }
 
-    // Import du logo personnalisé
-    function triggerFileInput() {
-      document.getElementById('logo-file-input').click();
-    }
+    function triggerFileInput() { document.getElementById('logo-file-input').click(); }
 
     function handleLogoUpload(event) {
       const file = event.target.files[0];
@@ -1236,40 +747,29 @@
       }
     }
 
-    // Notification toast
     function showToast(message) {
       const toast = document.getElementById('toast');
-      const toastText = document.getElementById('toast-text');
-      
-      toastText.innerText = message;
+      document.getElementById('toast-text').innerText = message;
       toast.classList.remove('hidden');
-      
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 4000);
+      setTimeout(() => { toast.classList.add('hidden'); }, 4000);
     }
 
-    // Réinitialiser la formule
     function resetConfiguration() {
-      resetConfig();
-      
-      document.getElementById('decrementStep').value = state.decrementStep;
-      document.getElementById('minRate').value = state.minRate;
-      document.getElementById('multiplier').value = state.multiplier;
-      document.getElementById('lithoBaseRate').value = state.lithoBaseRate;
-      document.getElementById('lithoDecrementStep').value = state.lithoDecrementStep;
-      document.getElementById('lithoMinRate').value = state.lithoMinRate;
-      document.getElementById('priceZone1').value = state.priceZone1;
-      document.getElementById('priceZone2').value = state.priceZone2;
-      document.getElementById('priceZone3').value = state.priceZone3;
-
+      document.getElementById('decrementStep').value = 0.02;
+      document.getElementById('minRate').value = 0.40;
+      document.getElementById('multiplier').value = 2;
+      document.getElementById('lithoBaseRate').value = 0.65;
+      document.getElementById('lithoDecrementStep').value = 0.02;
+      document.getElementById('lithoMinRate').value = 0.30;
+      document.getElementById('priceZone1').value = 0;
+      document.getElementById('priceZone2').value = 10;
+      document.getElementById('priceZone3').value = 25;
       showToast("Toutes les formules ont été réinitialisées !");
       updateAll();
     }
 
     // --- RECALCULER TOUT ET RENDRE L'UI ---
     function updateAll() {
-      // Récupérer les valeurs des entrées HTML
       state.clientName = document.getElementById('clientName').value;
       state.clientEmail = document.getElementById('clientEmail').value;
       state.clientPhone = document.getElementById('clientPhone').value;
@@ -1278,17 +778,16 @@
       state.eventType = document.getElementById('eventType').value;
       state.eventDate = document.getElementById('eventDate') ? document.getElementById('eventDate').value : '';
       state.deliveryMethod = document.getElementById('deliveryMethod').value;
-      if (state.deliveryMethod === 'livraison') {
-        state.deliveryCity = document.getElementById('deliveryCity').value;
-      }
+      if (state.deliveryMethod === 'livraison') state.deliveryCity = document.getElementById('deliveryCity').value;
+      
       state.text = document.getElementById('text').value;
       state.height = Number(document.getElementById('height').value) || 0;
       state.shapeCount = Number(document.getElementById('shapeCount').value) || 0;
+      state.shapeDescription = document.getElementById('shapeDescription').value; // CORRECTION ICI
       state.engravingCount = Number(document.getElementById('engravingCount').value) || 0;
       state.engravingTheme = document.getElementById('engravingTheme').value;
       state.hasLedPremium = document.getElementById('hasLedPremium').checked;
 
-      // Lire les formules si modifiées
       state.decrementStep = Number(document.getElementById('decrementStep').value) || 0.02;
       state.minRate = Number(document.getElementById('minRate').value) || 0.40;
       state.multiplier = Number(document.getElementById('multiplier').value) || 2;
@@ -1299,16 +798,12 @@
       state.priceZone2 = Number(document.getElementById('priceZone2').value) || 10;
       state.priceZone3 = Number(document.getElementById('priceZone3').value) || 25;
 
-      // 1. Affichage conditionnel des blocs
-      // Bloc livraison
+      // Affichage du sélecteur de ville
       const deliveryContainer = document.getElementById('deliveryCityContainer');
-      if (state.deliveryMethod === 'livraison') {
-        deliveryContainer.classList.remove('hidden');
-      } else {
-        deliveryContainer.classList.add('hidden');
-      }
+      if (state.deliveryMethod === 'livraison') deliveryContainer.classList.remove('hidden');
+      else deliveryContainer.classList.add('hidden');
 
-      // Bloc date d'événement
+      // Affichage du sélecteur de date d'événement
       const eventContainer = document.getElementById('eventDateContainer');
       const eventWrapper = document.getElementById('eventTypeWrapper');
       if (state.eventType !== 'aucun') {
@@ -1321,402 +816,22 @@
         eventWrapper.classList.add('sm:col-span-2');
       }
 
-      // Input descriptif de la forme
+      // Input forme premium (désactiver si = 0)
       const shapeDescInput = document.getElementById('shapeDescription');
       const shapeWarning = document.getElementById('shapeWarning');
       if (state.shapeCount > 0) {
         shapeDescInput.removeAttribute('disabled');
-        shapeDescInput.classList.remove('bg-slate-800/40', 'text-slate-505', 'cursor-not-allowed');
-        shapeDescInput.classList.add('bg-slate-850', 'text-white');
+        shapeDescInput.classList.remove('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
+        shapeDescInput.classList.add('bg-slate-800', 'text-white');
         shapeWarning.classList.remove('hidden');
       } else {
         shapeDescInput.setAttribute('disabled', 'true');
-        shapeDescInput.classList.add('bg-slate-800/40', 'text-slate-505', 'cursor-not-allowed');
-        shapeDescInput.classList.remove('bg-slate-850', 'text-white');
+        shapeDescInput.classList.add('bg-slate-800/40', 'text-slate-500', 'cursor-not-allowed');
+        shapeDescInput.classList.remove('bg-slate-800', 'text-white');
         shapeWarning.classList.add('hidden');
       }
 
-      // 2. Calculs mathématiques
-      // Compter les lettres
-      const match = state.text.match(/[\p{L}\p{N}]/gu);
-      const letterCount = match ? match.length : 0;
-      
-      const totalElements = letterCount + state.shapeCount;
-
-      // Déterminer le tarif dégressif au cm
-      let rate = 0;
-      if (totalElements === 0) {
-        rate = 0;
-      } else if (totalElements <= 2) {
-        rate = 1.00;
-      } else if (totalElements <= 4) {
-        rate = 0.95;
-      } else if (totalElements === 5) {
-        rate = 0.90;
-      } else if (totalElements === 6) {
-        rate = 0.87;
-      } else if (totalElements === 7) {
-        rate = 0.82;
-      } else if (totalElements === 8) {
-        rate = 0.80;
-      } else if (totalElements === 9) {
-        rate = 0.78;
-      } else if (totalElements === 10) {
-        rate = 0.76;
-      } else {
-        const diff = totalElements - 10;
-        const calculatedRate = 0.76 - (diff * state.decrementStep);
-        rate = Math.max(state.minRate, calculatedRate);
-      }
-
-      // Calcul de la Lithophanie (dégressive)
-      let engravingRate = 0;
-      let engravingPrice = 0;
-      const degressiveTip = document.getElementById('lithoDegressiveTip');
-      const lithoCurrentBadge = document.getElementById('lithoCurrentRateBadge');
-      
-      if (state.engravingCount > 0) {
-        const calculatedEngRate = state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep;
-        engravingRate = Math.max(state.lithoMinRate, calculatedEngRate);
-        engravingPrice = state.engravingCount * state.height * engravingRate;
-
-        lithoCurrentBadge.classList.remove('hidden');
-        lithoCurrentBadge.innerText = `Tarif unitaire actuel : ${engravingRate.toFixed(2).replace('.', ',')} €/cm`;
-        
-        if (state.engravingCount > 1) {
-          degressiveTip.classList.remove('hidden');
-          degressiveTip.innerText = `💡 Remise dégressive appliquée : le prix au cm par lithophanie est passé de ${state.lithoBaseRate.toFixed(2).replace('.', ',')} € à ${engravingRate.toFixed(2).replace('.', ',')} € (-${((state.engravingCount - 1) * state.lithoDecrementStep).toFixed(2).replace('.', ',')} € d'économie par unité).`;
-        } else {
-          degressiveTip.classList.add('hidden');
-        }
-      } else {
-        lithoCurrentBadge.classList.add('hidden');
-        degressiveTip.classList.add('hidden');
-      }
-
-      // Calcul de livraison
-      const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
-      let deliveryPrice = 0;
-      if (state.deliveryMethod === 'livraison') {
-        document.getElementById('deliveryZoneBadge').innerText = cityInfo.zone === 1 ? 'Zone < 20 min' : cityInfo.zone === 2 ? 'Zone Moyenne' : 'Zone Éloignée';
-        if (cityInfo.zone === 1) deliveryPrice = state.priceZone1;
-        else if (cityInfo.zone === 2) deliveryPrice = state.priceZone2;
-        else deliveryPrice = state.priceZone3;
-      }
-
-      // Calcul globaux
-      const baseTotal = totalElements * state.height * rate * state.multiplier;
-      const ledPrice = state.hasLedPremium ? 10.90 : 0;
-      const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
-      const deposit = total / 2;
-      const balance = total / 2;
-
-      // 3. Rendre l'UI de droite (Résultats)
-      // Bloc Fiche client à droite
-      const resClientBlock = document.getElementById('clientResultBlock');
-      if (state.clientName || state.clientEmail || state.clientPhone || state.eventType !== 'aucun' || state.deliveryMethod === 'livraison') {
-        resClientBlock.classList.remove('hidden');
-        
-        // Nom
-        toggleResRow('resClientNameRow', 'resClientName', state.clientName);
-        // Mail
-        toggleResRow('resClientEmailRow', 'resClientEmail', state.clientEmail);
-        // Tél
-        toggleResRow('resClientPhoneRow', 'resClientPhone', state.clientPhone);
-        
-        // Mode livraison / atelier
-        const resDeliveryMethod = document.getElementById('resDeliveryMethod');
-        const resDeliveryCityRow = document.getElementById('resDeliveryCityRow');
-        const resDeliveryDescRow = document.getElementById('resDeliveryDescRow');
-        
-        if (state.deliveryMethod === 'livraison') {
-          resDeliveryMethod.innerText = "Livraison à domicile";
-          resDeliveryMethod.className = "font-semibold text-emerald-400";
-          resDeliveryCityRow.classList.remove('hidden');
-          document.getElementById('resDeliveryCity').innerText = state.deliveryCity;
-          resDeliveryDescRow.classList.remove('hidden');
-          document.getElementById('resDeliveryDesc').innerText = cityInfo.desc;
-        } else {
-          resDeliveryMethod.innerText = "Retrait direct Atelier";
-          resDeliveryMethod.className = "font-semibold text-blue-300";
-          resDeliveryCityRow.classList.add('hidden');
-          resDeliveryDescRow.classList.add('hidden');
-        }
-
-        // Dates
-        document.getElementById('resOrderDate').innerText = formatDateFR(state.orderDate);
-        document.getElementById('resDeliveryDate').innerText = formatDateFR(state.deliveryDate);
-
-        // Alerte événement
-        const eventBadge = document.getElementById('eventBadge');
-        const resEventDateAlert = document.getElementById('resEventDateAlert');
-        if (state.eventType !== 'aucun') {
-          eventBadge.classList.remove('hidden');
-          eventBadge.innerText = getEventLabel(state.eventType);
-          if (state.eventDate) {
-            resEventDateAlert.classList.remove('hidden');
-            document.getElementById('resEventDate').innerText = formatDateFR(state.eventDate);
-          } else {
-            resEventDateAlert.classList.add('hidden');
-          }
-        } else {
-          eventBadge.classList.add('hidden');
-          resEventDateAlert.classList.add('hidden');
-        }
-      } else {
-        resClientBlock.classList.add('hidden');
-      }
-
-      // Statistiques standard
-      document.getElementById('resLetterCount').innerText = letterCount;
-
-      // Section Forme Premium à droite
-      const resShapeBlock = document.getElementById('resShapeBlock');
-      const resShapeDescWrapper = document.getElementById('resShapeDescWrapper');
-      if (state.shapeCount > 0) {
-        resShapeBlock.classList.remove('hidden');
-        document.getElementById('resShapeCount').innerText = `+${state.shapeCount}`;
-        if (state.shapeDescription) {
-          resShapeDescWrapper.classList.remove('hidden');
-          document.getElementById('resShapeDescription').innerText = state.shapeDescription;
-        } else {
-          resShapeDescWrapper.classList.add('hidden');
-        }
-      } else {
-        resShapeBlock.classList.add('hidden');
-      }
-
-      // Section Éclairage à droite
-      const resLedBlock = document.getElementById('resLedBlock');
-      if (state.hasLedPremium) {
-        resLedBlock.innerHTML = `
-          <div class="flex items-center justify-between font-semibold">
-            <div class="flex items-center gap-2">
-              <i data-lucide="zap" class="text-emerald-400 animate-bounce w-5 h-5"></i>
-              <span class="text-xs font-bold uppercase tracking-wide">Option Active</span>
-            </div>
-            <span class="text-lg font-bold text-emerald-400">+10,90 €</span>
-          </div>
-          <div class="text-xs text-emerald-100 bg-emerald-900/50 p-3 rounded-lg border border-emerald-800/40 font-medium leading-relaxed mt-2 animate-fadeIn">
-            LED premium Adressable Bluetooth + télécommande réactif au son multitude d'effets lumineux
-          </div>
-        `;
-      } else {
-        resLedBlock.innerHTML = `
-          <div class="flex items-center justify-between font-semibold text-[11px] text-emerald-450 uppercase tracking-wider">
-            <span>Éclairage standard</span>
-            <span class="font-extrabold">Inclus (Gratuit)</span>
-          </div>
-          <div class="text-sm font-bold text-emerald-100 flex items-center mt-1">
-            <i data-lucide="zap" class="text-emerald-400 mr-2 w-4 h-4"></i>
-            LED standard RGB
-          </div>
-        `;
-      }
-
-      // Section Lithophanie à droite
-      const resEngravingBlock = document.getElementById('resEngravingBlock');
-      const resEngravingThemeWrapper = document.getElementById('resEngravingThemeWrapper');
-      if (state.engravingCount > 0) {
-        resEngravingBlock.classList.remove('hidden');
-        document.getElementById('resEngravingCountHeader').innerText = state.engravingCount;
-        document.getElementById('resEngravingPriceHeader').innerText = `+${engravingPrice.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('resEngravingRate').innerText = engravingRate.toFixed(2).replace('.', ',');
-        
-        if (state.engravingTheme) {
-          resEngravingThemeWrapper.classList.remove('hidden');
-          resEngravingThemeWrapper.innerText = state.engravingTheme;
-        } else {
-          resEngravingThemeWrapper.classList.add('hidden');
-        }
-      } else {
-        resEngravingBlock.classList.add('hidden');
-      }
-
-      // Section livraison à droite
-      const resDeliveryFeeBlock = document.getElementById('resDeliveryFeeBlock');
-      if (state.deliveryMethod === 'livraison') {
-        resDeliveryFeeBlock.classList.remove('hidden');
-        resDeliveryFeeBlock.innerHTML = `
-          <div class="flex items-center justify-between font-semibold text-[11px] text-emerald-400 uppercase tracking-wider">
-            <span>Frais de port (${state.deliveryCity})</span>
-            <span class="font-extrabold">
-              ${deliveryPrice === 0 ? 'LIVRAISON OFFERTE' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`}
-            </span>
-          </div>
-          <div class="text-sm font-bold text-emerald-100 flex items-center mt-1">
-            <i data-lucide="truck" class="text-emerald-400 mr-2 w-4 h-4"></i>
-            ${deliveryPrice === 0 ? '<span class="text-emerald-400 font-extrabold">Zone Proche (Saint-Pierre et alentours)</span>' : 'Envoi à domicile par coursier'}
-          </div>
-        `;
-      } else {
-        resDeliveryFeeBlock.classList.add('hidden');
-      }
-
-      // Tarif calculé au cm
-      document.getElementById('resCalculatedRate').innerText = `${rate.toFixed(2).replace('.', ',')} €`;
-      const minRateReached = document.getElementById('resMinRateReached');
-      if (rate === state.minRate && totalElements > 10) {
-        minRateReached.classList.remove('hidden');
-      } else {
-        minRateReached.classList.add('hidden');
-      }
-
-      // Détail du calcul à droite
-      document.getElementById('calcLetterCount').innerText = letterCount;
-      const calcShapeRow = document.getElementById('calcShapeRow');
-      if (state.shapeCount > 0) {
-        calcShapeRow.classList.remove('hidden');
-        document.getElementById('calcShapeCount').innerText = `+ ${state.shapeCount}`;
-      } else {
-        calcShapeRow.classList.add('hidden');
-      }
-      document.getElementById('calcTotalCount').innerText = totalElements;
-      document.getElementById('calcHeight').innerText = state.height;
-      document.getElementById('calcRate').innerText = rate.toFixed(2).replace('.', ',');
-      document.getElementById('calcMultiplier').innerText = state.multiplier;
-      document.getElementById('calcBaseTotal').innerText = `${baseTotal.toFixed(2).replace('.', ',')} €`;
-
-      const calcLedRow = document.getElementById('calcLedRow');
-      if (state.hasLedPremium) {
-        calcLedRow.classList.remove('hidden');
-      } else {
-        calcLedRow.classList.add('hidden');
-      }
-
-      const calcLithoRow = document.getElementById('calcLithoRow');
-      if (state.engravingCount > 0) {
-        calcLithoRow.classList.remove('hidden');
-        document.getElementById('calcLithoCount').innerText = state.engravingCount;
-        document.getElementById('calcLithoRate').innerText = engravingRate.toFixed(2).replace('.', ',');
-        document.getElementById('calcLithoPrice').innerText = `+ ${engravingPrice.toFixed(2).replace('.', ',')} €`;
-      } else {
-        calcLithoRow.classList.add('hidden');
-      }
-
-      const calcDeliveryRow = document.getElementById('calcDeliveryRow');
-      if (state.deliveryMethod === 'livraison') {
-        calcDeliveryRow.classList.remove('hidden');
-        document.getElementById('calcDeliveryCity').innerText = state.deliveryCity;
-        document.getElementById('calcDeliveryPrice').innerText = deliveryPrice === 0 ? 'OFFERTE (0 €)' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`;
-      } else {
-        calcDeliveryRow.classList.add('hidden');
-      }
-
-      // Prix Total de base, acompte et solde
-      document.getElementById('calcTotalPrice').innerText = `${total.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('calcDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('calcBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
-
-      // Encart total principal tout en bas de droite
-      document.getElementById('resTotalPrice').innerText = total.toFixed(2).replace('.', ',');
-      document.getElementById('resDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
-      document.getElementById('resBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
-
-      // 4. Rendu de la grille dynamique de suivi du barème
-      renderBarèmeGrid(totalElements, rate);
-
-      // Re-exécuter le créateur d'icônes Lucide pour s'assurer que les nouvelles icônes sont appliquées
-      lucide.createIcons();
-    }
-
-    // Fonction d'aide pour afficher/masquer les lignes à droite
-    function toggleResRow(rowId, valId, value) {
-      const row = document.getElementById(rowId);
-      const textSpan = document.getElementById(valId);
-      if (value) {
-        row.classList.remove('hidden');
-        row.classList.add('flex');
-        textSpan.innerText = value;
-      } else {
-        row.classList.add('hidden');
-        row.classList.remove('flex');
-      }
-    }
-
-    // Générer la grille dynamique du barème
-    function renderBarèmeGrid(totalElements, rate) {
-      const grid = document.getElementById('reference-table-grid');
-      grid.innerHTML = '';
-
-      const baseGridData = [
-        { range: '1-2', price: 1.00 },
-        { range: '3-4', price: 0.95 },
-        { range: '5', price: 0.90 },
-        { range: '6', price: 0.87 },
-        { range: '7', price: 0.82 },
-        { range: '8', price: 0.80 },
-        { range: '9', price: 0.78 },
-        { range: '10', price: 0.76 },
-      ];
-
-      // Ajouter la ligne sur-mesure si > 10
-      if (totalElements > 10) {
-        baseGridData.push({
-          range: `${totalElements}`,
-          price: rate,
-          isCustom: true
-        });
-      } else {
-        baseGridData.push({
-          range: '10+',
-          price: 0.76,
-          isInfiniteHint: true
-        });
-      }
-
-      baseGridData.forEach(row => {
-        // Détecter si actif
-        const isCurrent = 
-          (totalElements === 1 && row.range === '1-2') ||
-          (totalElements === 2 && row.range === '1-2') ||
-          (totalElements === 3 && row.range === '3-4') ||
-          (totalElements === 4 && row.range === '3-4') ||
-          (totalElements.toString() === row.range) ||
-          (totalElements > 10 && row.isCustom) ||
-          (totalElements > 10 && row.isInfiniteHint);
-
-        const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border text-center transition-all duration-300 ${
-          isCurrent
-            ? 'custom-accent-bg text-white shadow-md scale-105 font-bold' 
-            : row.isCustom 
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-              : state.isDarkMode
-                ? 'bg-slate-800 border-slate-700/60 text-slate-300'
-                : 'bg-slate-100 border-slate-200 text-slate-600'
-        }`;
-
-        const header = document.createElement('div');
-        header.className = 'font-semibold';
-        header.innerText = `${row.range} ${row.isCustom ? 'élém. (vous)' : 'élém.'}`;
-
-        const price = document.createElement('div');
-        price.className = isCurrent ? 'text-white/90' : 'text-slate-500 dark:text-slate-400 font-mono';
-        price.innerText = `${row.price.toFixed(2).replace('.', ',')} €/cm`;
-
-        card.appendChild(header);
-        card.appendChild(price);
-        grid.appendChild(card);
-      });
-
-      // Mettre à jour les tips textuels sous le barème
-      document.getElementById('hint-decrement-step').innerText = state.lithoDecrementStep;
-      document.getElementById('hint-min-rate').innerText = state.minRate.toFixed(2);
-    }
-
-    // --- GENERATION DU PDF COMPACT SUR UNE PAGE UNIQUE ---
-    function handleExportPDF() {
-      if (typeof window.html2pdf === 'undefined') {
-        showToast("La bibliothèque PDF charge encore. Réessayez dans un instant.");
-        return;
-      }
-
-      const btnText = document.getElementById('btn-export-text');
-      btnText.innerText = "Génération...";
-      showToast("Génération de votre devis PDF en cours...");
-
-      // Recompter à l'instant t pour assurer l'intégrité du PDF
+      // Calcul lettres
       const match = state.text.match(/[\p{L}\p{N}]/gu);
       const letterCount = match ? match.length : 0;
       const totalElements = letterCount + state.shapeCount;
@@ -1732,12 +847,224 @@
       else if (totalElements === 9) rate = 0.78;
       else if (totalElements === 10) rate = 0.76;
       else {
-        const diff = totalElements - 10;
-        rate = Math.max(state.minRate, 0.76 - (diff * state.decrementStep));
+        rate = Math.max(state.minRate, 0.76 - ((totalElements - 10) * state.decrementStep));
       }
 
-      let engravingRate = 0;
-      let engravingPrice = 0;
+      // Calcul Lithophanie
+      document.getElementById('displayLithoBase').innerText = state.lithoBaseRate.toFixed(2).replace('.', ',');
+      let engravingRate = 0, engravingPrice = 0;
+      const degressiveTip = document.getElementById('lithoDegressiveTip');
+      const lithoCurrentBadge = document.getElementById('lithoCurrentRateBadge');
+      
+      if (state.engravingCount > 0) {
+        engravingRate = Math.max(state.lithoMinRate, state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep);
+        engravingPrice = state.engravingCount * state.height * engravingRate;
+        lithoCurrentBadge.classList.remove('hidden');
+        lithoCurrentBadge.innerText = `Tarif unitaire actuel : ${engravingRate.toFixed(2).replace('.', ',')} €/cm`;
+        if (state.engravingCount > 1) {
+          degressiveTip.classList.remove('hidden');
+          degressiveTip.innerText = `💡 Remise dégressive : le prix unitaire est passé de ${state.lithoBaseRate.toFixed(2).replace('.', ',')} € à ${engravingRate.toFixed(2).replace('.', ',')} € (-${((state.engravingCount - 1) * state.lithoDecrementStep).toFixed(2).replace('.', ',')} €).`;
+        } else degressiveTip.classList.add('hidden');
+      } else {
+        lithoCurrentBadge.classList.add('hidden');
+        degressiveTip.classList.add('hidden');
+      }
+
+      // Livraison
+      const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
+      let deliveryPrice = 0;
+      if (state.deliveryMethod === 'livraison') {
+        const badge = document.getElementById('deliveryZoneBadge');
+        badge.innerText = cityInfo.zone === 1 ? 'Zone Proche (Gratuit)' : cityInfo.zone === 2 ? 'Zone Moyenne' : 'Zone Éloignée';
+        if (cityInfo.zone === 1) deliveryPrice = state.priceZone1;
+        else if (cityInfo.zone === 2) deliveryPrice = state.priceZone2;
+        else deliveryPrice = state.priceZone3;
+      }
+
+      const baseTotal = totalElements * state.height * rate * state.multiplier;
+      const ledPrice = state.hasLedPremium ? 10.90 : 0;
+      const total = baseTotal + ledPrice + engravingPrice + deliveryPrice;
+      const deposit = total / 2;
+      const balance = total / 2;
+
+      // MISE A JOUR UI DROITE
+      const resClientBlock = document.getElementById('clientResultBlock');
+      if (state.clientName || state.clientEmail || state.clientPhone || state.eventType !== 'aucun' || state.deliveryMethod === 'livraison') {
+        resClientBlock.classList.remove('hidden');
+        toggleResRow('resClientNameRow', 'resClientName', state.clientName);
+        toggleResRow('resClientEmailRow', 'resClientEmail', state.clientEmail);
+        toggleResRow('resClientPhoneRow', 'resClientPhone', state.clientPhone);
+        
+        if (state.deliveryMethod === 'livraison') {
+          document.getElementById('resDeliveryMethod').innerText = "Livraison à domicile";
+          document.getElementById('resDeliveryIcon').setAttribute('data-lucide', 'truck');
+          document.getElementById('resDeliveryCityRow').classList.remove('hidden');
+          document.getElementById('resDeliveryCity').innerText = state.deliveryCity;
+          document.getElementById('resDeliveryDescRow').classList.remove('hidden');
+          document.getElementById('resDeliveryDesc').innerText = cityInfo.desc;
+        } else {
+          document.getElementById('resDeliveryMethod').innerText = "Retrait direct Atelier";
+          document.getElementById('resDeliveryIcon').setAttribute('data-lucide', 'map-pin');
+          document.getElementById('resDeliveryCityRow').classList.add('hidden');
+          document.getElementById('resDeliveryDescRow').classList.add('hidden');
+        }
+
+        document.getElementById('resOrderDate').innerText = formatDateFR(state.orderDate);
+        document.getElementById('resDeliveryDate').innerText = formatDateFR(state.deliveryDate);
+
+        if (state.eventType !== 'aucun') {
+          document.getElementById('eventBadge').classList.remove('hidden');
+          document.getElementById('eventBadge').innerText = getEventLabel(state.eventType);
+          if (state.eventDate) {
+            document.getElementById('resEventDateAlert').classList.remove('hidden');
+            document.getElementById('resEventDate').innerText = formatDateFR(state.eventDate);
+          } else document.getElementById('resEventDateAlert').classList.add('hidden');
+        } else {
+          document.getElementById('eventBadge').classList.add('hidden');
+          document.getElementById('resEventDateAlert').classList.add('hidden');
+        }
+      } else resClientBlock.classList.add('hidden');
+
+      document.getElementById('resLetterCount').innerText = letterCount;
+
+      if (state.shapeCount > 0) {
+        document.getElementById('resShapeBlock').classList.remove('hidden');
+        document.getElementById('resShapeCount').innerText = `+${state.shapeCount}`;
+        if (state.shapeDescription) {
+          document.getElementById('resShapeDescWrapper').classList.remove('hidden');
+          document.getElementById('resShapeDescription').innerText = state.shapeDescription;
+        } else document.getElementById('resShapeDescWrapper').classList.add('hidden');
+      } else document.getElementById('resShapeBlock').classList.add('hidden');
+
+      const resLedBlock = document.getElementById('resLedBlock');
+      if (state.hasLedPremium) {
+        resLedBlock.innerHTML = `<div class="flex items-center justify-between font-semibold"><div class="flex items-center gap-2"><i data-lucide="zap" class="text-emerald-400 animate-bounce w-5 h-5"></i><span class="text-xs font-bold uppercase tracking-wide">Option Active</span></div><span class="text-lg font-bold text-emerald-400">+10,90 €</span></div><div class="text-xs text-emerald-100 bg-emerald-900/50 p-3 rounded-lg border border-emerald-800/40 font-medium leading-relaxed mt-2">LED premium Adressable Bluetooth + télécommande</div>`;
+      } else {
+        resLedBlock.innerHTML = `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-450 uppercase tracking-wider"><span>Éclairage standard</span><span class="font-extrabold">Inclus (Gratuit)</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="zap" class="text-emerald-400 mr-2 w-4 h-4"></i>LED standard RGB</div>`;
+      }
+
+      if (state.engravingCount > 0) {
+        document.getElementById('resEngravingBlock').classList.remove('hidden');
+        document.getElementById('resEngravingCountHeader').innerText = state.engravingCount;
+        document.getElementById('resEngravingPriceHeader').innerText = `+${engravingPrice.toFixed(2).replace('.', ',')} €`;
+        document.getElementById('resEngravingRate').innerText = engravingRate.toFixed(2).replace('.', ',');
+        if (state.engravingTheme) {
+          document.getElementById('resEngravingThemeWrapper').classList.remove('hidden');
+          document.getElementById('resEngravingThemeWrapper').innerText = state.engravingTheme;
+        } else document.getElementById('resEngravingThemeWrapper').classList.add('hidden');
+      } else document.getElementById('resEngravingBlock').classList.add('hidden');
+
+      const resDeliveryFeeBlock = document.getElementById('resDeliveryFeeBlock');
+      if (state.deliveryMethod === 'livraison') {
+        resDeliveryFeeBlock.classList.remove('hidden');
+        resDeliveryFeeBlock.innerHTML = `<div class="flex items-center justify-between font-semibold text-[11px] text-emerald-400 uppercase tracking-wider"><span>Frais de port (${state.deliveryCity})</span><span class="font-extrabold">${deliveryPrice === 0 ? 'LIVRAISON OFFERTE' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`}</span></div><div class="text-sm font-bold text-emerald-100 flex items-center mt-1"><i data-lucide="truck" class="text-emerald-400 mr-2 w-4 h-4"></i>${deliveryPrice === 0 ? '<span class="text-emerald-400 font-extrabold">Zone Proche (Saint-Pierre et alentours)</span>' : 'Envoi à domicile par coursier'}</div>`;
+      } else resDeliveryFeeBlock.classList.add('hidden');
+
+      document.getElementById('resCalculatedRate').innerText = `${rate.toFixed(2).replace('.', ',')} €`;
+      if (rate === state.minRate && totalElements > 10) document.getElementById('resMinRateReached').classList.remove('hidden');
+      else document.getElementById('resMinRateReached').classList.add('hidden');
+
+      // Détails
+      document.getElementById('calcLetterCount').innerText = letterCount;
+      if (state.shapeCount > 0) {
+        document.getElementById('calcShapeRow').classList.remove('hidden');
+        document.getElementById('calcShapeCount').innerText = `+ ${state.shapeCount}`;
+      } else document.getElementById('calcShapeRow').classList.add('hidden');
+      document.getElementById('calcTotalCount').innerText = totalElements;
+      document.getElementById('calcHeight').innerText = state.height;
+      document.getElementById('calcRate').innerText = rate.toFixed(2).replace('.', ',');
+      document.getElementById('calcMultiplier').innerText = state.multiplier;
+      document.getElementById('calcBaseTotal').innerText = `${baseTotal.toFixed(2).replace('.', ',')} €`;
+
+      if (state.hasLedPremium) document.getElementById('calcLedRow').classList.remove('hidden');
+      else document.getElementById('calcLedRow').classList.add('hidden');
+
+      if (state.engravingCount > 0) {
+        document.getElementById('calcLithoRow').classList.remove('hidden');
+        document.getElementById('calcLithoCount').innerText = state.engravingCount;
+        document.getElementById('calcLithoRate').innerText = engravingRate.toFixed(2).replace('.', ',');
+        document.getElementById('calcLithoPrice').innerText = `+ ${engravingPrice.toFixed(2).replace('.', ',')} €`;
+      } else document.getElementById('calcLithoRow').classList.add('hidden');
+
+      if (state.deliveryMethod === 'livraison') {
+        document.getElementById('calcDeliveryRow').classList.remove('hidden');
+        document.getElementById('calcDeliveryCity').innerText = state.deliveryCity;
+        document.getElementById('calcDeliveryPrice').innerText = deliveryPrice === 0 ? 'OFFERTE (0 €)' : `+ ${deliveryPrice.toFixed(2).replace('.', ',')} €`;
+      } else document.getElementById('calcDeliveryRow').classList.add('hidden');
+
+      document.getElementById('resTotalPrice').innerText = total.toFixed(2).replace('.', ',');
+      document.getElementById('calcTotalPrice').innerText = `${total.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('calcDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('calcBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('resDepositPrice').innerText = `${deposit.toFixed(2).replace('.', ',')} €`;
+      document.getElementById('resBalancePrice').innerText = `${balance.toFixed(2).replace('.', ',')} €`;
+
+      renderBarèmeGrid(totalElements, rate);
+      lucide.createIcons(); // Recréer les icônes lucide nouvellement injectées
+    }
+
+    function toggleResRow(rowId, valId, value) {
+      const row = document.getElementById(rowId);
+      if (value) { row.classList.remove('hidden'); row.classList.add('flex'); document.getElementById(valId).innerText = value; }
+      else { row.classList.add('hidden'); row.classList.remove('flex'); }
+    }
+
+    function renderBarèmeGrid(totalElements, rate) {
+      const grid = document.getElementById('reference-table-grid');
+      grid.innerHTML = '';
+      const baseGridData = [
+        { range: '1-2', price: 1.00 }, { range: '3-4', price: 0.95 }, { range: '5', price: 0.90 },
+        { range: '6', price: 0.87 }, { range: '7', price: 0.82 }, { range: '8', price: 0.80 },
+        { range: '9', price: 0.78 }, { range: '10', price: 0.76 }
+      ];
+      if (totalElements > 10) baseGridData.push({ range: `${totalElements}`, price: rate, isCustom: true });
+      else baseGridData.push({ range: '10+', price: 0.76, isInfiniteHint: true });
+
+      baseGridData.forEach(row => {
+        const isCurrent = (totalElements === 1 && row.range === '1-2') || (totalElements === 2 && row.range === '1-2') || (totalElements === 3 && row.range === '3-4') || (totalElements === 4 && row.range === '3-4') || (totalElements.toString() === row.range) || (totalElements > 10 && row.isCustom) || (totalElements > 10 && row.isInfiniteHint);
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-xl border text-center transition-all duration-300 ${isCurrent ? 'custom-accent-bg text-white shadow-md scale-105 font-bold' : row.isCustom ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-300' : state.isDarkMode ? 'bg-slate-800 border-slate-700/60 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'}`;
+        card.innerHTML = `<div class="font-semibold">${row.range} ${row.isCustom ? 'élém. (vous)' : 'élém.'}</div><div class="${isCurrent ? 'text-white/90' : 'text-slate-500 dark:text-slate-400 font-mono'}">${row.price.toFixed(2).replace('.', ',')} €/cm</div>`;
+        grid.appendChild(card);
+      });
+      document.getElementById('hint-decrement-step').innerText = state.decrementStep;
+      document.getElementById('hint-min-rate').innerText = state.minRate.toFixed(2);
+    }
+
+    function formatDateFR(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function getEventLabel(type) {
+      const labels = { aucun: 'Aucun', anniversaire: 'Anniversaire', bapteme: 'Baptême', mariage: 'Mariage', divorce: 'Divorce', noel: 'Noël', fete_meres: 'Fête des mères', fete_peres: 'Fête des pères' };
+      return labels[type] || 'Aucun';
+    }
+
+    // --- PDF ---
+    function handleExportPDF() {
+      if (typeof window.html2pdf === 'undefined') { showToast("Veuillez patienter..."); return; }
+      showToast("Génération de votre devis PDF en cours...");
+
+      // Recalcul au moment précis
+      const match = state.text.match(/[\p{L}\p{N}]/gu);
+      const letterCount = match ? match.length : 0;
+      const totalElements = letterCount + state.shapeCount;
+      let rate = 0;
+      if (totalElements === 0) rate = 0;
+      else if (totalElements <= 2) rate = 1.00;
+      else if (totalElements <= 4) rate = 0.95;
+      else if (totalElements === 5) rate = 0.90;
+      else if (totalElements === 6) rate = 0.87;
+      else if (totalElements === 7) rate = 0.82;
+      else if (totalElements === 8) rate = 0.80;
+      else if (totalElements === 9) rate = 0.78;
+      else if (totalElements === 10) rate = 0.76;
+      else rate = Math.max(state.minRate, 0.76 - ((totalElements - 10) * state.decrementStep));
+
+      let engravingRate = 0, engravingPrice = 0;
       if (state.engravingCount > 0) {
         engravingRate = Math.max(state.lithoMinRate, state.lithoBaseRate - (state.engravingCount - 1) * state.lithoDecrementStep);
         engravingPrice = state.engravingCount * state.height * engravingRate;
@@ -1768,40 +1095,22 @@
       element.style.fontFamily = 'system-ui, -apple-system, sans-serif';
       element.style.position = 'relative';
       
-      const accentColorMap = {
-        blue: '#2563eb',
-        emerald: '#059669',
-        indigo: '#4f46e5',
-        violet: '#7c3aed',
-        rose: '#e11d48',
-        amber: '#d97706'
-      };
+      const accentColorMap = { blue: '#2563eb', emerald: '#059669', indigo: '#4f46e5', violet: '#7c3aed', rose: '#e11d48', amber: '#d97706' };
       const accentHex = accentColorMap[state.colorTheme] || '#2563eb';
 
-      // Rendu du logo (Upload personnalisé ou dessin SVG de secours)
       const logoHtml = state.uploadedLogo 
         ? `<img src="${state.uploadedLogo}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid ${accentHex};" />`
-        : `<svg width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" />
-            <path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" />
-            <text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text>
-            <text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text>
-          </svg>`;
+        : `<svg width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;"><circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" /><path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" /><text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text><text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text></svg>`;
 
       element.innerHTML = `
         <div style="box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-          <!-- En-tête de page -->
           <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; gap: 15px;">
               ${logoHtml}
               <div>
                 <h1 style="font-size: 24px; font-weight: 900; margin: 0; color: #f8fafc; letter-spacing: -0.02em;">TIBOUTIK-974</h1>
                 <p style="font-size: 11px; color: #94a3b8; margin: 1px 0 6px 0;">Créations d'Enseignes Lumineuses & Lithophanies</p>
-                <div style="font-size: 9px; color: #cbd5e1; line-height: 1.4;">
-                  <strong>Bruno BAILLY</strong> (Entrepreneur individuel)<br />
-                  SIRET : 522 513 829 00039 | APE : 93.29Z<br />
-                  Saint-Pierre, Île de la Réunion
-                </div>
+                <div style="font-size: 9px; color: #cbd5e1; line-height: 1.4;"><strong>Bruno BAILLY</strong> (Entrepreneur individuel)<br />SIRET : 522 513 829 00039 | APE : 93.29Z<br />Saint-Pierre, Île de la Réunion</div>
               </div>
             </div>
             <div style="text-align: right;">
@@ -1813,7 +1122,6 @@
             </div>
           </div>
 
-          <!-- Fiche Client & Événement -->
           <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px; margin-bottom: 20px;">
             <div style="background-color: #1e293b; padding: 12px 15px; border-radius: 10px; border: 1px solid #334155;">
               <h3 style="font-size: 10px; text-transform: uppercase; color: #94a3b8; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Destinataire / Client</h3>
@@ -1830,7 +1138,6 @@
             </div>
           </div>
 
-          <!-- Détails de la fabrication -->
           <div style="flex-grow: 1; margin-bottom: 20px;">
             <h3 style="font-size: 11px; text-transform: uppercase; color: #cbd5e1; margin: 0 0 8px 0; font-weight: bold; letter-spacing: 0.05em;">Détail de la commande</h3>
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
@@ -1843,7 +1150,6 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Lettres -->
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
                     <strong style="color: #f8fafc; font-size: 12px;">Lettrage et enseigne personnalisée</strong><br />
@@ -1854,7 +1160,6 @@
                   <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(letterCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
                 </tr>
                 
-                <!-- Forme Premium -->
                 ${state.shapeCount > 0 ? `
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
@@ -1866,7 +1171,6 @@
                   <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(state.shapeCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
                 </tr>` : ''}
 
-                <!-- Lithophanie / Gravure -->
                 ${state.engravingCount > 0 ? `
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
@@ -1878,18 +1182,16 @@
                   <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingPrice.toFixed(2).replace('.', ',')} €</td>
                 </tr>` : ''}
 
-                <!-- Option Éclairage LED -->
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
                     <strong style="color: #f8fafc; font-size: 12px;">Système d'Éclairage LED</strong><br />
-                    <span style="font-size: 10px; color: #94a3b8;">${state.hasLedPremium ? 'LED premium Adressable Bluetooth + télécommande réactif au son' : 'LED standard RGB'}</span>
+                    <span style="font-size: 10px; color: #94a3b8;">${state.hasLedPremium ? 'LED premium Adressable Bluetooth + télécommande' : 'LED standard RGB'}</span>
                   </td>
                   <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">1 système</td>
                   <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
                   <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.hasLedPremium ? '10,90 €' : 'Offert'}</td>
                 </tr>
 
-                <!-- Option Livraison -->
                 ${state.deliveryMethod === 'livraison' ? `
                 <tr style="border-bottom: 1px solid #1e293b;">
                   <td style="padding: 10px 4px;">
@@ -1904,11 +1206,8 @@
             </table>
           </div>
 
-          <!-- Totaux & Signatures -->
           <div style="border-top: 1px solid #1e293b; padding-top: 15px; margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-              
-              <!-- Mentions & Cadre Signature -->
               <div style="width: 55%; font-size: 9px; color: #94a3b8; line-height: 1.5; padding-right: 20px;">
                 <p style="margin: 0 0 8px 0; color: #cbd5e1; font-weight: bold;">Mentions Légales :</p>
                 <p style="margin: 0 0 12px 0;">Ce document est une estimation tarifaire provisoire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.</p>
@@ -1918,7 +1217,6 @@
                 </div>
               </div>
 
-              <!-- Bloc Récapitulatif Financier (Mise à jour Prix total / Acompte / Solde) -->
               <div style="width: 40%; background-color: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; box-sizing: border-box;">
                 <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
                   <span>Sous-total fabrication :</span>
@@ -1940,7 +1238,6 @@
                   <span style="font-family: monospace;">${deliveryPrice === 0 ? '0,00' : deliveryPrice.toFixed(2).replace('.', ',')} €</span>
                 </div>` : ''}
                 
-                <!-- SECTION PRIX TOTAL ET DETAIL PDF -->
                 <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: #f8fafc; border-top: 1px solid #334155; margin-top: 8px; padding-top: 8px;">
                   <span>Prix total :</span>
                   <span style="color: #34d399; font-family: monospace;">${total.toFixed(2).replace('.', ',')} €</span>
@@ -1971,21 +1268,7 @@
         jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(element).save()
-        .then(() => {
-          setIsGeneratingPdf(false);
-        })
-        .catch((err) => {
-          setIsGeneratingPdf(false);
-          showToast("Erreur lors de la génération du PDF.");
-          console.error(err);
-        });
-    }
-
-    function setIsGeneratingPdf(val) {
-      state.isGeneratingPdf = val;
-      const btnText = document.getElementById('btn-export-text');
-      btnText.innerText = val ? "Génération..." : "Export PDF";
+      html2pdf().set(opt).from(element).save().then(() => showToast("PDF téléchargé avec succès !"));
     }
   </script>
 </body>
