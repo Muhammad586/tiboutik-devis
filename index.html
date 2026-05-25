@@ -82,7 +82,7 @@
           <!-- Injecté par JavaScript -->
         </div>
       </div>
-      <div class="flex items-center gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800 w-full md:w-auto justify-end">
+      <div class="flex items-center gap-2 w-full md:w-auto justify-end">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Style :</span>
         <button onclick="setThemeMode(false)" id="btn-light-mode" class="p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800" title="Thème Clair">
           <i data-lucide="sun" class="w-5 h-5"></i>
@@ -237,20 +237,6 @@
           </h2>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Type de Document -->
-            <div class="sm:col-span-2">
-              <label class="block text-sm font-medium text-slate-400 mb-1.5">Type de document</label>
-              <div class="relative">
-                <i data-lucide="file-text" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
-                <select id="documentType" onchange="updateAll()" class="w-full pl-9 pr-3 py-2 rounded-xl border outline-none transition text-sm bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-blue-500">
-                  <option value="">Estimation prix</option>
-                  <option value="devis">Devis</option>
-                  <option value="bon_de_commande">Bon de commande</option>
-                  <option value="facture">Facture</option>
-                </select>
-              </div>
-            </div>
-
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-slate-400 mb-1.5">Nom & Prénom</label>
               <div class="relative">
@@ -463,7 +449,7 @@
           
           <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
             <h2 class="text-xl font-bold flex items-center">
-              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i> <span id="ui-result-title">Résultat : Estimation prix</span>
+              <i data-lucide="calculator" class="mr-2 text-blue-400 w-6 h-6"></i> <span id="ui-result-title">Résultat : Devis</span>
             </h2>
             <button onclick="handleExportPDF()" id="btn-export-pdf" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md custom-accent-bg text-white hover:scale-105 active:scale-95 transition-all">
               <i data-lucide="download" class="w-3.5 h-3.5"></i> <span id="btn-export-text">Export PDF</span>
@@ -496,7 +482,7 @@
               </div>
 
               <div class="border-t border-slate-700 pt-2 grid grid-cols-2 gap-2 text-[11px]">
-                <div><span class="text-slate-500 block">Commande :</span> <span id="resOrderDate" class="font-semibold text-slate-300"></span></div>
+                <div><span class="text-slate-500 block">Émis le :</span> <span id="resOrderDate" class="font-semibold text-slate-300"></span></div>
                 <div class="text-right"><span class="text-slate-500 block">Livraison :</span> <span id="resDeliveryDate" class="font-semibold text-emerald-400"></span></div>
               </div>
               <div id="resEventDateAlert" class="hidden bg-amber-950/40 border border-amber-900/65 p-2.5 rounded-lg text-amber-300 mt-2 text-center font-medium">
@@ -609,7 +595,6 @@
     const state = {
       isDarkMode: true,
       colorTheme: 'blue',
-      documentType: '', // Type de document
       clientName: '',
       clientEmail: '',
       clientPhone: '',
@@ -820,7 +805,6 @@
       updateAll();
     }
 
-    // --- FONCTIONS PARE-FEU CONTRE LES ERREURS ---
     function setTxt(id, text) {
       const el = document.getElementById(id);
       if(el) el.innerText = text;
@@ -851,18 +835,7 @@
       }
     }
 
-    // Fonction d'aide pour obtenir le libellé du type de document
-    function getDocumentTypeName() {
-      if (state.documentType === 'devis') return 'Devis';
-      if (state.documentType === 'bon_de_commande') return 'Bon de commande';
-      if (state.documentType === 'facture') return 'Facture';
-      return 'Estimation prix';
-    }
-
-    // --- RECALCULER TOUT ET RENDRE L'UI ---
     function updateAll() {
-      // Saisie utilisateur
-      state.documentType = document.getElementById('documentType')?.value || '';
       state.clientName = document.getElementById('clientName')?.value || '';
       state.clientEmail = document.getElementById('clientEmail')?.value || '';
       state.clientPhone = document.getElementById('clientPhone')?.value || '';
@@ -891,14 +864,8 @@
       state.priceZone2 = Number(document.getElementById('priceZone2')?.value) || 10;
       state.priceZone3 = Number(document.getElementById('priceZone3')?.value) || 25;
 
-      // Mise à jour du type de document dans l'UI (titre à droite)
-      const docName = getDocumentTypeName();
-      setTxt('ui-result-title', `Résultat : ${docName}`);
-
-      // Affichage du sélecteur de ville
       toggleHide('deliveryCityContainer', state.deliveryMethod !== 'livraison');
 
-      // Affichage du sélecteur de date d'événement
       const eventWrapper = document.getElementById('eventTypeWrapper');
       if (state.eventType !== 'aucun') {
         toggleHide('eventDateContainer', false);
@@ -908,7 +875,6 @@
         if(eventWrapper) eventWrapper.classList.replace('sm:col-span-1', 'sm:col-span-2');
       }
 
-      // Input forme premium (désactiver si = 0)
       const shapeDescInput = document.getElementById('shapeDescription');
       if (state.shapeCount > 0) {
         if(shapeDescInput) {
@@ -926,7 +892,6 @@
         toggleHide('shapeWarning', true);
       }
 
-      // Calcul lettres
       const match = state.text.match(/[\p{L}\p{N}]/gu);
       const letterCount = match ? match.length : 0;
       const totalElements = letterCount + state.shapeCount;
@@ -945,7 +910,6 @@
         rate = Math.max(state.minRate, 0.76 - ((totalElements - 10) * state.decrementStep));
       }
 
-      // Calcul Lithophanie
       setTxt('displayLithoBase', state.lithoBaseRate.toFixed(2).replace('.', ','));
       let engravingRate = 0, engravingPrice = 0;
       
@@ -967,7 +931,6 @@
         toggleHide('lithoDegressiveTip', true);
       }
 
-      // Livraison
       const cityInfo = reunionCities.find(c => c.name === state.deliveryCity) || { name: 'Saint-Pierre', zone: 1, desc: '' };
       let deliveryPrice = 0;
       if (state.deliveryMethod === 'livraison') {
@@ -983,7 +946,6 @@
       const deposit = total / 2;
       const balance = total / 2;
 
-      // MISE A JOUR UI DROITE
       if (state.clientName || state.clientEmail || state.clientPhone || state.eventType !== 'aucun' || state.deliveryMethod === 'livraison') {
         toggleHide('clientResultBlock', false);
         toggleResRow('resClientNameRow', 'resClientName', state.clientName);
@@ -1072,7 +1034,6 @@
       setTxt('resCalculatedRate', `${rate.toFixed(2).replace('.', ',')} €`);
       toggleHide('resMinRateReached', rate !== state.minRate || totalElements <= 10);
 
-      // --- Détails Détaillés ---
       setTxt('calcLetterCount', letterCount);
       
       if (state.shapeCount > 0) {
@@ -1113,7 +1074,6 @@
         toggleHide('calcDeliveryRow', true);
       }
 
-      // --- PRIX TOTAUX DANS LE HTML ---
       setTxt('calcTotalPrice', `${total.toFixed(2).replace('.', ',')} €`);
       setTxt('calcDepositPrice', `${deposit.toFixed(2).replace('.', ',')} €`);
       setTxt('calcBalancePrice', `${balance.toFixed(2).replace('.', ',')} €`);
@@ -1150,15 +1110,25 @@
       setTxt('hint-min-rate', state.minRate.toFixed(2));
     }
 
+    function formatDateFR(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function getEventLabel(type) {
+      const labels = { aucun: 'Aucun', anniversaire: 'Anniversaire', bapteme: 'Baptême', mariage: 'Mariage', divorce: 'Divorce', noel: 'Noël', fete_meres: 'Fête des mères', fete_peres: 'Fête des pères' };
+      return labels[type] || 'Aucun';
+    }
+
     // --- PDF ---
     function handleExportPDF() {
       if (typeof window.html2pdf === 'undefined') { showToast("Veuillez patienter..."); return; }
       
-      const docName = getDocumentTypeName();
-      showToast(`Génération de votre ${docName.toLowerCase()} PDF en cours...`);
+      showToast(`Génération de votre devis PDF en cours...`);
 
       try {
-        // Recalcul au moment précis
         const match = state.text.match(/[\p{L}\p{N}]/gu);
         const letterCount = match ? match.length : 0;
         const totalElements = letterCount + state.shapeCount;
@@ -1194,20 +1164,6 @@
         const deposit = total / 2;
         const balance = total / 2;
 
-        const element = document.createElement('div');
-        element.style.width = '794px'; 
-        element.style.minHeight = '1120px';
-        element.style.maxHeight = '1120px';
-        element.style.boxSizing = 'border-box';
-        element.style.padding = '35px 40px';
-        element.style.backgroundColor = '#0f172a';
-        element.style.color = '#ffffff';
-        element.style.fontFamily = 'system-ui, -apple-system, sans-serif';
-        // Hide off-screen but keep in DOM for html2canvas to render styles perfectly
-        element.style.position = 'fixed';
-        element.style.left = '-9999px';
-        element.style.top = '0';
-        
         const accentColorMap = { blue: '#2563eb', emerald: '#059669', indigo: '#4f46e5', violet: '#7c3aed', rose: '#e11d48', amber: '#d97706' };
         const accentHex = accentColorMap[state.colorTheme] || '#2563eb';
 
@@ -1215,192 +1171,198 @@
           ? `<img src="${state.uploadedLogo}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid ${accentHex};" />`
           : `<svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;"><circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" /><path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" /><text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text><text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text></svg>`;
 
-        // Mentions légales adaptées au type de document
-        const docTypeLower = docName.toLowerCase();
-        let legalText = `Ce document est un(e) ${docTypeLower} émis(e) par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.`;
-        if(state.documentType === 'facture') {
-          legalText = `Ce document est une facture émise par l'entreprise TIBOUTIK-974. Merci pour votre confiance et votre achat.`;
-        } else if(state.documentType === 'bon_de_commande') {
-          legalText = `Ce document est un bon de commande émis par l'entreprise TIBOUTIK-974. L'accord ci-dessous valide le lancement de la fabrication.`;
-        }
-        
-        const signatureBoxDisplay = state.documentType === 'facture' ? 'none' : 'block';
+        let legalText = `Ce document est une estimation tarifaire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.`;
 
-        element.innerHTML = `
-          <div style="box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px;">
-              <div style="display: flex; align-items: center; gap: 15px;">
-                ${logoHtml}
-                <div>
+        // RE-DESIGN DU PDF : Utilisation exclusive de HTML/CSS basique (sans Grid) 
+        // avec des boîtes flottantes simulées via des tableaux (garantit à 100% l'alignement sur pdf)
+        const pdfHtmlContent = `
+          <div style="width: 794px; min-height: 1122px; padding: 40px; box-sizing: border-box; background-color: #0f172a; color: #ffffff; font-family: system-ui, -apple-system, sans-serif;">
+            
+            <table style="width: 100%; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 20px; border-spacing: 0;">
+              <tr>
+                <td style="width: 80px; vertical-align: middle;">${logoHtml}</td>
+                <td style="vertical-align: middle; padding-left: 15px;">
                   <h1 style="font-size: 24px; font-weight: 900; margin: 0; color: #f8fafc; letter-spacing: -0.02em;">TIBOUTIK-974</h1>
                   <p style="font-size: 11px; color: #94a3b8; margin: 1px 0 6px 0;">Créations d'Enseignes Lumineuses & Lithophanies</p>
                   <div style="font-size: 9px; color: #cbd5e1; line-height: 1.4;"><strong>Bruno BAILLY</strong> (Entrepreneur individuel)<br />SIRET : 522 513 829 00039 | APE : 93.29Z<br />Saint-Pierre, Île de la Réunion</div>
-                </div>
-              </div>
-              <div style="text-align: right;">
-                <div style="background-color: #1e293b; padding: 8px 16px; border-radius: 10px; border: 1px solid #334155; display: inline-block;">
-                  <h2 style="font-size: 12px; margin: 0; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">${docName}</h2>
-                  <p style="font-size: 10px; margin: 3px 0 0 0; color: #94a3b8;">Émis le : ${formatDateFR(state.orderDate)}</p>
-                  <p style="font-size: 10px; margin: 1px 0 0 0; color: #34d399; font-weight: bold;">Livraison : ${formatDateFR(state.deliveryDate)}</p>
-                </div>
+                </td>
+                <td style="text-align: right; vertical-align: top;">
+                  <div style="background-color: #1e293b; padding: 10px 15px; border-radius: 8px; border: 1px solid #334155; display: inline-block; text-align: left;">
+                    <h2 style="font-size: 12px; margin: 0 0 5px 0; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">Proposition Commerciale</h2>
+                    <p style="font-size: 10px; margin: 0 0 2px 0; color: #94a3b8;">Émis le : ${formatDateFR(state.orderDate)}</p>
+                    <p style="font-size: 10px; margin: 0; color: #34d399; font-weight: bold;">Livraison : ${formatDateFR(state.deliveryDate)}</p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table style="width: 100%; margin-bottom: 25px; border-spacing: 0; table-layout: fixed;">
+              <tr>
+                <td style="width: ${state.eventType !== 'aucun' ? '58%' : '100%'}; vertical-align: top; padding: 0;">
+                  <div style="background-color: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; height: 100%; box-sizing: border-box;">
+                    <h3 style="font-size: 10px; text-transform: uppercase; color: #94a3b8; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Destinataire / Client</h3>
+                    <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Client : ${state.clientName || 'Non spécifié'}</p>
+                    ${state.clientEmail ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">E-mail : ${state.clientEmail}</p>` : ''}
+                    ${state.clientPhone ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">Tél : ${state.clientPhone}</p>` : ''}
+                    <p style="font-size: 11px; margin: 0; color: #cbd5e1;">Mode : ${state.deliveryMethod === 'livraison' ? `Livraison à domicile (${state.deliveryCity})` : 'Retrait direct à l\'atelier'}</p>
+                  </div>
+                </td>
+                ${state.eventType !== 'aucun' ? `
+                <td style="width: 4%; padding: 0;"></td>
+                <td style="width: 38%; vertical-align: top; padding: 0;">
+                  <div style="background-color: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; height: 100%; box-sizing: border-box;">
+                    <h3 style="font-size: 10px; text-transform: uppercase; color: #fb7185; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Planification Événement</h3>
+                    <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Occasion : ${getEventLabel(state.eventType)}</p>
+                    ${state.eventDate ? `<p style="font-size: 11px; margin: 0; color: #fbbf24; font-weight: bold;">Date : ${formatDateFR(state.eventDate)}</p>` : ''}
+                  </div>
+                </td>
+                ` : ''}
+              </tr>
+            </table>
+
+            <div style="margin-bottom: 25px;">
+              <h3 style="font-size: 12px; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.05em;">Détail de la commande</h3>
+              <div style="background-color: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                  <thead>
+                    <tr style="background-color: #0f172a; border-bottom: 1px solid #334155; color: #cbd5e1; font-size: 11px; text-transform: uppercase;">
+                      <th style="padding: 12px 15px; font-weight: 600; width: 45%;">Description de la pièce</th>
+                      <th style="padding: 12px 15px; text-align: center; font-weight: 600; width: 25%;">Détails / Taille</th>
+                      <th style="padding: 12px 15px; text-align: right; font-weight: 600; width: 15%;">Tarif U.</th>
+                      <th style="padding: 12px 15px; text-align: right; font-weight: 600; width: 15%;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #334155;">
+                      <td style="padding: 15px;">
+                        <strong style="color: #f8fafc; font-size: 13px;">Lettrage et enseigne personnalisée</strong><br />
+                        <span style="font-size: 11px; color: #94a3b8;">Texte : "${state.text || 'Aucun texte saisi'}"</span>
+                      </td>
+                      <td style="padding: 15px; text-align: center; color: #cbd5e1;">${letterCount} lettres / ${state.height} cm</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace; font-weight: bold;">${(letterCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
+                    </tr>
+                    
+                    ${state.shapeCount > 0 ? `
+                    <tr style="border-bottom: 1px solid #334155;">
+                      <td style="padding: 15px;">
+                        <strong style="color: #f8fafc; font-size: 13px;">Forme Premium</strong><br />
+                        <span style="font-size: 11px; color: #94a3b8;">Modèle : ${state.shapeDescription || 'Non défini'}</span>
+                      </td>
+                      <td style="padding: 15px; text-align: center; color: #cbd5e1;">${state.shapeCount} forme(s) / ${state.height} cm</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace; font-weight: bold;">${(state.shapeCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
+                    </tr>` : ''}
+
+                    ${state.engravingCount > 0 ? `
+                    <tr style="border-bottom: 1px solid #334155;">
+                      <td style="padding: 15px;">
+                        <strong style="color: #f8fafc; font-size: 13px;">Lithophanie (Gravure dégressive)</strong><br />
+                        <span style="font-size: 11px; color: #94a3b8;">Thème : ${state.engravingTheme || 'Standard'}</span>
+                      </td>
+                      <td style="padding: 15px; text-align: center; color: #cbd5e1;">${state.engravingCount} litho(s) / ${state.height} cm</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingRate.toFixed(2).replace('.', ',')} €</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace; font-weight: bold;">${engravingPrice.toFixed(2).replace('.', ',')} €</td>
+                    </tr>` : ''}
+
+                    <tr style="border-bottom: 1px solid #334155;">
+                      <td style="padding: 15px;">
+                        <strong style="color: #f8fafc; font-size: 13px;">Système d'Éclairage LED</strong><br />
+                        <span style="font-size: 11px; color: #94a3b8;">${state.ledPremiumCount > 0 ? 'LED premium Adressable Bluetooth + télécommande' : 'LED standard RGB'}</span>
+                      </td>
+                      <td style="padding: 15px; text-align: center; color: #cbd5e1;">${state.ledPremiumCount > 0 ? state.ledPremiumCount : 1} système(s)</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.ledPremiumCount > 0 ? '10,90 €' : '-'}</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace; font-weight: bold;">${state.ledPremiumCount > 0 ? `${ledPrice.toFixed(2).replace('.', ',')} €` : 'Offert'}</td>
+                    </tr>
+
+                    ${state.deliveryMethod === 'livraison' ? `
+                    <tr>
+                      <td style="padding: 15px;">
+                        <strong style="color: #f8fafc; font-size: 13px;">Livraison à domicile Réunion</strong><br />
+                        <span style="font-size: 11px; color: #94a3b8;">Destination : ${state.deliveryCity} (${cityInfo.desc})</span>
+                      </td>
+                      <td style="padding: 15px; text-align: center; color: #cbd5e1;">Coursier</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
+                      <td style="padding: 15px; text-align: right; color: #cbd5e1; font-family: monospace; font-weight: bold;">${deliveryPrice === 0 ? 'Offerte' : `${deliveryPrice.toFixed(2).replace('.', ',')} €`}</td>
+                    </tr>` : ''}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px; margin-bottom: 20px;">
-              <div style="background-color: #1e293b; padding: 12px 15px; border-radius: 10px; border: 1px solid #334155;">
-                <h3 style="font-size: 10px; text-transform: uppercase; color: #94a3b8; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Destinataire / Client</h3>
-                <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Client : ${state.clientName || 'Non spécifié'}</p>
-                ${state.clientEmail ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">E-mail : ${state.clientEmail}</p>` : ''}
-                ${state.clientPhone ? `<p style="font-size: 11px; margin: 0 0 2px 0; color: #cbd5e1;">Tél : ${state.clientPhone}</p>` : ''}
-                <p style="font-size: 11px; margin: 0; color: #cbd5e1;">Mode : ${state.deliveryMethod === 'livraison' ? `Livraison à domicile (${state.deliveryCity})` : 'Retrait direct à l\'atelier'}</p>
-              </div>
-              
-              <div style="background-color: #1e293b; padding: 12px 15px; border-radius: 10px; border: 1px solid #334155; display: ${state.eventType !== 'aucun' ? 'block' : 'none'};">
-                <h3 style="font-size: 10px; text-transform: uppercase; color: #fb7185; margin: 0 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; font-weight: bold; letter-spacing: 0.05em;">Planification Événement</h3>
-                <p style="font-size: 13px; font-weight: bold; margin: 0 0 4px 0; color: #f8fafc;">Occasion : ${getEventLabel(state.eventType)}</p>
-                ${state.eventDate ? `<p style="font-size: 11px; margin: 0; color: #fbbf24; font-weight: bold;">Date : ${formatDateFR(state.eventDate)}</p>` : ''}
-              </div>
-            </div>
-
-            <div style="flex-grow: 1; margin-bottom: 20px;">
-              <h3 style="font-size: 11px; text-transform: uppercase; color: #cbd5e1; margin: 0 0 8px 0; font-weight: bold; letter-spacing: 0.05em;">Détail de la commande</h3>
-              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
-                <thead>
-                  <tr style="border-bottom: 2px solid #334155; color: #cbd5e1; font-size: 11px;">
-                    <th style="padding: 6px 4px; width: 50%;">Description de la pièce</th>
-                    <th style="padding: 6px 4px; text-align: center; width: 22%;">Détails / Taille</th>
-                    <th style="padding: 6px 4px; text-align: right; width: 14%;">Tarif unitaire</th>
-                    <th style="padding: 6px 4px; text-align: right; width: 14%;">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 10px 4px;">
-                      <strong style="color: #f8fafc; font-size: 12px;">Lettrage et enseigne personnalisée</strong><br />
-                      <span style="font-size: 10px; color: #94a3b8;">Texte : "${state.text || 'Aucun texte saisi'}"</span>
-                    </td>
-                    <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${letterCount} lettres / ${state.height} cm</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(letterCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
-                  </tr>
-                  
-                  ${state.shapeCount > 0 ? `
-                  <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 10px 4px;">
-                      <strong style="color: #f8fafc; font-size: 12px;">Forme Premium</strong><br />
-                      <span style="font-size: 10px; color: #94a3b8;">Modèle : ${state.shapeDescription || 'Non défini'}</span>
-                    </td>
-                    <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.shapeCount} forme(s) / ${state.height} cm</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${rate.toFixed(2).replace('.', ',')} €</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${(state.shapeCount * state.height * rate * state.multiplier).toFixed(2).replace('.', ',')} €</td>
-                  </tr>` : ''}
-
-                  ${state.engravingCount > 0 ? `
-                  <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 10px 4px;">
-                      <strong style="color: #f8fafc; font-size: 12px;">Lithophanie (Gravure dégressive)</strong><br />
-                      <span style="font-size: 10px; color: #94a3b8;">Thème : ${state.engravingTheme || 'Standard'}</span>
-                    </td>
-                    <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.engravingCount} litho(s) / ${state.height} cm</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingRate.toFixed(2).replace('.', ',')} €</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${engravingPrice.toFixed(2).replace('.', ',')} €</td>
-                  </tr>` : ''}
-
-                  <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 10px 4px;">
-                      <strong style="color: #f8fafc; font-size: 12px;">Système d'Éclairage LED</strong><br />
-                      <span style="font-size: 10px; color: #94a3b8;">${state.ledPremiumCount > 0 ? 'LED premium Adressable Bluetooth + télécommande' : 'LED standard RGB'}</span>
-                    </td>
-                    <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">${state.ledPremiumCount > 0 ? state.ledPremiumCount : 1} système(s)</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.ledPremiumCount > 0 ? '10,90 €' : '-'}</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${state.ledPremiumCount > 0 ? `${ledPrice.toFixed(2).replace('.', ',')} €` : 'Offert'}</td>
-                  </tr>
-
-                  ${state.deliveryMethod === 'livraison' ? `
-                  <tr style="border-bottom: 1px solid #1e293b;">
-                    <td style="padding: 10px 4px;">
-                      <strong style="color: #f8fafc; font-size: 12px;">Livraison à domicile Réunion</strong><br />
-                      <span style="font-size: 10px; color: #94a3b8;">Destination : ${state.deliveryCity} (${cityInfo.desc})</span>
-                    </td>
-                    <td style="padding: 10px 4px; text-align: center; color: #cbd5e1;">Coursier</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">-</td>
-                    <td style="padding: 10px 4px; text-align: right; color: #cbd5e1; font-family: monospace;">${deliveryPrice === 0 ? 'Offerte' : `${deliveryPrice.toFixed(2).replace('.', ',')} €`}</td>
-                  </tr>` : ''}
-                </tbody>
-              </table>
-            </div>
-
-            <div style="border-top: 1px solid #1e293b; padding-top: 15px; margin-top: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                <div style="width: 55%; font-size: 9px; color: #94a3b8; line-height: 1.5; padding-right: 20px;">
+            <table style="width: 100%; margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 20px; border-spacing: 0; table-layout: fixed;">
+              <tr>
+                <td style="width: 55%; vertical-align: bottom; padding-right: 20px; font-size: 9px; color: #94a3b8; line-height: 1.5;">
                   <p style="margin: 0 0 8px 0; color: #cbd5e1; font-weight: bold;">Mentions Légales :</p>
                   <p style="margin: 0 0 12px 0;">${legalText}</p>
-                  <div style="border: 1px dashed #334155; border-radius: 8px; padding: 8px; text-align: center; display: ${signatureBoxDisplay};">
+                  <div style="border: 1px dashed #334155; border-radius: 8px; padding: 15px; text-align: center;">
                     <span style="color: #cbd5e1; font-weight: bold; font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Bon pour accord (Date et Signature client)</span>
                     <div style="height: 35px;"></div>
                   </div>
-                </div>
-
-                <div style="width: 40%; background-color: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; box-sizing: border-box;">
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
-                    <span>Sous-total fabrication :</span>
-                    <span style="font-family: monospace;">${baseTotal.toFixed(2).replace('.', ',')} €</span>
+                </td>
+                <td style="width: 45%; vertical-align: bottom; padding: 0;">
+                  <div style="background-color: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; box-sizing: border-box;">
+                    <table style="width: 100%; border-spacing: 0;">
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">Sous-total fabrication :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">${baseTotal.toFixed(2).replace('.', ',')} €</td>
+                      </tr>
+                      ${state.ledPremiumCount > 0 ? `
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">Option LED Premium (${state.ledPremiumCount}) :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">${ledPrice.toFixed(2).replace('.', ',')} €</td>
+                      </tr>` : ''}
+                      ${state.engravingCount > 0 ? `
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">Option Gravure :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">${engravingPrice.toFixed(2).replace('.', ',')} €</td>
+                      </tr>` : ''}
+                      ${state.deliveryMethod === 'livraison' ? `
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">Frais de livraison :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; color: #cbd5e1; padding-bottom: 5px;">${deliveryPrice === 0 ? '0,00' : deliveryPrice.toFixed(2).replace('.', ',')} €</td>
+                      </tr>` : ''}
+                      <tr>
+                        <td colspan="2" style="border-top: 1px solid #334155; padding-top: 8px; margin-top: 8px;"></td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 15px; font-weight: bold; color: #f8fafc; padding-bottom: 6px;">Prix total :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 15px; font-weight: bold; color: #34d399; padding-bottom: 6px;">${total.toFixed(2).replace('.', ',')} €</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1; padding-bottom: 4px;">Acompte à verser (50%) :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; font-weight: bold; color: #cbd5e1; padding-bottom: 4px;">${deposit.toFixed(2).replace('.', ',')} €</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 11px; color: #cbd5e1;">Solde restant :</td>
+                        <td style="font-family: monospace; text-align: right; font-size: 11px; font-weight: bold; color: #cbd5e1;">${balance.toFixed(2).replace('.', ',')} €</td>
+                      </tr>
+                    </table>
                   </div>
-                  ${state.ledPremiumCount > 0 ? `
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
-                    <span>Option LED Premium (${state.ledPremiumCount}) :</span>
-                    <span style="font-family: monospace;">${ledPrice.toFixed(2).replace('.', ',')} €</span>
-                  </div>` : ''}
-                  ${state.engravingCount > 0 ? `
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
-                    <span>Option Gravure :</span>
-                    <span style="font-family: monospace;">${engravingPrice.toFixed(2).replace('.', ',')} €</span>
-                  </div>` : ''}
-                  ${state.deliveryMethod === 'livraison' ? `
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 5px;">
-                    <span>Frais de livraison :</span>
-                    <span style="font-family: monospace;">${deliveryPrice === 0 ? '0,00' : deliveryPrice.toFixed(2).replace('.', ',')} €</span>
-                  </div>` : ''}
-                  
-                  <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: #f8fafc; border-top: 1px solid #334155; margin-top: 8px; padding-top: 8px;">
-                    <span>Prix total :</span>
-                    <span style="color: #34d399; font-family: monospace;">${total.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-top: 6px;">
-                    <span>Acompte à verser (50%) :</span>
-                    <span style="font-family: monospace; font-weight: bold;">${deposit.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-top: 4px;">
-                    <span>Solde restant :</span>
-                    <span style="font-family: monospace; font-weight: bold;">${balance.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div style="text-align: center; margin-top: 15px; font-size: 9px; color: #64748b; font-weight: 500;">
-                TIBOUTIK-974 • Merci pour votre confiance !
-              </div>
+                </td>
+              </tr>
+            </table>
+            
+            <div style="text-align: center; margin-top: 20px; font-size: 9px; color: #64748b; font-weight: 500;">
+              TIBOUTIK-974 • Merci pour votre confiance !
             </div>
           </div>
         `;
 
-        document.body.appendChild(element); // Attacher au DOM pour éviter les crashs html2canvas
-
         const opt = {
           margin:       0, 
-          filename:     `${docName.replace(/\s+/g, '_')}_${state.clientName.replace(/\s+/g, '_') || 'Client'}_TIBOUTIK974.pdf`,
-          image:        { type: 'jpeg', quality: 0.98 },
+          filename:     `Devis_${state.clientName.replace(/\s+/g, '_') || 'Client'}_TIBOUTIK974.pdf`,
+          image:        { type: 'jpeg', quality: 1 },
           html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
           jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(element).save().then(() => {
+        // L'astuce ultime : on passe LE CODE TEXTE DIRECTEMENT. Zéro attachement, zéro marge d'écran, 100% de réussite.
+        html2pdf().set(opt).from(pdfHtmlContent).save().then(() => {
           showToast("PDF téléchargé avec succès !");
-          document.body.removeChild(element);
         }).catch((err) => {
           console.error(err);
-          showToast("Une erreur est survenue.");
-          document.body.removeChild(element);
+          showToast("Une erreur est survenue lors de l'exportation.");
         });
 
       } catch (err) {
