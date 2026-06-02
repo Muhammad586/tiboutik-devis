@@ -62,42 +62,9 @@
     }
   </style>
 </head>
-<body id="app-body" class="bg-slate-950 text-slate-100 min-h-screen font-sans transition-colors duration-300">
+<body id="app-body" class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans transition-colors duration-300">
 
-  <!-- --- ECRAN DE VERROUILLAGE --- -->
-  <div id="login-screen" class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-sm p-8 rounded-3xl shadow-2xl border bg-slate-900 border-slate-800 transition-colors" id="login-card">
-      <div class="flex justify-center mb-6">
-        <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center text-slate-950 shadow-lg border-2 border-amber-400">
-          <i data-lucide="lock" class="w-7 h-7"></i>
-        </div>
-      </div>
-      <h1 class="text-2xl font-black text-center mb-2">Espace Pro</h1>
-      <p class="text-center text-sm text-slate-400 mb-8">Accès réservé à TIBOUTIK-974</p>
-      
-      <form onsubmit="handleLogin(event)" class="space-y-4">
-        <div>
-          <input
-            type="password"
-            id="password-input"
-            placeholder="Mot de passe..."
-            class="w-full px-4 py-3 rounded-xl border outline-none font-medium transition-all text-center tracking-widest bg-slate-800 border-slate-700 text-white focus:ring-2 focus:ring-amber-500"
-            autofocus
-          />
-          <p id="login-error" class="hidden text-rose-500 text-xs mt-2 font-medium text-center animate-bounce">Mot de passe incorrect</p>
-        </div>
-        <button 
-          type="submit"
-          class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
-        >
-          Déverrouiller l'outil
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- --- CONTENU DE L'APPLICATION (Caché par défaut) --- -->
-  <div id="main-app" class="hidden max-w-5xl mx-auto space-y-6 p-4 md:p-8">
+  <div class="max-w-5xl mx-auto space-y-6">
     
     <!-- Toast de Notification -->
     <div id="toast" class="hidden fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50 animate-fadeIn text-sm">
@@ -693,28 +660,6 @@
       { name: 'Salazie', zone: 3, desc: 'Secteur Cirques' }
     ];
 
-    // --- LOGIQUE DE CONNEXION ---
-    function handleLogin(event) {
-      event.preventDefault();
-      const pwd = document.getElementById('password-input').value;
-      const err = document.getElementById('login-error');
-      
-      // Le mot de passe est "masqué" sous forme de codes numériques.
-      // Il correspond à votre phrase : "mes chiens ce nomais goliate foulette et melimelow @µ£%*$ù"
-      const secret = [109, 101, 115, 32, 99, 104, 105, 101, 110, 115, 32, 99, 101, 32, 110, 111, 109, 97, 105, 115, 32, 103, 111, 108, 105, 97, 116, 101, 32, 102, 111, 117, 108, 101, 116, 116, 101, 32, 101, 116, 32, 109, 101, 108, 105, 109, 101, 108, 111, 119, 32, 64, 181, 163, 37, 42, 36, 249];
-      
-      const isMatch = pwd.length === secret.length && pwd.split('').every((c, i) => c.charCodeAt(0) === secret[i]);
-
-      if (isMatch) {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        document.getElementById('main-app').classList.add('animate-fadeIn');
-      } else {
-        err.classList.remove('hidden');
-        setTimeout(() => err.classList.add('hidden'), 3000);
-      }
-    }
-
     window.onload = function() {
       const date = new Date();
       date.setDate(date.getDate() + 14);
@@ -788,30 +733,18 @@
       const btnLight = document.getElementById('btn-light-mode');
       const btnDark = document.getElementById('btn-dark-mode');
 
-      // Éléments de l'écran de connexion
-      const loginCard = document.getElementById('login-card');
-      const pwdInput = document.getElementById('password-input');
-
       if (darkMode) {
         htmlEl.classList.add('dark');
         bodyEl.classList.add('bg-slate-950', 'text-slate-100');
         bodyEl.classList.remove('bg-slate-50', 'text-slate-800');
         if(btnDark) btnDark.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
         if(btnLight) btnLight.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-400";
-        
-        // Thème sombre pour la connexion
-        if(loginCard) { loginCard.classList.add('bg-slate-900', 'border-slate-800'); loginCard.classList.remove('bg-white', 'border-slate-200'); }
-        if(pwdInput) { pwdInput.classList.add('bg-slate-800', 'border-slate-700', 'text-white'); pwdInput.classList.remove('bg-slate-50', 'border-slate-300', 'text-slate-900'); }
       } else {
         htmlEl.classList.remove('dark');
         bodyEl.classList.add('bg-slate-50', 'text-slate-800');
         bodyEl.classList.remove('bg-slate-950', 'text-slate-100');
         if(btnLight) btnLight.className = "p-2 rounded-xl transition-all custom-accent-badge ring-1 custom-accent-border";
         if(btnDark) btnDark.className = "p-2 rounded-xl transition-all text-slate-500 hover:text-slate-800";
-        
-        // Thème clair pour la connexion
-        if(loginCard) { loginCard.classList.remove('bg-slate-900', 'border-slate-800'); loginCard.classList.add('bg-white', 'border-slate-200'); }
-        if(pwdInput) { pwdInput.classList.remove('bg-slate-800', 'border-slate-700', 'text-white'); pwdInput.classList.add('bg-slate-50', 'border-slate-300', 'text-slate-900'); }
       }
       updateAll();
     }
@@ -1193,12 +1126,6 @@
     function handleExportPDF() {
       if (typeof window.html2pdf === 'undefined') { showToast("Veuillez patienter..."); return; }
       
-      const btn = document.getElementById('btn-export-pdf');
-      const btnText = document.getElementById('btn-export-text');
-      const originalText = btnText.innerText;
-      
-      btnText.innerText = "Génération...";
-      if(btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
       showToast(`Génération de votre devis PDF en cours...`);
 
       try {
@@ -1237,17 +1164,15 @@
         const deposit = total / 2;
         const balance = total / 2;
 
-        // Le remède final contre le décalage !
         const originalScrollY = window.scrollY;
-        window.scrollTo(0, 0); 
+        window.scrollTo(0, 0); // Remonte tout en haut pour forcer une capture parfaite
 
         const wrapper = document.createElement('div');
-        wrapper.style.position = 'fixed'; 
+        wrapper.style.position = 'absolute'; // ABSOLUTE pour ne pas être coupé par l'écran !
         wrapper.style.top = '0px';
         wrapper.style.left = '0px';
         wrapper.style.width = '794px';
         wrapper.style.zIndex = '-9999';
-        wrapper.style.pointerEvents = 'none';
 
         const accentColorMap = { blue: '#2563eb', emerald: '#059669', indigo: '#4f46e5', violet: '#7c3aed', rose: '#e11d48', amber: '#d97706' };
         const accentHex = accentColorMap[state.colorTheme] || '#2563eb';
@@ -1256,8 +1181,9 @@
           ? `<img src="${state.uploadedLogo}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid ${accentHex};" />`
           : `<svg xmlns="http://www.w3.org/2000/svg" width="65" height="65" viewBox="0 0 100 100" style="border-radius: 50%; border: 2px solid ${accentHex}; background: #111; padding: 4px;"><circle cx="50" cy="50" r="45" fill="none" stroke="${accentHex}" stroke-width="2" /><path d="M 30,50 C 35,30 65,30 70,50 C 65,70 35,70 30,50 Z" fill="none" stroke="#fbbf24" stroke-width="2" /><text x="50%" y="46%" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" font-family="sans-serif">974</text><text x="50%" y="78%" font-weight="bold" font-size="11" fill="#fbbf24" text-anchor="middle" font-family="sans-serif" letter-spacing="1">TIBOUTIK</text></svg>`;
 
-        let legalText = `Ce document est une estimation tarifaire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.`;
+        let legalText = `Ce document est une estimation tarifaire provisoire émise par l'entreprise TIBOUTIK-974. Le tarif définitif sera validé lors de la signature du bon de commande officiel.`;
 
+        // RE-DESIGN 100% propre pour PDF (sans Grid, basé sur des Flex stables)
         const pdfHtmlContent = `
           <div style="width: 794px; min-height: 1122px; padding: 40px; box-sizing: border-box; background-color: #0f172a; color: #f8fafc; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;">
             
@@ -1429,34 +1355,31 @@
           html2canvas:  { 
             scale: isMobile ? 1.5 : 2, 
             useCORS: true, 
-            backgroundColor: '#0f172a'
+            backgroundColor: '#0f172a',
+            width: 794,
+            windowWidth: 794,
+            x: 0,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0
           },
           jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
         };
 
-        // Délai de 150ms essentiel pour valider l'action scrollTo(0,0) avant de flasher !
-        setTimeout(() => {
-          html2pdf().set(opt).from(wrapper.firstElementChild).save().then(() => {
-            showToast("PDF téléchargé avec succès !");
-            btnText.innerText = originalText;
-            if(btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            document.body.removeChild(wrapper);
-            window.scrollTo(0, originalScrollY);
-          }).catch((err) => {
-            console.error(err);
-            showToast("Une erreur est survenue lors de l'exportation.");
-            btnText.innerText = originalText;
-            if(btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
-            window.scrollTo(0, originalScrollY);
-          });
-        }, 150);
+        html2pdf().set(opt).from(wrapper.firstElementChild).save().then(() => {
+          showToast("PDF téléchargé avec succès !");
+          document.body.removeChild(wrapper);
+          window.scrollTo(0, originalScrollY); // Remet le site où il était
+        }).catch((err) => {
+          console.error(err);
+          showToast("Une erreur est survenue lors de l'exportation.");
+          if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+          window.scrollTo(0, originalScrollY);
+        });
 
       } catch (err) {
         console.error(err);
         showToast("Erreur système: " + err.message);
-        btnText.innerText = "Export PDF";
-        if(btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
       }
     }
   </script>
